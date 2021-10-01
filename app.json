@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Sustainabyte",
+    "version": "1.0.0",
+    "slug": "sustainabyte",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "bundleIdentifier": "in.mcfarl.sustainabyte",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "in.mcfarl.sustainabyte",
+      "versionCode": 1
+    }
+  }
+}

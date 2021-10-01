@@ -1,0 +1,64 @@
+{
+  "name": "sustainabyte",
+  "description": "An Expo/React Native app for encouraging sustainable eating",
+  "version": "0.0.1",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josh-mcfarlin/sustainabyte.git"
+  },
+  "bugs": {
+    "url": "https://github.com/josh-mcfarlin/sustainabyte/issues"
+  },
+  "author": {
+    "name": "Josh McFarlin",
+    "email": "jmcfarlin6@gatech.edu"
+  },
+  "lint-staged": {
+    "*.@(js|ts|tsx)": [
+      "npm run lint",
+      "npm run format"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint --fix --ext ts --ext tsx --ext js .",
+    "format": "prettier --write **/*.{js,ts,tsx,json}",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@react-navigation/bottom-tabs": "^6.0.5",
+    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/native-stack": "^6.1.0",
+    "expo": "~42.0.0",
+    "firebase": "8.2.3",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
+    "react-native-safe-area-context": "3.2.0",
+    "react-native-screens": "~3.4.0",
+    "react-native-web": "~0.13.12"
+  },
+  "devDependencies": {
+    "@babel/core": "~7.15.5",
+    "@types/react": "~16.9.35",
+    "@types/react-native": "~0.63.2",
+    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@typescript-eslint/parser": "^4.31.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.25.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^7.0.2",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.4.0",
+    "typescript": "~4.0.0"
+  }
+}
