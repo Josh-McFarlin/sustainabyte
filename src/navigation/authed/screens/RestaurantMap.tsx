@@ -1,10 +1,11 @@
 import * as React from "react";
 import MapView, { PROVIDER_GOOGLE, Region, Marker } from "react-native-maps";
-import { Alert, Dimensions, StyleSheet, View } from "react-native";
+import { Alert, Dimensions, StyleSheet, View, Text } from "react-native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import * as Location from "expo-location";
 import { LocationAccuracy } from "expo-location";
+import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import { AuthedNavParamList } from "../types";
 import { Restaurant } from "../../../types/Restaurant";
@@ -19,6 +20,28 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
     latitudeDelta: 0.1,
     longitudeDelta: 0.1,
   });
+  const [selectedRest, setRestaurant] = React.useState<Restaurant | null>(null);
+  const sheetRef = React.useRef<BottomSheet>(null);
+  const snapPoints = React.useMemo(() => ["25%", "60%"], []);
+
+  const handleMarkerPress = React.useCallback(
+    (restaurant) => {
+      setRestaurant(restaurant);
+      // sheetRef.current.expand();
+      sheetRef.current.snapToIndex(0);
+    },
+    [sheetRef, setRestaurant]
+  );
+
+  const handleMapPress = React.useCallback(
+    (event) => {
+      if (event.nativeEvent.action !== "marker-press") {
+        // setRestaurant(null);
+        sheetRef.current.close();
+      }
+    },
+    [sheetRef]
+  );
 
   React.useEffect(() => {
     (async () => {
@@ -43,12 +66,7 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
     })();
   }, []);
 
-  const {
-    isLoading,
-    isError,
-    data: restaurants,
-    error,
-  } = useQuery<Restaurant[], Error>(
+  const { data: restaurants } = useQuery<Restaurant[], Error>(
     [
       "restaurants",
       {
@@ -70,15 +88,32 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
         customMapStyle={mapStyle}
         region={mapRegion}
         onRegionChangeComplete={setMapRegion}
+        onPress={handleMapPress}
+        cacheEnabled
       >
         {restaurants?.map((restaurant) => (
           <Marker
             key={restaurant.id}
             coordinate={restaurant.coordinates}
             title={restaurant.name}
+            onPress={() => handleMarkerPress(restaurant)}
           />
         ))}
       </MapView>
+      <BottomSheet
+        ref={sheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        enableContentPanningGesture
+        style={styles.sheet}
+      >
+        <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
+          <View>
+            <Text>Sel Rest: {selectedRest?.name}</Text>
+          </View>
+        </BottomSheetScrollView>
+      </BottomSheet>
     </View>
   );
 };
@@ -93,6 +128,24 @@ const styles = StyleSheet.create({
   map: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
+  },
+  sheet: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 7,
+    },
+    shadowOpacity: 0.43,
+    shadowRadius: 9.51,
+    elevation: 15,
+  },
+  contentContainer: {
+    backgroundColor: "white",
+  },
+  itemContainer: {
+    padding: 6,
+    margin: 6,
+    backgroundColor: "#eee",
   },
 });
 
