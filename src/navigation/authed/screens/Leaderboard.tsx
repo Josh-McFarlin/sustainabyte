@@ -4,14 +4,14 @@ import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../../../utils/auth";
 import type { AuthedNavParamList } from "../types";
 
-type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Home">;
+type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Leaderboard">;
 
-const HomeScreen: React.FC<PropTypes> = () => {
+const LeaderboardScreen: React.FC<PropTypes> = () => {
   const { user } = useAuth();
 
   return (
     <View style={styles.container}>
-      <Text>Home Screen</Text>
+      <Text>Leaderboard Screen</Text>
       <Text>Hello {user.email}</Text>
     </View>
   );
@@ -26,4 +26,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default LeaderboardScreen;

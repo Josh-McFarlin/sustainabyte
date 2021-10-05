@@ -1,18 +1,20 @@
 import * as React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, Button, StyleSheet } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../../../utils/auth";
+import { logout } from "../../../utils/firebase/actions/auth";
 import type { AuthedNavParamList } from "../types";
 
-type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Home">;
+type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Profile">;
 
-const HomeScreen: React.FC<PropTypes> = () => {
+const ProfileScreen: React.FC<PropTypes> = () => {
   const { user } = useAuth();
 
   return (
     <View style={styles.container}>
-      <Text>Home Screen</Text>
+      <Text>Profile Screen</Text>
       <Text>Hello {user.email}</Text>
+      <Button title="Logout" onPress={logout} />
     </View>
   );
 };
@@ -26,4 +28,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default ProfileScreen;
