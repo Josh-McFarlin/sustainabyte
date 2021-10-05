@@ -11,11 +11,19 @@
     },
     "ios": {
       "bundleIdentifier": "in.mcfarl.sustainabyte",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "config": {
+        "googleMapsApiKey": "AIzaSyD9cTO2D_qm49eF_Jk7am_B5cu7imfkSuc"
+      }
     },
     "android": {
       "package": "in.mcfarl.sustainabyte",
-      "versionCode": 1
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAOruHlUpgRqfyqumGt_BcPTCSzpWtRjkM"
+        }
+      }
     }
   }
 }

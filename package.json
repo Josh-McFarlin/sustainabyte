@@ -30,18 +30,24 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^4.1.1",
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
     "expo": "~42.0.0",
     "firebase": "8.2.3",
+    "miragejs": "^0.1.42",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
+    "react-native-gesture-handler": "~1.10.2",
+    "react-native-maps": "0.28.0",
+    "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-web": "~0.13.12",
-    "react-native-maps": "0.28.0"
+    "react-query": "^3.25.1",
+    "expo-location": "~12.1.2"
   },
   "devDependencies": {
     "@babel/core": "~7.15.5",
