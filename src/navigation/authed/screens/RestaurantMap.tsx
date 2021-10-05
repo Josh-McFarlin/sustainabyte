@@ -15,13 +15,14 @@ type PropTypes = BottomTabScreenProps<AuthedNavParamList, "RestaurantMap">;
 
 const RestaurantMapScreen: React.FC<PropTypes> = () => {
   const [mapRegion, setMapRegion] = React.useState<Region>({
-    latitude: 33.773506,
-    longitude: -84.388854,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
+    latitude: 33.7695028,
+    longitude: -84.385734,
+    latitudeDelta: 0.04,
+    longitudeDelta: 0.05,
   });
   const [selectedRest, setRestaurant] = React.useState<Restaurant | null>(null);
   const sheetRef = React.useRef<BottomSheet>(null);
+  const mapRef = React.useRef<MapView>(null);
   const snapPoints = React.useMemo(() => ["25%", "60%"], []);
 
   const handleMarkerPress = React.useCallback(
@@ -53,13 +54,23 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
       }
 
       await Location.watchPositionAsync(
-        { accuracy: LocationAccuracy.Balanced },
+        {
+          accuracy: LocationAccuracy.Balanced,
+          distanceInterval: 20,
+        },
         ({ coords }) => {
           setMapRegion({
             latitude: coords.latitude,
             longitude: coords.longitude,
-            latitudeDelta: 0.1,
-            longitudeDelta: 0.1,
+            latitudeDelta: 0.04,
+            longitudeDelta: 0.05,
+          });
+
+          mapRef.current.animateToRegion({
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            latitudeDelta: 0.04,
+            longitudeDelta: 0.05,
           });
         }
       );
@@ -83,13 +94,13 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
   return (
     <View style={styles.container}>
       <MapView
+        ref={mapRef}
         style={styles.map}
         provider={PROVIDER_GOOGLE}
         customMapStyle={mapStyle}
-        region={mapRegion}
+        initialRegion={mapRegion}
         onRegionChangeComplete={setMapRegion}
         onPress={handleMapPress}
-        cacheEnabled
       >
         {restaurants?.map((restaurant) => (
           <Marker
