@@ -1,5 +1,5 @@
 import * as React from "react";
-import MapView from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { StyleSheet, View, Dimensions, Alert } from "react-native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -8,6 +8,7 @@ import { fetchRestaurants } from "../../../actions/restaurant";
 import { AuthedNavParamList } from "../types";
 import { Restaurant } from "../../../types/Restaurant";
 import { Coordinates } from "../../../types/Location";
+import { mapStyle } from "../../../utils/map";
 
 type PropTypes = BottomTabScreenProps<AuthedNavParamList, "RestaurantMap">;
 
@@ -49,7 +50,11 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} />
+      <MapView
+        style={styles.map}
+        provider={PROVIDER_GOOGLE}
+        customMapStyle={mapStyle}
+      />
     </View>
   );
 };
