@@ -24,7 +24,8 @@ const App: React.FC = () => {
     });
   }, []);
 
-  const isLoggedIn = user != null;
+  // const isLoggedIn = user != null;
+  const isLoggedIn = true;
 
   return (
     <QueryClientProvider client={queryClient}>

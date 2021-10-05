@@ -1,21 +1,24 @@
 import * as React from "react";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
-import { StyleSheet, View, Dimensions, Alert } from "react-native";
+import MapView, { PROVIDER_GOOGLE, Region, Marker } from "react-native-maps";
+import { Alert, Dimensions, StyleSheet, View } from "react-native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import * as Location from "expo-location";
+import { LocationAccuracy } from "expo-location";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import { AuthedNavParamList } from "../types";
 import { Restaurant } from "../../../types/Restaurant";
-import { Coordinates } from "../../../types/Location";
 import { mapStyle } from "../../../utils/map";
 
 type PropTypes = BottomTabScreenProps<AuthedNavParamList, "RestaurantMap">;
 
 const RestaurantMapScreen: React.FC<PropTypes> = () => {
-  const [coordinates, setCoordinates] = React.useState<Coordinates | null>(
-    null
-  );
+  const [mapRegion, setMapRegion] = React.useState<Region>({
+    latitude: 33.773506,
+    longitude: -84.388854,
+    latitudeDelta: 0.1,
+    longitudeDelta: 0.1,
+  });
 
   React.useEffect(() => {
     (async () => {
@@ -26,12 +29,17 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
         return;
       }
 
-      const { coords } = await Location.getCurrentPositionAsync({});
-
-      setCoordinates({
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-      });
+      await Location.watchPositionAsync(
+        { accuracy: LocationAccuracy.Balanced },
+        ({ coords }) => {
+          setMapRegion({
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
+          });
+        }
+      );
     })();
   }, []);
 
@@ -41,10 +49,16 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
     data: restaurants,
     error,
   } = useQuery<Restaurant[], Error>(
-    ["restaurants", coordinates],
+    [
+      "restaurants",
+      {
+        latitude: mapRegion.latitude,
+        longitude: mapRegion.longitude,
+      },
+    ],
     fetchRestaurants,
     {
-      enabled: coordinates != null,
+      initialData: [],
     }
   );
 
@@ -54,7 +68,17 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
         style={styles.map}
         provider={PROVIDER_GOOGLE}
         customMapStyle={mapStyle}
-      />
+        region={mapRegion}
+        onRegionChangeComplete={setMapRegion}
+      >
+        {restaurants?.map((restaurant) => (
+          <Marker
+            key={restaurant.id}
+            coordinate={restaurant.coordinates}
+            title={restaurant.name}
+          />
+        ))}
+      </MapView>
     </View>
   );
 };

@@ -17,7 +17,8 @@ window.server = createServer({
     this.get(
       "/api/restaurants",
       (schema, request): { restaurants: Restaurant[] } => {
-        const { latitude, longitude } = request.params;
+        const latitude = parseFloat(request.queryParams.latitude);
+        const longitude = parseFloat(request.queryParams.longitude);
 
         console.log("API Coordinates:", { latitude, longitude });
 
@@ -94,7 +95,7 @@ export const fetchRestaurants: QueryFunction<
   const [_key, coordinates] = queryKey;
 
   const response = await fetch(
-    `/api/restaurants?latitude=${coordinates.latitude},longitude=${coordinates.longitude}`
+    `/api/restaurants?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}`
   );
 
   if (!response.ok) {

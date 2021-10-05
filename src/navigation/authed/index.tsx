@@ -13,9 +13,9 @@ const Tab = createBottomTabNavigator<AuthedNavParamList>();
 const AuthedNavigator: React.FC = () => {
   const { user } = useAuth();
 
-  if (user == null) {
-    return null;
-  }
+  // if (user == null) {
+  //   return null;
+  // }
 
   return (
     <Tab.Navigator initialRouteName="Home">

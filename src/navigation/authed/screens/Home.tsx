@@ -48,10 +48,12 @@ const HomeScreen: React.FC<PropTypes> = () => {
     }
   );
 
+  console.log("restaurants:", restaurants);
+
   return (
     <View style={styles.container}>
       <Text>Home Screen</Text>
-      <Text>Hello {user.email}</Text>
+      <Text>Hello {user?.email}</Text>
     </View>
   );
 };
