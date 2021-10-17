@@ -36,6 +36,7 @@
     "@react-navigation/native-stack": "^6.1.0",
     "expo": "~42.0.0",
     "expo-location": "~12.1.2",
+    "faker": "^5.5.3",
     "firebase": "8.2.3",
     "miragejs": "^0.1.42",
     "prop-types": "^15.7.2",
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "@babel/core": "~7.15.5",
+    "@types/faker": "^5.5.8",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
