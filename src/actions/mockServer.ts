@@ -5,6 +5,7 @@ import {
   Factory,
   belongsTo,
   association,
+  RestSerializer,
 } from "miragejs";
 import faker from "faker";
 import type { User } from "../types/User";
@@ -41,35 +42,43 @@ export const makeServer = ({
       user: Model,
       restaurant: Model,
       review: Model.extend({
-        user: belongsTo("user"),
-        restaurant: belongsTo("restaurant"),
+        user: belongsTo(),
+        restaurant: belongsTo(),
       }),
     },
     seeds(server) {
-      server.create("restaurant");
-      server.create("user");
-      server.create("review");
-      server.createList("user", 10);
-      server.createList("restaurant", 10);
-      server.createList("review", 30);
+      // server.createList("user", 10);
+      // server.createList("restaurant", 10);
+      server.createList("review", 20);
+    },
+    serializers: {
+      review: RestSerializer.extend({
+        include: ["user", "restaurant"],
+        embed: false,
+      }),
     },
     factories: {
       user: Factory.extend<User>({
         id() {
           return faker.datatype.uuid();
         },
-        name() {
-          return faker.name.findName();
+        name(i) {
+          const gender = i % 2 ? 0 : 1;
+
+          return `${faker.name.firstName(gender)} ${faker.name.lastName(
+            gender
+          )}`;
         },
         email() {
           return faker.internet.email();
         },
         username() {
-          return faker.internet.userName();
+          return faker.internet.userName(...this.name.split(" "));
         },
         avatarUrl(i) {
-          const c = i % 2 ? "men" : "women";
-          return `https://randomuser.me/api/portraits/${c}/${i}.jpg`;
+          const gender = i % 2 ? "men" : "women";
+
+          return `https://randomuser.me/api/portraits/${gender}/${i}.jpg`;
         },
         score() {
           return faker.datatype.number(100);
@@ -120,12 +129,6 @@ export const makeServer = ({
         id() {
           return faker.datatype.uuid();
         },
-        // user() {
-        //   return faker.datatype.uuid();
-        // },
-        // restaurant() {
-        //   return faker.datatype.uuid();
-        // },
         user: association(),
         restaurant: association(),
         createdAt() {
@@ -142,10 +145,12 @@ export const makeServer = ({
 
           return [...foodTags].sort(() => 0.5 - Math.random()).slice(0, count);
         },
-        photos() {
+        photos(index) {
           const count = faker.datatype.number(3) + 1;
 
-          return Array(count).fill(randomFoodUrl);
+          return [...Array(count)].map(
+            (_, index2) => `${randomFoodUrl}/1080x1080?sig=${index}${index2}`
+          );
         },
         score() {
           return faker.datatype.number(100);
