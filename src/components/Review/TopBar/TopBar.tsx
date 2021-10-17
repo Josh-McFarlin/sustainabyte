@@ -1,5 +1,6 @@
 import * as React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
 import type { User } from "../../../types/User";
 
 type PropTypes = {
@@ -7,6 +8,10 @@ type PropTypes = {
 };
 
 const TopBar: React.FC<PropTypes> = ({ user }) => {
+  const handlePlus = React.useCallback(() => {
+    console.log("Pressed plus");
+  }, []);
+
   return (
     <View style={styles.container}>
       <Image
@@ -16,6 +21,9 @@ const TopBar: React.FC<PropTypes> = ({ user }) => {
         }}
       />
       <Text style={styles.username}>{user.username}</Text>
+      <TouchableOpacity onPress={handlePlus}>
+        <FontAwesome5 name="plus" size={16} color="black" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -40,6 +48,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 12,
     fontWeight: "bold",
+    flex: 1,
   },
 });
 

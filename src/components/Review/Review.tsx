@@ -1,6 +1,15 @@
 import * as React from "react";
-import { View, ScrollView, Text, Image, StyleSheet } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { useQuery } from "react-query";
+import dayjs from "dayjs";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import TopBar from "./TopBar";
 import PhotoGallery from "./PhotoGallery";
 import { fetchUser } from "../../actions/user";
@@ -13,6 +22,10 @@ type PropTypes = {
   review: Review;
 };
 
+const crownColor = (selected: boolean) => (selected ? "#d7bd38" : "#b4b4b4");
+const heartColor = (selected: boolean) => (selected ? "#db2f2f" : "#b4b4b4");
+const iconColor = "#404040";
+
 const SingleReview: React.FC<PropTypes> = ({ review }) => {
   const {
     user: userId,
@@ -20,7 +33,7 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
     photos,
     body,
     score,
-    stars,
+    createdAt,
     tags,
   } = review;
   const { data: user } = useQuery<User, Error>(["user", userId], fetchUser);
@@ -28,6 +41,18 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
     ["restaurant", restaurantId],
     fetchRestaurant
   );
+
+  const crownImage = React.useCallback(() => {
+    console.log("Crowned image");
+  }, []);
+
+  const likeImage = React.useCallback(() => {
+    console.log("Liked image");
+  }, []);
+
+  const shareImage = React.useCallback(() => {
+    console.log("Shared image");
+  }, []);
 
   if (!user || !restaurant) {
     return null;
@@ -57,10 +82,21 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
           </View>
         </View>
         <View style={styles.buttonRow}>
-          <Text>buttons</Text>
+          <TouchableOpacity style={styles.button} onPress={crownImage}>
+            <FontAwesome5 name="crown" size={24} color={crownColor(true)} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={likeImage}>
+            <FontAwesome name="heart" size={24} color={heartColor(true)} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={shareImage}>
+            <FontAwesome5 name="paper-plane" size={24} color={iconColor} />
+          </TouchableOpacity>
+          <View style={styles.filler} />
+          <FontAwesome5 name="map-marker-alt" size={24} color={iconColor} />
         </View>
         <Text style={styles.scoreRow}>
           Earned {score} sustainabytes * level 6
+          <Text style={styles.date}>{dayjs(createdAt).format("MMM D")}</Text>
         </Text>
         <View style={styles.spacer} />
         <View style={styles.bodyRow}>
@@ -112,13 +148,25 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     // flex: 1,
+    display: "flex",
+    flexDirection: "row",
     marginVertical: 4,
+  },
+  button: {
+    marginHorizontal: 4,
+  },
+  filler: {
+    flex: 1,
   },
   scoreRow: {
     // flex: 1,
     fontWeight: "bold",
     fontSize: 12,
     marginVertical: 4,
+  },
+  date: {
+    position: "absolute",
+    right: 8,
   },
   spacer: {
     height: 1,
