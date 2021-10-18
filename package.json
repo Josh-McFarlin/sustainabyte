@@ -27,6 +27,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "deploy-ios": "npx expo-optimize && expo build:ios",
     "prepare": "husky install"
   },
   "dependencies": {

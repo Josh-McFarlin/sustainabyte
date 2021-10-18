@@ -7,23 +7,13 @@ import UnauthedNavigator from "./src/navigation/unauthed";
 import { AuthContext } from "./src/utils/auth";
 import { observeAuthState } from "./src/utils/firebase/actions/auth";
 import SplashScreen from "./src/components/SplashScreen";
-import { makeServer } from "./src/actions/mockServer";
+import runServer from "./src/utils/mockServer";
 
 type User = firebase.User;
 
-if (process.env.NODE_ENV === "development") {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (window.server) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    server.shutdown();
-  }
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  window.server = makeServer({ environment: "development" });
-}
+// if (process.env.NODE_ENV === "development") {
+runServer();
+// }
 
 const queryClient = new QueryClient();
 

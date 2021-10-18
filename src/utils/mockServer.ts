@@ -32,9 +32,7 @@ const foodTags = [
   "popular",
 ];
 
-export const makeServer = ({
-  environment = "development",
-}: ServerArgs): Server => {
+const makeServer = ({ environment = "development" }: ServerArgs): Server => {
   return createServer({
     environment,
 
@@ -180,3 +178,13 @@ export const makeServer = ({
     },
   });
 };
+
+const runServer = (): void => {
+  if ((window as any).server) {
+    (window as any).server.shutdown();
+  }
+
+  (window as any).server = makeServer({ environment: "development" });
+};
+
+export default runServer;
