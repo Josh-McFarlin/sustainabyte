@@ -100,6 +100,9 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
 
           return [...foodTags].sort(() => 0.5 - Math.random()).slice(0, count);
         },
+        numCrowns() {
+          return faker.datatype.number(5);
+        },
         address() {
           const state = faker.address.state(true);
 

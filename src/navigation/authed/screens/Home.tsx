@@ -1,5 +1,14 @@
 import * as React from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  Alert,
+  FlatList,
+  TouchableWithoutFeedback,
+  SafeAreaView,
+} from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import * as Location from "expo-location";
@@ -8,6 +17,10 @@ import { fetchRestaurants } from "../../../actions/restaurant";
 import type { AuthedNavParamList } from "../types";
 import { Coordinates } from "../../../types/Location";
 import { Restaurant } from "../../../types/Restaurant";
+import {
+  ListRestaurant,
+  GalleryRestaurant,
+} from "../../../components/MiniRestaurant";
 
 type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Home">;
 
@@ -35,12 +48,7 @@ const HomeScreen: React.FC<PropTypes> = () => {
     })();
   }, []);
 
-  const {
-    isLoading,
-    isError,
-    data: restaurants,
-    error,
-  } = useQuery<Restaurant[], Error>(
+  const { data: restaurants } = useQuery<Restaurant[], Error>(
     ["restaurants", coordinates],
     fetchRestaurants,
     {
@@ -48,22 +56,83 @@ const HomeScreen: React.FC<PropTypes> = () => {
     }
   );
 
+  const onPress = (restaurant: Restaurant) => {
+    console.log(restaurant.id);
+  };
+
   console.log("restaurants:", restaurants);
 
   return (
-    <View style={styles.container}>
-      <Text>Home Screen</Text>
-      <Text>Hello {user?.email}</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.group}>
+          <Text style={styles.title}>Try Something New</Text>
+          <FlatList
+            horizontal
+            data={restaurants}
+            keyExtractor={(i) => i.id}
+            renderItem={({ item }) => (
+              <TouchableWithoutFeedback
+                key={item.id}
+                onPress={() => onPress(item)}
+              >
+                <GalleryRestaurant restaurant={item} />
+              </TouchableWithoutFeedback>
+            )}
+          />
+        </View>
+        <View style={styles.group}>
+          <Text style={styles.title}>Top Sustainabytes</Text>
+          <FlatList
+            horizontal
+            data={restaurants}
+            keyExtractor={(i) => i.id}
+            renderItem={({ item }) => (
+              <TouchableWithoutFeedback
+                key={item.id}
+                onPress={() => onPress(item)}
+              >
+                <GalleryRestaurant restaurant={item} />
+              </TouchableWithoutFeedback>
+            )}
+          />
+        </View>
+        <View style={styles.group}>
+          <Text style={styles.title}>All Sustainabytes</Text>
+          <FlatList
+            data={restaurants}
+            keyExtractor={(i) => i.id}
+            renderItem={({ item }) => (
+              <TouchableWithoutFeedback
+                key={item.id}
+                onPress={() => onPress(item)}
+              >
+                <ListRestaurant restaurant={item} />
+              </TouchableWithoutFeedback>
+            )}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 8,
+  },
+  scrollContainer: {
+    padding: 8,
+  },
+  group: {
+    marginBottom: 18,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 4,
   },
 });
 
