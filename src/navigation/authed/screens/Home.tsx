@@ -22,6 +22,7 @@ import {
   GalleryRestaurant,
   GalleryOffer,
 } from "../../../components/MiniRestaurant";
+import LocationBar from "../../../components/LocationBar";
 import { Offer } from "../../../types/Offer";
 import { fetchOffers } from "../../../actions/offer";
 
@@ -79,6 +80,7 @@ const HomeScreen: React.FC<PropTypes> = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <LocationBar />
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.group}>
           <Text style={styles.title}>Trending Near You</Text>

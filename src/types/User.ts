@@ -1,3 +1,5 @@
+import type { Location } from "./Location";
+
 export interface User {
   id: string;
   name: string;
@@ -5,4 +7,5 @@ export interface User {
   username: string;
   avatarUrl: string;
   score: number;
+  locations: Location[];
 }

@@ -89,6 +89,9 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         score() {
           return faker.datatype.number(100);
         },
+        locations() {
+          return [];
+        },
       }),
       restaurant: Factory.extend<Restaurant>({
         id() {

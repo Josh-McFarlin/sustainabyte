@@ -1,7 +1,5 @@
 import * as React from "react";
-import firebase from "firebase";
-
-type User = firebase.User;
+import type { User } from "../types/User";
 
 interface AuthContextType {
   user: User | null;
