@@ -1,5 +1,6 @@
 import * as React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import HomeScreen from "./screens/Home";
 import RestaurantMapScreen from "./screens/RestaurantMap";
 import DiscoverScreen from "./screens/Discover";
@@ -27,6 +28,9 @@ const AuthedNavigator: React.FC = () => {
         component={HomeScreen}
         options={{
           title: "Home",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="home" color={color} size={size} />
+          ),
         }}
       />
       <Tab.Screen
@@ -34,6 +38,9 @@ const AuthedNavigator: React.FC = () => {
         component={DiscoverScreen}
         options={{
           title: "Discover",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="search" color={color} size={size} />
+          ),
         }}
       />
       <Tab.Screen
@@ -41,6 +48,9 @@ const AuthedNavigator: React.FC = () => {
         component={RestaurantMapScreen}
         options={{
           title: "Map",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="map-marked-alt" color={color} size={size} />
+          ),
         }}
       />
       <Tab.Screen
@@ -48,6 +58,9 @@ const AuthedNavigator: React.FC = () => {
         component={LeaderboardScreen}
         options={{
           title: "Leaderboard",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="crown" color={color} size={size} />
+          ),
         }}
       />
       <Tab.Screen
@@ -55,6 +68,9 @@ const AuthedNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           title: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="user-circle" color={color} size={size} />
+          ),
         }}
       />
     </Tab.Navigator>

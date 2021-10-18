@@ -95,6 +95,11 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         description() {
           return faker.company.catchPhrase();
         },
+        tags() {
+          const count = faker.datatype.number(3) + 1;
+
+          return [...foodTags].sort(() => 0.5 - Math.random()).slice(0, count);
+        },
         address() {
           const state = faker.address.state(true);
 

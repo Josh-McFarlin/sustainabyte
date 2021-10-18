@@ -11,6 +11,8 @@ import {
   SafeAreaView,
   Text,
   View,
+  Image,
+  ScrollView,
 } from "react-native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -125,7 +127,6 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
           <Marker
             key={restaurant.id}
             coordinate={restaurant.coordinates}
-            title={restaurant.name}
             onPress={() => handleMarkerPress(restaurant)}
           />
         ))}
@@ -142,7 +143,24 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
         <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
           {selectedRest != null && (
             <View>
-              <Text>Sel Rest: {selectedRest?.name || "ahh"}</Text>
+              <View style={styles.restInfo}>
+                <Image
+                  style={styles.avatar}
+                  source={{
+                    uri: selectedRest.avatarUrl,
+                  }}
+                />
+                <View style={styles.nameTags}>
+                  <Text style={styles.restName}>{selectedRest.name}</Text>
+                  <ScrollView horizontal>
+                    {selectedRest.tags.map((tag) => (
+                      <View key={tag} style={styles.tag}>
+                        <Text>#{tag}</Text>
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              </View>
             </View>
           )}
         </BottomSheetScrollView>
@@ -173,12 +191,34 @@ const styles = StyleSheet.create({
     elevation: 15,
   },
   contentContainer: {
-    backgroundColor: "white",
+    padding: 8,
+    backgroundColor: "#ffffff",
   },
-  itemContainer: {
-    padding: 6,
-    margin: 6,
-    backgroundColor: "#eee",
+  restInfo: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    marginRight: 8,
+  },
+  nameTags: {
+    flex: 1,
+  },
+  restName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  tag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: "#77bd67",
+    color: "#000",
+    marginHorizontal: 4,
   },
 });
 

@@ -5,6 +5,7 @@ export interface Restaurant {
   name: string;
   avatarUrl: string;
   description: string;
+  tags: string[];
   address: Address;
   coordinates: Coordinates;
   website?: string;
