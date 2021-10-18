@@ -15,7 +15,13 @@ type User = firebase.User;
 runServer();
 // }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      keepPreviousData: true,
+    },
+  },
+});
 
 const App: React.FC = () => {
   const [user, setUser] = React.useState<User | null>(null);

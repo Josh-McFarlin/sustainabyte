@@ -1,6 +1,17 @@
 import * as React from "react";
-import MapView, { PROVIDER_GOOGLE, Region, Marker } from "react-native-maps";
-import { Alert, Dimensions, StyleSheet, View, Text } from "react-native";
+import MapView, {
+  PROVIDER_GOOGLE,
+  Region,
+  Marker as MarkerBase,
+} from "react-native-maps";
+import {
+  Alert,
+  Dimensions,
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  View,
+} from "react-native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import * as Location from "expo-location";
@@ -12,6 +23,7 @@ import { Restaurant } from "../../../types/Restaurant";
 import { mapStyle } from "../../../utils/map";
 
 type PropTypes = BottomTabScreenProps<AuthedNavParamList, "RestaurantMap">;
+const Marker = MarkerBase || (MapView as any).Marker;
 
 const RestaurantMapScreen: React.FC<PropTypes> = () => {
   const [mapRegion, setMapRegion] = React.useState<Region>({
@@ -36,10 +48,12 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
 
   const handleMapPress = React.useCallback(
     (event) => {
-      if (event.nativeEvent.action !== "marker-press") {
-        // setRestaurant(null);
-        sheetRef.current.close();
+      if (event?.nativeEvent?.action === "marker-press") {
+        return;
       }
+
+      // setRestaurant(null);
+      sheetRef.current.close();
     },
     [sheetRef]
   );
@@ -56,7 +70,7 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
       await Location.watchPositionAsync(
         {
           accuracy: LocationAccuracy.Balanced,
-          distanceInterval: 20,
+          distanceInterval: 2000,
         },
         ({ coords }) => {
           setMapRegion({
@@ -66,7 +80,7 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
             longitudeDelta: 0.05,
           });
 
-          mapRef.current.animateToRegion({
+          mapRef?.current?.animateToRegion({
             latitude: coords.latitude,
             longitude: coords.longitude,
             latitudeDelta: 0.04,
@@ -92,7 +106,7 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -101,6 +115,11 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
         initialRegion={mapRegion}
         onRegionChangeComplete={setMapRegion}
         onPress={handleMapPress}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        options={{
+          disableDefaultUI: true,
+        }}
       >
         {restaurants?.map((restaurant) => (
           <Marker
@@ -111,6 +130,7 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
           />
         ))}
       </MapView>
+
       <BottomSheet
         ref={sheetRef}
         index={-1}
@@ -120,12 +140,14 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
         style={styles.sheet}
       >
         <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
-          <View>
-            <Text>Sel Rest: {selectedRest?.name}</Text>
-          </View>
+          {selectedRest != null && (
+            <View>
+              <Text>Sel Rest: {selectedRest?.name || "ahh"}</Text>
+            </View>
+          )}
         </BottomSheetScrollView>
       </BottomSheet>
-    </View>
+    </SafeAreaView>
   );
 };
 

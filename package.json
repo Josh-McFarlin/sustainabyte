@@ -27,6 +27,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "publish-app": "expo publish",
     "deploy-ios": "npx expo-optimize && expo build:ios",
     "prepare": "husky install"
   },
@@ -52,10 +53,12 @@
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-web": "~0.13.12",
+    "react-native-web-maps": "^0.3.0",
     "react-query": "^3.25.1"
   },
   "devDependencies": {
     "@babel/core": "~7.15.5",
+    "@expo/webpack-config": "^0.16.2",
     "@types/faker": "^5.5.8",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",

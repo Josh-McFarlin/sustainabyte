@@ -74,9 +74,9 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
             <Text style={styles.restName}>{restaurant.name}</Text>
             <ScrollView horizontal>
               {tags.map((tag) => (
-                <Text key={tag} style={styles.tag}>
-                  #{tag}
-                </Text>
+                <View key={tag} style={styles.tag}>
+                  <Text>#{tag}</Text>
+                </View>
               ))}
             </ScrollView>
           </View>
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // backgroundColor: "#fff",
-    marginVertical: 8,
+    marginBottom: 8,
   },
   bottomBar: {
     // flex: 1,

@@ -1,5 +1,10 @@
 import * as React from "react";
-import { View, StyleSheet, FlatList, TouchableHighlight } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  FlatList,
+  TouchableWithoutFeedback,
+} from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import SingleReview from "../../../components/Review";
@@ -25,17 +30,17 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={reviews}
         keyExtractor={(i) => i.id}
         renderItem={({ item }) => (
-          <TouchableHighlight key={item.id} onPress={() => onPress(item)}>
+          <TouchableWithoutFeedback key={item.id} onPress={() => onPress(item)}>
             <SingleReview review={item} />
-          </TouchableHighlight>
+          </TouchableWithoutFeedback>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

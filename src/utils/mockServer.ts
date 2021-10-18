@@ -107,8 +107,9 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           };
         },
         coordinates() {
+          const randRadius = faker.datatype.number(9) + 1;
           const coords = faker.address
-            .nearbyGPSCoordinate(gtCoords, 10)
+            .nearbyGPSCoordinate(gtCoords, randRadius)
             .map(parseFloat);
 
           return {
