@@ -20,7 +20,10 @@ import { Restaurant } from "../../../types/Restaurant";
 import {
   ListRestaurant,
   GalleryRestaurant,
+  GalleryOffer,
 } from "../../../components/MiniRestaurant";
+import { Offer } from "../../../types/Offer";
+import { fetchOffers } from "../../../actions/offer";
 
 type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Home">;
 
@@ -48,6 +51,13 @@ const HomeScreen: React.FC<PropTypes> = () => {
     })();
   }, []);
 
+  const { data: offers } = useQuery<Offer[], Error>(
+    ["offers", coordinates],
+    fetchOffers,
+    {
+      enabled: coordinates != null,
+    }
+  );
   const { data: restaurants } = useQuery<Restaurant[], Error>(
     ["restaurants", coordinates],
     fetchRestaurants,
@@ -56,15 +66,35 @@ const HomeScreen: React.FC<PropTypes> = () => {
     }
   );
 
+  const onPressOffer = (offer: Offer) => {
+    console.log(offer.id);
+  };
+
   const onPress = (restaurant: Restaurant) => {
     console.log(restaurant.id);
   };
 
+  console.log("offers:", offers);
   console.log("restaurants:", restaurants);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
+        <View style={styles.group}>
+          <Text style={styles.title}>Trending Near You</Text>
+          <FlatList
+            horizontal
+            data={offers}
+            keyExtractor={(i) => i.id}
+            renderItem={({ item }) => (
+              <GalleryOffer
+                key={item.id}
+                offer={item}
+                onPress={() => onPressOffer(item)}
+              />
+            )}
+          />
+        </View>
         <View style={styles.group}>
           <Text style={styles.title}>Try Something New</Text>
           <FlatList
@@ -119,7 +149,7 @@ const HomeScreen: React.FC<PropTypes> = () => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     backgroundColor: "#fff",
     padding: 8,
   },

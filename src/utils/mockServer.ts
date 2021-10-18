@@ -11,6 +11,7 @@ import faker from "faker";
 import type { User } from "../types/User";
 import type { Restaurant } from "../types/Restaurant";
 import type { Review } from "../types/Review";
+import type { Offer } from "../types/Offer";
 
 interface ServerArgs {
   environment: string;
@@ -35,7 +36,6 @@ const foodTags = [
 const makeServer = ({ environment = "development" }: ServerArgs): Server => {
   return createServer({
     environment,
-
     models: {
       user: Model,
       restaurant: Model,
@@ -43,15 +43,23 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         user: belongsTo(),
         restaurant: belongsTo(),
       }),
+      offer: Model.extend({
+        restaurant: belongsTo(),
+      }),
     },
     seeds(server) {
       // server.createList("user", 10);
       // server.createList("restaurant", 10);
       server.createList("review", 20);
+      server.createList("offer", 5);
     },
     serializers: {
       review: RestSerializer.extend({
         include: ["user", "restaurant"],
+        embed: false,
+      }),
+      offer: RestSerializer.extend({
+        include: ["restaurant"],
         embed: false,
       }),
     },
@@ -163,6 +171,30 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return faker.datatype.number(100);
         },
       }),
+      offer: Factory.extend<Offer>({
+        id() {
+          return faker.datatype.uuid();
+        },
+        restaurant: association(),
+        createdAt() {
+          return faker.date.recent().valueOf();
+        },
+        expiresAt() {
+          return faker.date.soon().valueOf();
+        },
+        photo(index) {
+          return `${randomFoodUrl}/1080x1080?sig=${index}`;
+        },
+        title() {
+          return faker.lorem.words(3);
+        },
+        body() {
+          return faker.lorem.words(6);
+        },
+        prompt() {
+          return "Order Now";
+        },
+      }),
     },
     routes() {
       this.namespace = "api";
@@ -184,6 +216,12 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       this.post("/review");
       this.patch("/review/:id");
       this.del("/review/:id");
+
+      this.get("/offer");
+      this.get("/offer/:id");
+      this.post("/offer");
+      this.patch("/offer/:id");
+      this.del("/offer/:id");
     },
   });
 };
