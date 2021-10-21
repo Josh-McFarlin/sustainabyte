@@ -2,13 +2,12 @@ import * as React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../../../utils/auth";
-import { logout } from "../../../utils/firebase/actions/auth";
 import type { AuthedNavParamList } from "../types";
 
 type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Profile">;
 
 const ProfileScreen: React.FC<PropTypes> = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <View style={styles.container}>

@@ -12,11 +12,11 @@ import { useAuth } from "../../utils/auth";
 const Tab = createBottomTabNavigator<AuthedNavParamList>();
 
 const AuthedNavigator: React.FC = () => {
-  const { user } = useAuth();
+  const { isLoggedIn } = useAuth();
 
-  // if (user == null) {
-  //   return null;
-  // }
+  if (!isLoggedIn) {
+    return null;
+  }
 
   return (
     <Tab.Navigator

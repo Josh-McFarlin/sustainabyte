@@ -63,7 +63,9 @@
     "react-native-web-maps": "^0.3.0",
     "react-query": "^3.25.1",
     "react-singleton-hook": "^3.2.1",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "expo-status-bar": "~1.0.4",
+    "expo-app-loading": "1.1.2"
   },
   "devDependencies": {
     "@babel/core": "~7.15.5",
