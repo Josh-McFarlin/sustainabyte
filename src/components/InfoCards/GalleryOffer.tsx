@@ -54,10 +54,8 @@ const GalleryOffer: React.FC<PropTypes> = ({ offer, onPress }) => (
 
 const styles = StyleSheet.create({
   container: {
-    marginRight: 8,
-    width: 360,
+    width: Math.min(360, Dimensions.get("window").width * 0.8),
     height: 150,
-    maxWidth: Dimensions.get("window").width * 0.8,
     display: "flex",
     flexDirection: "row",
   },

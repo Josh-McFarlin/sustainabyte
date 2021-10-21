@@ -1,17 +1,19 @@
 import {
-  createServer,
-  Model,
-  Server,
-  Factory,
-  belongsTo,
   association,
+  belongsTo,
+  createServer,
+  Factory,
+  hasMany,
+  Model,
   RestSerializer,
+  Server,
 } from "miragejs";
 import faker from "faker";
 import type { User } from "../types/User";
 import type { Restaurant } from "../types/Restaurant";
 import type { Review } from "../types/Review";
 import type { Offer } from "../types/Offer";
+import type { SocialGroup } from "../types/SocialGroup";
 
 interface ServerArgs {
   environment: string;
@@ -37,7 +39,9 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
   return createServer({
     environment,
     models: {
-      user: Model,
+      user: Model.extend({
+        groups: hasMany("socialGroup"),
+      }),
       restaurant: Model,
       review: Model.extend({
         user: belongsTo(),
@@ -46,12 +50,24 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       offer: Model.extend({
         restaurant: belongsTo(),
       }),
+      socialGroup: Model.extend({
+        members: hasMany("user"),
+        reviews: hasMany("review"),
+      }),
     },
     seeds(server) {
       // server.createList("user", 10);
       // server.createList("restaurant", 10);
       server.createList("review", 20);
       server.createList("offer", 5);
+      server.createList("socialGroup", 10).forEach((group) => {
+        const count = faker.datatype.number(9) + 1;
+        group.update({
+          members: server.createList("user", count, {
+            groups: [group] as any,
+          }) as any,
+        });
+      });
     },
     serializers: {
       review: RestSerializer.extend({
@@ -60,6 +76,10 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       }),
       offer: RestSerializer.extend({
         include: ["restaurant"],
+        embed: false,
+      }),
+      socialGroup: RestSerializer.extend({
+        include: ["members"],
         embed: false,
       }),
     },
@@ -92,6 +112,9 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         locations() {
           return [];
         },
+        groups() {
+          return [];
+        },
       }),
       restaurant: Factory.extend<Restaurant>({
         id() {
@@ -100,8 +123,11 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         name() {
           return faker.company.companyName();
         },
-        avatarUrl() {
-          return `${randomFoodUrl}/100x100`;
+        avatarUrl(i) {
+          return `${randomFoodUrl}/100x100?sig=${i}`;
+        },
+        headerUrl(i) {
+          return `${randomFoodUrl}/1080x1080?sig=${i}`;
         },
         description() {
           return faker.company.catchPhrase();
@@ -110,9 +136,6 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           const count = faker.datatype.number(3) + 1;
 
           return [...foodTags].sort(() => 0.5 - Math.random()).slice(0, count);
-        },
-        numCrowns() {
-          return faker.datatype.number(5);
         },
         address() {
           const state = faker.address.state(true);
@@ -141,6 +164,24 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         },
         phoneNumber() {
           return faker.phone.phoneNumber();
+        },
+        ratings() {
+          const count = faker.datatype.number(990) + 10;
+          const avg = faker.datatype.number(4) + 1;
+
+          return {
+            sum: count * avg,
+            count,
+          };
+        },
+        sustainability() {
+          const vegan = faker.datatype.number(100);
+          const vegetarian = faker.datatype.number(100 - vegan) + vegan;
+
+          return {
+            vegan,
+            vegetarian,
+          };
         },
       }),
       review: Factory.extend<Review>({
@@ -198,6 +239,29 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return "Order Now";
         },
       }),
+      socialGroup: Factory.extend<SocialGroup>({
+        id() {
+          return faker.datatype.uuid();
+        },
+        createdAt() {
+          return faker.date.recent().valueOf();
+        },
+        name() {
+          return faker.lorem.words(3);
+        },
+        description() {
+          return faker.lorem.words(6);
+        },
+        icon(i) {
+          return `${randomFoodUrl}/1080x1080?sig=${i}`;
+        },
+        members() {
+          return [];
+        },
+        reviews() {
+          return [];
+        },
+      }),
     },
     routes() {
       this.namespace = "api";
@@ -225,6 +289,12 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       this.post("/offer");
       this.patch("/offer/:id");
       this.del("/offer/:id");
+
+      this.get("/socialGroup");
+      this.get("/socialGroup/:id");
+      this.post("/socialGroup");
+      this.patch("/socialGroup/:id");
+      this.del("/socialGroup/:id");
     },
   });
 };

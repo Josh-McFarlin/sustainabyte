@@ -1,4 +1,5 @@
 import type { Location } from "./Location";
+import type { SocialGroup } from "./SocialGroup";
 
 export interface User {
   id: string;
@@ -8,4 +9,5 @@ export interface User {
   avatarUrl: string;
   score: number;
   locations: Location[];
+  groups: SocialGroup[];
 }
