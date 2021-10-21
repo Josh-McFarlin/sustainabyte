@@ -45,10 +45,12 @@ const LocationSelector: React.FC<PropTypes> = ({ open, onSelect, onClose }) => {
             style={styles.item}
             onPress={() => onSelect(item)}
           >
-            <Text>{item.address.street}</Text>
-            <Text>
-              {item.address.city}, {item.address.state}
-            </Text>
+            <View>
+              <Text>{item.address.street}</Text>
+              <Text>
+                {item.address.city}, {item.address.state}
+              </Text>
+            </View>
           </TouchableHighlight>
         )}
         ListHeaderComponent={() => (
@@ -57,13 +59,15 @@ const LocationSelector: React.FC<PropTypes> = ({ open, onSelect, onClose }) => {
               style={styles.headerButton}
               onPress={toggleCreator}
             >
-              <Text>Create New</Text>
-              <FontAwesome5
-                // style={styles.icon}
-                name={creatorOpen ? "chevron-up" : "chevron-down"}
-                size={16}
-                color="#55933e"
-              />
+              <View>
+                <Text>Create New</Text>
+                <FontAwesome5
+                  // style={styles.icon}
+                  name={creatorOpen ? "chevron-up" : "chevron-down"}
+                  size={16}
+                  color="#55933e"
+                />
+              </View>
             </TouchableHighlight>
             {creatorOpen && <LocationCreator />}
           </View>

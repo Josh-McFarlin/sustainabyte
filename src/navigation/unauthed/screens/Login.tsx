@@ -1,14 +1,19 @@
 import * as React from "react";
 import { View, Text, TextInput, Button, Alert } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { login } from "../../../utils/firebase/actions/auth";
 import type { UnauthedNavParamList } from "../types";
+import { useAuth } from "../../../utils/auth";
 
 type PropTypes = NativeStackScreenProps<UnauthedNavParamList, "Login">;
 
 const LoginScreen: React.FC<PropTypes> = ({ navigation }) => {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
+  const { login } = useAuth();
+
+  // React.useEffect(() => {
+  //   login();
+  // }, [login]);
 
   const handleLogin = React.useCallback(async () => {
     try {
@@ -16,11 +21,12 @@ const LoginScreen: React.FC<PropTypes> = ({ navigation }) => {
         throw new Error("Please provide all fields!");
       }
 
-      await login(email, password);
+      // await login(email, password);
+      login();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
-  }, [email, password]);
+  }, [login, email, password]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -29,7 +35,7 @@ const LoginScreen: React.FC<PropTypes> = ({ navigation }) => {
       <TextInput value={email} onChangeText={setEmail} />
       <Text>Password</Text>
       <TextInput value={password} onChangeText={setPassword} secureTextEntry />
-      <Button title="Login" onPress={handleLogin} />
+      <Button title="Login" onPress={login} />
       <Button
         title="Reset Password"
         onPress={() =>
