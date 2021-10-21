@@ -1,5 +1,14 @@
-import { geocodeAsync } from "expo-location";
-import { Address, Location } from "../types/Location";
+import * as React from "react";
+import { Alert } from "react-native";
+import {
+  geocodeAsync,
+  requestForegroundPermissionsAsync,
+  getCurrentPositionAsync,
+  LocationAccuracy,
+  watchPositionAsync,
+  LocationOptions,
+} from "expo-location";
+import { Address, Coordinates, Location } from "../types/Location";
 
 const formatAddress = (address: Address): string => {
   if (address == null) {
@@ -28,4 +37,63 @@ export const lookupAddress = async (address: Address): Promise<Location> => {
   } catch (error) {
     throw new Error("Failed to lookup address!");
   }
+};
+
+export const useLocation = (): Coordinates => {
+  const [coordinates, setCoordinates] = React.useState<Coordinates | null>({
+    latitude: 33.7695028,
+    longitude: -84.385734,
+  });
+
+  React.useEffect(() => {
+    (async () => {
+      const { status } = await requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert("Permission to access location was denied!");
+        return;
+      }
+
+      const { coords } = await getCurrentPositionAsync({});
+
+      setCoordinates({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      });
+    })();
+  }, []);
+
+  return coordinates;
+};
+
+export const useCurrentLocation = (
+  options: LocationOptions = {
+    accuracy: LocationAccuracy.Balanced,
+    distanceInterval: 2000,
+  }
+): Coordinates => {
+  const [coordinates, setCoordinates] = React.useState<Coordinates | null>({
+    latitude: 33.7695028,
+    longitude: -84.385734,
+  });
+
+  React.useEffect(() => {
+    (async () => {
+      const { status } = await requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert("Permission to access location was denied!");
+        return;
+      }
+
+      await watchPositionAsync(options, ({ coords }) => {
+        setCoordinates({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+      });
+    })();
+  }, [options]);
+
+  return coordinates;
 };

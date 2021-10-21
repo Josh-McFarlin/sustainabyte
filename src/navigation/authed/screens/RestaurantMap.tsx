@@ -5,7 +5,6 @@ import MapView, {
   Marker as MarkerBase,
 } from "react-native-maps";
 import {
-  Alert,
   Dimensions,
   StyleSheet,
   SafeAreaView,
@@ -16,9 +15,8 @@ import {
 } from "react-native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
-import * as Location from "expo-location";
-import { LocationAccuracy } from "expo-location";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { useCurrentLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import { AuthedNavParamList } from "../types";
 import { Restaurant } from "../../../types/Restaurant";
@@ -28,9 +26,10 @@ type PropTypes = BottomTabScreenProps<AuthedNavParamList, "RestaurantMap">;
 const Marker = MarkerBase || (MapView as any).Marker;
 
 const RestaurantMapScreen: React.FC<PropTypes> = () => {
+  const coordinates = useCurrentLocation();
   const [mapRegion, setMapRegion] = React.useState<Region>({
-    latitude: 33.7695028,
-    longitude: -84.385734,
+    latitude: coordinates.latitude,
+    longitude: coordinates.longitude,
     latitudeDelta: 0.04,
     longitudeDelta: 0.05,
   });
@@ -42,7 +41,6 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
   const handleMarkerPress = React.useCallback(
     (restaurant) => {
       setRestaurant(restaurant);
-      // sheetRef.current.expand();
       sheetRef.current.snapToIndex(0);
     },
     [sheetRef, setRestaurant]
@@ -61,37 +59,13 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
   );
 
   React.useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status !== "granted") {
-        Alert.alert("Permission to access location was denied!");
-        return;
-      }
-
-      await Location.watchPositionAsync(
-        {
-          accuracy: LocationAccuracy.Balanced,
-          distanceInterval: 2000,
-        },
-        ({ coords }) => {
-          setMapRegion({
-            latitude: coords.latitude,
-            longitude: coords.longitude,
-            latitudeDelta: 0.04,
-            longitudeDelta: 0.05,
-          });
-
-          mapRef?.current?.animateToRegion({
-            latitude: coords.latitude,
-            longitude: coords.longitude,
-            latitudeDelta: 0.04,
-            longitudeDelta: 0.05,
-          });
-        }
-      );
-    })();
-  }, []);
+    mapRef?.current?.animateToRegion({
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      latitudeDelta: 0.04,
+      longitudeDelta: 0.05,
+    });
+  }, [coordinates]);
 
   const { data: restaurants } = useQuery<Restaurant[], Error>(
     [
