@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useQueries } from "react-query";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { fetchUser } from "../../actions/user";
 import { SocialGroup } from "../../types/SocialGroup";
 import { User } from "../../types/User";
@@ -49,8 +50,9 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
             ))}
           </View>
           <Text style={styles.secondary}>{group.members.length} people</Text>
+          <FontAwesome5 name="chevron-right" size={20} color="#4b9193" />
         </View>
-        <View style={styles.hContainer}>
+        <View style={[styles.hContainer, styles.spaceBetween]}>
           <Text style={styles.secondary}>
             Followed by {(userQueries[0]?.data as User)?.username} +{" "}
             {group.members.length - 1} more
@@ -97,9 +99,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   userAvatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     borderColor: "#fff",
     borderWidth: 3,
     marginRight: -15,
@@ -120,6 +122,8 @@ const styles = StyleSheet.create({
   secondary: {
     fontSize: 12,
     marginRight: 4,
+    color: "#747474",
+    fontWeight: "700",
   },
   button: {
     paddingHorizontal: 4,

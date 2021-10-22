@@ -38,9 +38,15 @@ const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {
           ))}
         </View>
         <Text style={styles.secondary}>({restaurant.ratings.count})</Text>
-        <FontAwesome5 name="crown" size={12} color="#585858" />
+        <Image
+          style={styles.vegan}
+          source={require("../../../assets/icons/vegan.png")}
+        />
         <Text style={styles.secondary}>{restaurant.sustainability.vegan}%</Text>
-        <FontAwesome5 name="crown" size={12} color="#585858" />
+        <Image
+          style={styles.healthy}
+          source={require("../../../assets/icons/healthy.png")}
+        />
         <Text style={styles.secondary}>
           {restaurant.sustainability.vegetarian}%
         </Text>
@@ -80,6 +86,16 @@ const styles = StyleSheet.create({
   secondary: {
     fontSize: 13,
     marginRight: 4,
+  },
+  vegan: {
+    width: 18,
+    height: 14,
+    resizeMode: "contain",
+  },
+  healthy: {
+    width: 18,
+    height: 14,
+    resizeMode: "contain",
   },
 });
 

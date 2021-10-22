@@ -8,6 +8,7 @@ import {
   SectionList,
   View,
   Image,
+  ScrollView,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -18,7 +19,7 @@ import type { AuthedNavParamList } from "../types";
 import { Restaurant } from "../../../types/Restaurant";
 import {
   GalleryRestaurant,
-  GalleryOffer,
+  CircleOffer,
   GallerySocialGroup,
 } from "../../../components/InfoCards";
 import type { Offer } from "../../../types/Offer";
@@ -33,8 +34,36 @@ enum SectionType {
   LIST_RESTAURANT,
   GALLERY_RESTAURANT,
   GALLERY_OFFER,
+  CIRCLE_OFFER,
   GALLERY_SOCIAL_GROUP,
 }
+
+const categories = [
+  {
+    name: "Healthy",
+    icon: require("../../../../assets/icons/healthy.png"),
+  },
+  {
+    name: "Mexican",
+    icon: require("../../../../assets/icons/mexican.png"),
+  },
+  {
+    name: "Indian",
+    icon: require("../../../../assets/icons/indian.png"),
+  },
+  {
+    name: "Vegan",
+    icon: require("../../../../assets/icons/vegan.png"),
+  },
+  {
+    name: "Asian",
+    icon: require("../../../../assets/icons/asian.png"),
+  },
+  {
+    name: "Sandwiches",
+    icon: require("../../../../assets/icons/sandwiches.png"),
+  },
+];
 
 const HomeScreen: React.FC<PropTypes> = () => {
   const { user } = useAuth();
@@ -72,6 +101,10 @@ const HomeScreen: React.FC<PropTypes> = () => {
     console.log(restaurant.id);
   };
 
+  const onPressCategory = (category: string) => {
+    console.log(category);
+  };
+
   console.log("offers:", offers);
   console.log("restaurants:", restaurants);
 
@@ -95,7 +128,7 @@ const HomeScreen: React.FC<PropTypes> = () => {
         title: "Top updates for you",
         key: "3",
         data: ["3", offers],
-        type: SectionType.GALLERY_OFFER,
+        type: SectionType.CIRCLE_OFFER,
         horizontal: true,
       },
       {
@@ -117,17 +150,32 @@ const HomeScreen: React.FC<PropTypes> = () => {
         sections={data as any}
         keyExtractor={(item) => item[0]}
         ListHeaderComponent={() => (
-          <View style={styles.header}>
-            <View style={styles.headerText}>
-              <Text style={styles.headerName}>Hi, {user.name}</Text>
-              <Text style={styles.headerTitle}>Welcome back!</Text>
+          <View>
+            <View style={styles.header}>
+              <View style={styles.headerText}>
+                <Text style={styles.headerName}>Hi, {user.name}</Text>
+                <Text style={styles.headerTitle}>Welcome back!</Text>
+              </View>
+              <Image
+                style={styles.userAvatar}
+                source={{
+                  uri: user.avatarUrl,
+                }}
+              />
             </View>
-            <Image
-              style={styles.userAvatar}
-              source={{
-                uri: user.avatarUrl,
-              }}
-            />
+            <ScrollView style={styles.categories} horizontal>
+              {categories.map((category) => (
+                <TouchableWithoutFeedback
+                  key={category.name}
+                  onPress={() => onPressCategory(category.name)}
+                >
+                  <View style={styles.category}>
+                    <Image style={styles.categoryIcon} source={category.icon} />
+                    <Text style={styles.categoryText}>{category.name}</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              ))}
+            </ScrollView>
           </View>
         )}
         renderSectionHeader={({ section: { title } }) => (
@@ -172,11 +220,12 @@ const HomeScreen: React.FC<PropTypes> = () => {
                 );
               }
               return (
-                <GalleryOffer
+                <TouchableWithoutFeedback
                   key={item.id}
-                  offer={item as unknown as Offer}
-                  onPress={() => onPressOffer(item as unknown as Offer)}
-                />
+                  onPress={() => onPressOffer(item)}
+                >
+                  <CircleOffer offer={item as unknown as Offer} />
+                </TouchableWithoutFeedback>
               );
             }}
           />
@@ -247,6 +296,31 @@ const styles = StyleSheet.create({
   },
   noMargin: {
     margin: 0,
+  },
+  categories: {
+    borderTopWidth: 3,
+    borderBottomWidth: 3,
+    borderColor: "#d7d7d7",
+    paddingVertical: 8,
+    marginHorizontal: -16,
+    marginBottom: 16,
+  },
+  category: {
+    // width: 90,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+    backgroundColor: "#fff",
+    paddingHorizontal: 16,
+  },
+  categoryIcon: {
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
+  },
+  categoryText: {
+    fontSize: 13,
+    fontWeight: "bold",
   },
 });
 

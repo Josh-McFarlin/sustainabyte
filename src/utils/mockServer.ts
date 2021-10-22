@@ -9,6 +9,7 @@ import {
   Server,
 } from "miragejs";
 import faker from "faker";
+import dayjs from "dayjs";
 import type { User } from "../types/User";
 import type { Restaurant } from "../types/Restaurant";
 import type { Review } from "../types/Review";
@@ -34,6 +35,12 @@ const foodTags = [
   "dinner",
   "popular",
 ];
+
+const getRandomDate = (hours = 24, minutes = 60): Date =>
+  dayjs()
+    .add(faker.datatype.number(hours), "hours")
+    .add(faker.datatype.number(minutes), "minutes")
+    .toDate();
 
 const makeServer = ({ environment = "development" }: ServerArgs): Server => {
   return createServer({
@@ -224,7 +231,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return faker.date.recent().valueOf();
         },
         expiresAt() {
-          return faker.date.soon().valueOf();
+          return getRandomDate().valueOf();
         },
         photo(index) {
           return `${randomFoodUrl}/1080x1080?sig=${index}`;
