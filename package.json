@@ -65,7 +65,8 @@
     "react-singleton-hook": "^3.2.1",
     "uuid": "^3.4.0",
     "expo-status-bar": "~1.0.4",
-    "expo-app-loading": "1.1.2"
+    "expo-app-loading": "1.1.2",
+    "expo-asset": "~8.3.3"
   },
   "devDependencies": {
     "@babel/core": "~7.15.5",

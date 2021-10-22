@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     marginRight: 12,
     borderRadius: 12,
+    backgroundColor: "#888",
   },
   userAvatar: {
     width: 60,
@@ -105,6 +106,7 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
     borderWidth: 3,
     marginRight: -15,
+    backgroundColor: "#888",
   },
   secondaryContainer: {
     display: "flex",

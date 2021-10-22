@@ -1,29 +1,41 @@
-/* eslint-disable react/no-array-index-key */
 import * as React from "react";
-import { View, Image, StyleSheet, Text, ViewStyle } from "react-native";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import type { Restaurant } from "../../types/Restaurant";
+import {
+  Image,
+  ScrollView,
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { Restaurant } from "../../types/Restaurant";
 
-type PropTypes = {
-  // eslint-disable-next-line react/require-default-props
-  style?: ViewStyle;
+interface PropTypes {
   restaurant: Restaurant;
-};
+}
 
-const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {
+const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
   const rating = restaurant.ratings.sum / restaurant.ratings.count;
 
   return (
-    <View style={[styles.container, style]}>
-      <Image
-        style={styles.image}
-        source={{
-          uri: restaurant.headerUrl,
-        }}
-      />
-      <View style={styles.primaryContainer}>
-        <Text style={styles.name}>{restaurant.name}</Text>
-        <FontAwesome5 name="heart" size={16} color="#585858" />
+    <View>
+      <View style={styles.restInfo}>
+        <Image
+          style={styles.avatar}
+          source={{
+            uri: restaurant.avatarUrl,
+          }}
+        />
+        <View style={styles.nameTags}>
+          <Text style={styles.restName}>{restaurant.name}</Text>
+          <ScrollView horizontal>
+            {restaurant.tags.map((tag) => (
+              <View key={tag} style={styles.tag}>
+                <Text>#{tag}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
       </View>
       <View style={styles.secondaryContainer}>
         <Text style={styles.secondary}>{rating}.0</Text>
@@ -56,17 +68,37 @@ const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#fff",
-    width: 300,
-    height: 200,
+  restInfo: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    marginRight: 8,
+  },
+  nameTags: {
+    flex: 1,
+  },
+  restName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  tag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: "#77bd67",
+    color: "#000",
+    marginHorizontal: 4,
   },
   image: {
     flex: 1,
     resizeMode: "cover",
     marginBottom: 6,
     borderRadius: 16,
-    backgroundColor: "#888",
   },
   primaryContainer: {
     display: "flex",
@@ -100,4 +132,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GalleryRestaurant;
+export default SheetContents;

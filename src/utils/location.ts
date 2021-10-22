@@ -69,7 +69,8 @@ export const useLocation = (): Coordinates => {
 export const useCurrentLocation = (
   options: LocationOptions = {
     accuracy: LocationAccuracy.Balanced,
-    distanceInterval: 2000,
+    timeInterval: 60000,
+    distanceInterval: 200,
   }
 ): Coordinates => {
   const [coordinates, setCoordinates] = React.useState<Coordinates | null>({

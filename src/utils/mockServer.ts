@@ -214,7 +214,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         photos(index) {
           const count = faker.datatype.number(3) + 1;
 
-          return [...Array(count)].map(
+          return Array.from(Array(count)).map(
             (_, index2) => `${randomFoodUrl}/1080x1080?sig=${index}${index2}`
           );
         },

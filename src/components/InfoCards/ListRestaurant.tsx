@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     marginRight: 6,
     borderRadius: 12,
+    backgroundColor: "#888",
   },
   restInfo: {
     //
