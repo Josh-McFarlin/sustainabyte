@@ -54,7 +54,14 @@ const SettingsSheet = React.forwardRef<BottomSheet>((_, sheetRef) => {
   const snapPoints = React.useMemo(() => ["50%"], []);
 
   const renderBackdrop = React.useCallback(
-    (props) => <BottomSheetBackdrop {...props} />,
+    (props) => (
+      <BottomSheetBackdrop
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        pressBehavior="close"
+        {...props}
+      />
+    ),
     []
   );
 
@@ -67,29 +74,26 @@ const SettingsSheet = React.forwardRef<BottomSheet>((_, sheetRef) => {
       enableContentPanningGesture
       style={styles.sheet}
       backdropComponent={renderBackdrop}
-      enableOverDrag={false}
     >
       <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
-        <FlatList
-          data={settings}
-          renderItem={({ item }) => (
-            <TouchableHighlight
-              onPress={item.action}
-              activeOpacity={0.9}
-              underlayColor="#ececec"
-            >
-              <View style={styles.item}>
-                <FontAwesome
-                  style={styles.icon}
-                  name={item.icon}
-                  size={28}
-                  color="#3C8D90"
-                />
-                <Text style={styles.text}>{item.name}</Text>
-              </View>
-            </TouchableHighlight>
-          )}
-        />
+        {settings.map((item) => (
+          <TouchableHighlight
+            key={item.name}
+            onPress={item.action}
+            activeOpacity={0.9}
+            underlayColor="#ececec"
+          >
+            <View style={styles.item}>
+              <FontAwesome
+                style={styles.icon}
+                name={item.icon}
+                size={28}
+                color="#3C8D90"
+              />
+              <Text style={styles.text}>{item.name}</Text>
+            </View>
+          </TouchableHighlight>
+        ))}
       </BottomSheetScrollView>
     </BottomSheet>
   );
