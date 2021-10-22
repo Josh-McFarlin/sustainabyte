@@ -12,6 +12,7 @@ import {
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import type { AuthedNavParamList } from "../types";
 import { WaveLeft, WaveRight } from "../../../components/Waves";
 import { fetchUsers } from "../../../actions/user";
@@ -91,8 +92,13 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
                   }}
                 />
               </View>
-              <View style={styles.placeCircle}>
-                <Text style={styles.placeCircleText}>2</Text>
+              <View style={styles.placeWrapper}>
+                <LinearGradient
+                  colors={["#27F9FF", "#3C8D90"]}
+                  style={styles.placeCircle}
+                >
+                  <Text style={styles.placeCircleText}>2</Text>
+                </LinearGradient>
               </View>
             </View>
             <View style={[styles.vRow, styles.center]}>
@@ -104,8 +110,13 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
                   }}
                 />
               </View>
-              <View style={styles.placeCircle}>
-                <Text style={styles.placeCircleText}>1</Text>
+              <View style={styles.placeWrapper}>
+                <LinearGradient
+                  colors={["#27F9FF", "#3C8D90"]}
+                  style={styles.placeCircle}
+                >
+                  <Text style={styles.placeCircleText}>1</Text>
+                </LinearGradient>
               </View>
             </View>
             <View style={[styles.vRow, styles.center]}>
@@ -117,8 +128,13 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
                   }}
                 />
               </View>
-              <View style={styles.placeCircle}>
-                <Text style={styles.placeCircleText}>3</Text>
+              <View style={styles.placeWrapper}>
+                <LinearGradient
+                  colors={["#27F9FF", "#3C8D90"]}
+                  style={styles.placeCircle}
+                >
+                  <Text style={styles.placeCircleText}>3</Text>
+                </LinearGradient>
               </View>
             </View>
           </View>
@@ -269,14 +285,16 @@ const styles = StyleSheet.create({
     marginHorizontal: -15,
     zIndex: 18,
   },
+  placeWrapper: {
+    borderRadius: 50,
+    overflow: "hidden",
+    marginTop: -20,
+  },
   placeCircle: {
     width: 40,
     height: 40,
-    borderRadius: 50,
-    backgroundColor: "#27F9FF",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -20,
   },
   placeCircleText: {
     fontSize: 18,
