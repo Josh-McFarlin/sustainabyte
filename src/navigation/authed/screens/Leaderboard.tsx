@@ -38,103 +38,105 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
         <View style={styles.waveContainer}>
           <WaveRight style={[styles.wave, styles.waveRight]} />
           <WaveLeft style={[styles.wave, styles.waveLeft]} />
-        </View>
-        <View style={styles.rankContainer}>
-          <Text style={[styles.title, styles.marginBottom]}>Leaderboard</Text>
-          <View style={[styles.hRow, styles.spaceAround, styles.marginBottom]}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setTimeSpan(TimeSpan.TODAY)}
+          <View style={styles.rankContainer}>
+            <Text style={[styles.title, styles.marginBottom]}>Leaderboard</Text>
+            <View
+              style={[styles.hRow, styles.spaceAround, styles.marginBottom]}
             >
-              <View
-                style={
-                  timeSpan === TimeSpan.TODAY
-                    ? styles.selectedSpan
-                    : styles.spanContainer
-                }
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => setTimeSpan(TimeSpan.TODAY)}
               >
-                <Text style={styles.spanText}>Today</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setTimeSpan(TimeSpan.WEEK)}>
-              <View
-                style={
-                  timeSpan === TimeSpan.WEEK
-                    ? styles.selectedSpan
-                    : styles.spanContainer
-                }
-              >
-                <Text style={styles.spanText}>Week</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setTimeSpan(TimeSpan.MONTH)}>
-              <View
-                style={
-                  timeSpan === TimeSpan.MONTH
-                    ? styles.selectedSpan
-                    : styles.spanContainer
-                }
-              >
-                <Text style={styles.spanText}>Month</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.hRow, styles.center, styles.marginBottom]}>
-            <FontAwesome5 name="crown" size={32} color="#FFC601" />
-          </View>
-          <View style={[styles.hRow, styles.center, styles.alignEnd]}>
-            <View style={[styles.vRow, styles.center]}>
-              <View style={styles.avatarShadow}>
-                <Image
-                  style={[styles.topAvatar, styles.otherAvatars]}
-                  source={{
-                    uri: users?.[1]?.avatarUrl,
-                  }}
-                />
-              </View>
-              <View style={styles.placeWrapper}>
-                <LinearGradient
-                  colors={["#27F9FF", "#3C8D90"]}
-                  style={styles.placeCircle}
+                <View
+                  style={
+                    timeSpan === TimeSpan.TODAY
+                      ? styles.selectedSpan
+                      : styles.spanContainer
+                  }
                 >
-                  <Text style={styles.placeCircleText}>2</Text>
-                </LinearGradient>
-              </View>
+                  <Text style={styles.spanText}>Today</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setTimeSpan(TimeSpan.WEEK)}>
+                <View
+                  style={
+                    timeSpan === TimeSpan.WEEK
+                      ? styles.selectedSpan
+                      : styles.spanContainer
+                  }
+                >
+                  <Text style={styles.spanText}>Week</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setTimeSpan(TimeSpan.MONTH)}>
+                <View
+                  style={
+                    timeSpan === TimeSpan.MONTH
+                      ? styles.selectedSpan
+                      : styles.spanContainer
+                  }
+                >
+                  <Text style={styles.spanText}>Month</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-            <View style={[styles.vRow, styles.center]}>
-              <View style={styles.avatarShadow}>
-                <Image
-                  style={[styles.topAvatar, styles.firstAvatar]}
-                  source={{
-                    uri: users?.[0]?.avatarUrl,
-                  }}
-                />
-              </View>
-              <View style={styles.placeWrapper}>
-                <LinearGradient
-                  colors={["#27F9FF", "#3C8D90"]}
-                  style={styles.placeCircle}
-                >
-                  <Text style={styles.placeCircleText}>1</Text>
-                </LinearGradient>
-              </View>
+            <View style={[styles.hRow, styles.center, styles.marginBottom]}>
+              <FontAwesome5 name="crown" size={32} color="#FFC601" />
             </View>
-            <View style={[styles.vRow, styles.center]}>
-              <View style={styles.avatarShadow}>
-                <Image
-                  style={[styles.topAvatar, styles.otherAvatars]}
-                  source={{
-                    uri: users?.[2]?.avatarUrl,
-                  }}
-                />
+            <View style={[styles.hRow, styles.center, styles.alignEnd]}>
+              <View style={[styles.vRow, styles.center]}>
+                <View style={styles.avatarShadow}>
+                  <Image
+                    style={[styles.topAvatar, styles.otherAvatars]}
+                    source={{
+                      uri: users?.[1]?.avatarUrl,
+                    }}
+                  />
+                </View>
+                <View style={styles.placeWrapper}>
+                  <LinearGradient
+                    colors={["#27F9FF", "#3C8D90"]}
+                    style={styles.placeCircle}
+                  >
+                    <Text style={styles.placeCircleText}>2</Text>
+                  </LinearGradient>
+                </View>
               </View>
-              <View style={styles.placeWrapper}>
-                <LinearGradient
-                  colors={["#27F9FF", "#3C8D90"]}
-                  style={styles.placeCircle}
-                >
-                  <Text style={styles.placeCircleText}>3</Text>
-                </LinearGradient>
+              <View style={[styles.vRow, styles.center, styles.taZindex]}>
+                <View style={styles.avatarShadow}>
+                  <Image
+                    style={[styles.topAvatar, styles.firstAvatar]}
+                    source={{
+                      uri: users?.[0]?.avatarUrl,
+                    }}
+                  />
+                </View>
+                <View style={styles.placeWrapper}>
+                  <LinearGradient
+                    colors={["#27F9FF", "#3C8D90"]}
+                    style={styles.placeCircle}
+                  >
+                    <Text style={styles.placeCircleText}>1</Text>
+                  </LinearGradient>
+                </View>
+              </View>
+              <View style={[styles.vRow, styles.center]}>
+                <View style={styles.avatarShadow}>
+                  <Image
+                    style={[styles.topAvatar, styles.otherAvatars]}
+                    source={{
+                      uri: users?.[2]?.avatarUrl,
+                    }}
+                  />
+                </View>
+                <View style={styles.placeWrapper}>
+                  <LinearGradient
+                    colors={["#27F9FF", "#3C8D90"]}
+                    style={styles.placeCircle}
+                  >
+                    <Text style={styles.placeCircleText}>3</Text>
+                  </LinearGradient>
+                </View>
               </View>
             </View>
           </View>
@@ -170,19 +172,10 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   waveContainer: {
-    position: "absolute",
     width: Dimensions.get("screen").width,
     height: 320,
-    left: 0,
-    top: 0,
-    zIndex: 10,
   },
   rankContainer: {
-    position: "absolute",
-    width: Dimensions.get("screen").width,
-    height: 320,
-    left: 0,
-    top: 0,
     zIndex: 12,
   },
   wave: {
@@ -200,8 +193,7 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     padding: 16,
-    paddingTop: 320 + 20,
-    zIndex: 3,
+    marginTop: 8,
   },
   listItem: {
     display: "flex",
@@ -261,6 +253,9 @@ const styles = StyleSheet.create({
     borderColor: "#3C8D90",
     backgroundColor: "#ccc",
   },
+  taZindex: {
+    zIndex: 30,
+  },
   avatarShadow: {
     shadowColor: "#00FFFF",
     shadowOffset: {
@@ -270,7 +265,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.39,
     shadowRadius: 8.3,
     elevation: 13,
-    borderRadius: 50,
+    borderRadius: 100,
   },
   firstAvatar: {
     width: 120,
