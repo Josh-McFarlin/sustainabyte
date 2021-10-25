@@ -11,8 +11,12 @@ import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useRef } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
+import { useQuery } from "react-query";
 import SettingsSheet from "../../../components/SettingsSheet";
+import PostGallery from "../../../components/PostGallery";
 import type { TabNavParamList } from "../types";
+import { Review } from "../../../types/Review";
+import { fetchReviews } from "../../../actions/review";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
@@ -26,6 +30,13 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
   const { user, isOwnProfile, isFollowing } = route.params;
   const settingsSheetRef = useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
+  const { data: reviews } = useQuery<Review[], Error>(
+    ["reviews"],
+    fetchReviews,
+    {
+      initialData: [],
+    }
+  );
 
   const openSheet = React.useCallback(() => {
     settingsSheetRef.current.expand();
@@ -140,7 +151,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
       <View style={[styles.hRow, styles.center, styles.marginBottom]}>
         <Text style={styles.bio}>Tap to add a bio</Text>
       </View>
-      <View style={[styles.hRow, styles.marginBottom, styles.border]}>
+      <View style={[styles.hRow, styles.border, styles.noPadding]}>
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.type}
@@ -160,6 +171,8 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
           </TouchableOpacity>
         ))}
       </View>
+
+      {curTab === TabTypes.GALLERY && <PostGallery posts={reviews} />}
       <SettingsSheet ref={settingsSheetRef} />
     </SafeAreaView>
   );
@@ -207,6 +220,9 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     paddingBottom: 16,
+  },
+  noPadding: {
+    paddingBottom: 0,
   },
   marginBottom: {
     marginBottom: 20,
