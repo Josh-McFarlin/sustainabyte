@@ -37,6 +37,7 @@
     "global-require": "off",
     "react/no-array-index-key": "off",
     "react/style-prop-object": "off",
-    "react/jsx-props-no-spreading": "off"
+    "react/jsx-props-no-spreading": "off",
+    "@typescript-eslint/no-var-requires": "off"
   }
 }

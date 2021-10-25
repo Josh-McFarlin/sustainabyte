@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  Image,
-  ScrollView,
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import { Image, ScrollView, Text, View, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Restaurant } from "../../types/Restaurant";
 

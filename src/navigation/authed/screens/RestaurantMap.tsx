@@ -125,14 +125,12 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
     position: "relative",
-    zIndex: 2,
   },
   buttonContainer: {
     width: Dimensions.get("window").width,
     position: "absolute",
     left: 0,
     top: 60,
-    zIndex: 3,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -149,7 +147,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    zIndex: 5,
   },
   buttonText: {
     fontSize: 14,
