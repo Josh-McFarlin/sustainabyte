@@ -12,12 +12,12 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import RestaurantSheet from "../../../components/RestaurantSheet";
-import { AuthedNavParamList } from "../types";
+import { TabNavParamList } from "../types";
 import { Restaurant } from "../../../types/Restaurant";
 import type { Coordinates } from "../../../types/Location";
 import { mapStyle } from "../../../utils/map";
 
-type PropTypes = BottomTabScreenProps<AuthedNavParamList, "RestaurantMap">;
+type PropTypes = BottomTabScreenProps<TabNavParamList, "RestaurantMap">;
 const Marker = MarkerBase || (MapView as any).Marker;
 
 const RestaurantMapScreen: React.FC<PropTypes> = () => {

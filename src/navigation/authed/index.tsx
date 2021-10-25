@@ -1,4 +1,5 @@
 import * as React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import HomeScreen from "./screens/Home";
@@ -6,17 +7,14 @@ import RestaurantMapScreen from "./screens/RestaurantMap";
 import DiscoverScreen from "./screens/Discover";
 import LeaderboardScreen from "./screens/Leaderboard";
 import ProfileScreen from "./screens/Profile";
-import type { AuthedNavParamList } from "./types";
+import type { TabNavParamList, StackNavParamList } from "./types";
 import { useAuth } from "../../utils/auth";
 
-const Tab = createBottomTabNavigator<AuthedNavParamList>();
+const Stack = createNativeStackNavigator<StackNavParamList>();
+const Tab = createBottomTabNavigator<TabNavParamList>();
 
-const AuthedNavigator: React.FC = () => {
-  const { isLoggedIn } = useAuth();
-
-  if (!isLoggedIn) {
-    return null;
-  }
+const TabbedNavigator: React.FC = () => {
+  const { user } = useAuth();
 
   return (
     <Tab.Navigator
@@ -66,6 +64,11 @@ const AuthedNavigator: React.FC = () => {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
+        initialParams={{
+          user,
+          isOwnProfile: true,
+          isFollowing: true,
+        }}
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
@@ -74,6 +77,41 @@ const AuthedNavigator: React.FC = () => {
         }}
       />
     </Tab.Navigator>
+  );
+};
+
+const AuthedNavigator: React.FC = () => {
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Tabs"
+        component={TabbedNavigator}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Group
+        screenOptions={{
+          presentation: "card",
+          headerTitleAlign: "center",
+          animation: "slide_from_right",
+        }}
+      >
+        <Stack.Screen
+          name="UserProfile"
+          component={ProfileScreen}
+          options={{
+            headerTitle: "Profile",
+          }}
+        />
+      </Stack.Group>
+    </Stack.Navigator>
   );
 };
 

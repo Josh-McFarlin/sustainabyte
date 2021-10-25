@@ -8,11 +8,11 @@ import {
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import SingleReview from "../../../components/Review";
-import type { AuthedNavParamList } from "../types";
+import type { TabNavParamList } from "../types";
 import { fetchReviews } from "../../../actions/review";
 import type { Review } from "../../../types/Review";
 
-type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Discover">;
+type PropTypes = BottomTabScreenProps<TabNavParamList, "Discover">;
 
 const DiscoverScreen: React.FC<PropTypes> = () => {
   const { data: reviews } = useQuery<Review[], Error>(

@@ -15,7 +15,7 @@ import { useQuery } from "react-query";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
-import type { AuthedNavParamList } from "../types";
+import type { TabNavParamList } from "../types";
 import { Restaurant } from "../../../types/Restaurant";
 import {
   GalleryRestaurant,
@@ -28,7 +28,7 @@ import { fetchOffers } from "../../../actions/offer";
 import { fetchSocialGroups } from "../../../actions/socialGroup";
 import { useAuth } from "../../../utils/auth";
 
-type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Home">;
+type PropTypes = BottomTabScreenProps<TabNavParamList, "Home">;
 
 enum SectionType {
   LIST_RESTAURANT,

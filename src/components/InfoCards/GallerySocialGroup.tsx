@@ -7,16 +7,19 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useQueries } from "react-query";
+import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { fetchUser } from "../../actions/user";
 import { SocialGroup } from "../../types/SocialGroup";
 import { User } from "../../types/User";
+import { AuthNavigationProp } from "../../navigation/authed/types";
 
 type PropTypes = {
   group: SocialGroup;
 };
 
 const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
+  const navigation = useNavigation<AuthNavigationProp>();
   const userQueries = useQueries(
     group.members.slice(0, 3).map((user) => ({
       queryKey: ["user", user],
@@ -41,12 +44,22 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
         >
           <View style={styles.hContainer}>
             {userQueries.map(({ data }) => (
-              <Image
-                style={styles.userAvatar}
-                source={{
-                  uri: (data as User)?.avatarUrl,
-                }}
-              />
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  navigation.navigate("UserProfile", {
+                    user: data as User,
+                    isOwnProfile: false,
+                    isFollowing: false,
+                  })
+                }
+              >
+                <Image
+                  style={styles.userAvatar}
+                  source={{
+                    uri: (data as User)?.avatarUrl,
+                  }}
+                />
+              </TouchableWithoutFeedback>
             ))}
           </View>
           <Text style={styles.secondary}>{group.members.length} people</Text>

@@ -3,7 +3,6 @@ import {
   SafeAreaView,
   View,
   Text,
-  Button,
   StyleSheet,
   Image,
   TouchableOpacity,
@@ -13,10 +12,9 @@ import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useRef } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import SettingsSheet from "../../../components/SettingsSheet";
-import { useAuth } from "../../../utils/auth";
-import type { AuthedNavParamList } from "../types";
+import type { TabNavParamList } from "../types";
 
-type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Profile">;
+type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
 enum TabTypes {
   GALLERY,
@@ -24,8 +22,8 @@ enum TabTypes {
   SAVED,
 }
 
-const ProfileScreen: React.FC<PropTypes> = () => {
-  const { user, logout } = useAuth();
+const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
+  const { user, isOwnProfile, isFollowing } = route.params;
   const settingsSheetRef = useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
 
@@ -72,43 +70,47 @@ const ProfileScreen: React.FC<PropTypes> = () => {
         <View
           style={[
             styles.hRow,
-            styles.spaceBetween,
+            isOwnProfile ? styles.spaceBetween : styles.center,
             styles.hPadding,
             styles.topPadding,
             styles.marginBottom,
           ]}
         >
-          <View style={styles.hRow}>
-            <TouchableOpacity>
-              <FontAwesome
-                style={styles.icon}
-                name="plus-square-o"
-                size={36}
-                color="#3C8D90"
-              />
-            </TouchableOpacity>
-            <View style={styles.icon} />
-          </View>
+          {isOwnProfile && (
+            <View style={styles.hRow}>
+              <TouchableOpacity>
+                <FontAwesome
+                  style={styles.icon}
+                  name="plus-square-o"
+                  size={36}
+                  color="#3C8D90"
+                />
+              </TouchableOpacity>
+              <View style={styles.icon} />
+            </View>
+          )}
           <Image style={styles.avatar} source={{ uri: user.avatarUrl }} />
-          <View style={styles.hRow}>
-            <TouchableOpacity>
-              <FontAwesome
-                style={styles.icon}
-                name="bell"
-                size={32}
-                color="#3C8D90"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <FontAwesome
-                style={styles.icon}
-                name="bars"
-                size={32}
-                color="#3C8D90"
-                onPress={openSheet}
-              />
-            </TouchableOpacity>
-          </View>
+          {isOwnProfile && (
+            <View style={styles.hRow}>
+              <TouchableOpacity>
+                <FontAwesome
+                  style={styles.icon}
+                  name="bell"
+                  size={32}
+                  color="#3C8D90"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <FontAwesome
+                  style={styles.icon}
+                  name="bars"
+                  size={32}
+                  color="#3C8D90"
+                  onPress={openSheet}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
         <View style={[styles.hRow, styles.center, styles.marginBottom]}>
           <Text style={styles.name}>{user.username || user.name}</Text>
@@ -125,7 +127,11 @@ const ProfileScreen: React.FC<PropTypes> = () => {
             <Text style={styles.statsDetails}>Posts</Text>
           </View>
           <View style={[styles.vRow, styles.center]}>
-            <FontAwesome name="user" size={32} color="#3C8D90" />
+            <FontAwesome
+              name="user"
+              size={32}
+              color={isFollowing ? "#3C8D90" : "#9EC1C3"}
+            />
             <Text style={styles.statsText}>439</Text>
             <Text style={styles.statsDetails}>Followers</Text>
           </View>
@@ -154,7 +160,6 @@ const ProfileScreen: React.FC<PropTypes> = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <Button title="Logout" onPress={logout} />
       <SettingsSheet ref={settingsSheetRef} />
     </SafeAreaView>
   );

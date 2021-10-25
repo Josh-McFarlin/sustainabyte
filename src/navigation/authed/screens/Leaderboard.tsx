@@ -13,12 +13,12 @@ import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import type { AuthedNavParamList } from "../types";
+import type { TabNavParamList } from "../types";
 import { WaveLeft, WaveRight } from "../../../components/Waves";
 import { fetchUsers } from "../../../actions/user";
 import { User } from "../../../types/User";
 
-type PropTypes = BottomTabScreenProps<AuthedNavParamList, "Leaderboard">;
+type PropTypes = BottomTabScreenProps<TabNavParamList, "Leaderboard">;
 
 enum TimeSpan {
   TODAY,
