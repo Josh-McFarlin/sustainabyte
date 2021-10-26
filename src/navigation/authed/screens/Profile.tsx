@@ -17,6 +17,9 @@ import PostGallery from "../../../components/PostGallery";
 import type { TabNavParamList } from "../types";
 import { Review } from "../../../types/Review";
 import { fetchReviews } from "../../../actions/review";
+import { CheckIn } from "../../../types/CheckIn";
+import { fetchCheckIns } from "../../../actions/checkIn";
+import CheckInHistory from "../../../components/CheckInHistory";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
@@ -37,43 +40,38 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
       initialData: [],
     }
   );
+  const { data: checkIns } = useQuery<CheckIn[], Error>(
+    ["checkIns"],
+    fetchCheckIns,
+    {
+      initialData: [],
+    }
+  );
 
   const openSheet = React.useCallback(() => {
     settingsSheetRef.current.expand();
   }, [settingsSheetRef]);
 
-  const tabs = [
-    {
-      type: TabTypes.GALLERY,
-      icon: ({ ...props }) => <Ionicons name="grid" {...props} />,
-      data: [],
-      renderItem: ({ item }) => (
-        <View>
-          <Text>{item}</Text>
-        </View>
-      ),
-    },
-    {
-      type: TabTypes.CHECKINS,
-      icon: ({ ...props }) => <FontAwesome5 name="map-pin" {...props} />,
-      data: [],
-      renderItem: ({ item }) => (
-        <View>
-          <Text>{item}</Text>
-        </View>
-      ),
-    },
-    {
-      type: TabTypes.SAVED,
-      icon: ({ ...props }) => <Ionicons name="bookmark" {...props} />,
-      data: [],
-      renderItem: ({ item }) => (
-        <View>
-          <Text>{item}</Text>
-        </View>
-      ),
-    },
-  ];
+  const tabs = React.useMemo(
+    () => ({
+      [TabTypes.GALLERY]: {
+        type: TabTypes.GALLERY,
+        icon: ({ ...props }) => <Ionicons name="grid" {...props} />,
+        renderItem: <PostGallery posts={reviews} />,
+      },
+      [TabTypes.CHECKINS]: {
+        type: TabTypes.CHECKINS,
+        icon: ({ ...props }) => <FontAwesome5 name="map-pin" {...props} />,
+        renderItem: <CheckInHistory checkIns={checkIns} />,
+      },
+      [TabTypes.SAVED]: {
+        type: TabTypes.SAVED,
+        icon: ({ ...props }) => <Ionicons name="bookmark" {...props} />,
+        renderItem: <PostGallery posts={reviews} />,
+      },
+    }),
+    [checkIns, reviews]
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -152,7 +150,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
         <Text style={styles.bio}>Tap to add a bio</Text>
       </View>
       <View style={[styles.hRow, styles.border, styles.noPadding]}>
-        {tabs.map((tab) => (
+        {Object.values(tabs).map((tab) => (
           <TouchableOpacity
             key={tab.type}
             style={[
@@ -172,7 +170,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
         ))}
       </View>
 
-      {curTab === TabTypes.GALLERY && <PostGallery posts={reviews} />}
+      {tabs[curTab].renderItem}
       <SettingsSheet ref={settingsSheetRef} />
     </SafeAreaView>
   );

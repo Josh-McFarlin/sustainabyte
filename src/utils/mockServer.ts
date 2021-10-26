@@ -15,6 +15,7 @@ import type { Restaurant } from "../types/Restaurant";
 import type { Review } from "../types/Review";
 import type { Offer } from "../types/Offer";
 import type { SocialGroup } from "../types/SocialGroup";
+import type { CheckIn } from "../types/CheckIn";
 
 interface ServerArgs {
   environment: string;
@@ -61,20 +62,55 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         members: hasMany("user"),
         reviews: hasMany("review"),
       }),
+      checkIn: Model.extend({
+        user: belongsTo(),
+        restaurant: belongsTo(),
+        withUsers: hasMany("user"),
+      }),
     },
     seeds(server) {
-      // server.createList("user", 10);
-      // server.createList("restaurant", 10);
       server.createList("review", 20);
       server.createList("offer", 5);
       server.createList("socialGroup", 10).forEach((group) => {
         const count = faker.datatype.number(9) + 1;
+        const subset = faker.datatype.number(4) + 1;
+
         group.update({
           members: server.createList("user", count, {
             groups: [group] as any,
           }) as any,
+          reviews: server.schema
+            .all("review")
+            .models.sort(() => 0.5 - Math.random())
+            .slice(0, subset) as any,
         });
       });
+
+      const users = server.schema.all("user").models;
+      const restaurants = server.schema.all("restaurant").models;
+
+      restaurants.forEach((restaurant) => {
+        const count = faker.datatype.number(15) + 1;
+        const subset = faker.datatype.number(2);
+
+        for (let i = 0; i < count; i += 1) {
+          server.create("checkIn", {
+            restaurant,
+            user: users.sort(() => 0.5 - Math.random())[0],
+            createdAt: faker.date.recent(-2).valueOf(),
+            withUsers: users.sort(() => 0.5 - Math.random()).slice(0, subset),
+          });
+        }
+      });
+
+      console.log(
+        server.schema
+          .all("checkIn")
+          .models.slice(0, 10)
+          .map((i) => JSON.stringify(i, null, 2))
+      );
+
+      console.log(server);
     },
     serializers: {
       review: RestSerializer.extend({
@@ -86,7 +122,11 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         embed: false,
       }),
       socialGroup: RestSerializer.extend({
-        include: ["members"],
+        include: ["members", "reviews"],
+        embed: false,
+      }),
+      checkIn: RestSerializer.extend({
+        include: ["user", "restaurant", "withUsers"],
         embed: false,
       }),
     },
@@ -269,6 +309,19 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return [];
         },
       }),
+      checkIn: Factory.extend<CheckIn>({
+        id() {
+          return faker.datatype.uuid();
+        },
+        user: association(),
+        restaurant: association(),
+        createdAt() {
+          return faker.date.recent().valueOf();
+        },
+        withUsers() {
+          return [];
+        },
+      }),
     },
     routes() {
       this.namespace = "api";
@@ -302,6 +355,12 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       this.post("/socialGroup");
       this.patch("/socialGroup/:id");
       this.del("/socialGroup/:id");
+
+      this.get("/checkIn");
+      this.get("/checkIn/:id");
+      this.post("/checkIn");
+      this.patch("/checkIn/:id");
+      this.del("/checkIn/:id");
     },
   });
 };
