@@ -18,6 +18,7 @@ export type TabNavParamList = {
 export type StackNavParamList = {
   Tabs: TabNavParamList;
   UserProfile: TabNavParamList["Profile"];
+  Preferences: Record<string, never>;
 };
 
 export type AuthNavigationProp = CompositeNavigationProp<

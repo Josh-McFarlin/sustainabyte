@@ -9,6 +9,7 @@ import LeaderboardScreen from "./screens/Leaderboard";
 import ProfileScreen from "./screens/Profile";
 import type { TabNavParamList, StackNavParamList } from "./types";
 import { useAuth } from "../../utils/auth";
+import PreferencesScreen from "./screens/Preferences";
 
 const Stack = createNativeStackNavigator<StackNavParamList>();
 const Tab = createBottomTabNavigator<TabNavParamList>();
@@ -108,6 +109,14 @@ const AuthedNavigator: React.FC = () => {
           component={ProfileScreen}
           options={{
             headerTitle: "Profile",
+          }}
+        />
+        <Stack.Screen
+          name="Preferences"
+          component={PreferencesScreen}
+          options={{
+            headerTitle: "Preferences",
+            gestureEnabled: false,
           }}
         />
       </Stack.Group>

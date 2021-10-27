@@ -6,7 +6,10 @@ module.exports = async function (env, argv) {
     {
       ...env,
       babel: {
-        dangerouslyAddModulePathsToTranspile: ["@gorhom/bottom-sheet"],
+        dangerouslyAddModulePathsToTranspile: [
+          "@gorhom/bottom-sheet",
+          "rn-range-slider",
+        ],
       },
     },
     argv

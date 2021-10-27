@@ -11,46 +11,46 @@ import BottomSheet, {
   BottomSheetBackdrop,
 } from "@gorhom/bottom-sheet";
 import { FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import {
+  AuthNavigationProp,
+  StackNavParamList,
+} from "../../navigation/authed/types";
 
-const settings = [
+const settings: {
+  name: string;
+  icon: keyof typeof FontAwesome["glyphMap"];
+  route: keyof StackNavParamList;
+}[] = [
   {
     name: "Account Settings",
     icon: "gear" as const,
-    action: () => {
-      console.log("settings");
-    },
+    route: "Preferences",
   },
   {
     name: "Your Preferences",
     icon: "sliders" as const,
-    action: () => {
-      console.log("prefs");
-    },
+    route: "Preferences",
   },
   {
     name: "Your Cart",
     icon: "shopping-cart" as const,
-    action: () => {
-      console.log("cart");
-    },
+    route: "Preferences",
   },
   {
     name: "Order History",
     icon: "history" as const,
-    action: () => {
-      console.log("history");
-    },
+    route: "Preferences",
   },
   {
     name: "Payments",
     icon: "credit-card" as const,
-    action: () => {
-      console.log("payments");
-    },
+    route: "Preferences",
   },
 ];
 
 const SettingsSheet = React.forwardRef<BottomSheet>((_, sheetRef) => {
+  const navigation = useNavigation<AuthNavigationProp>();
   const snapPoints = React.useMemo(() => ["50%"], []);
 
   const renderBackdrop = React.useCallback(
@@ -79,7 +79,7 @@ const SettingsSheet = React.forwardRef<BottomSheet>((_, sheetRef) => {
         {settings.map((item) => (
           <TouchableHighlight
             key={item.name}
-            onPress={item.action}
+            onPress={() => navigation.navigate(item.route)}
             activeOpacity={0.9}
             underlayColor="#ececec"
           >

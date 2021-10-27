@@ -16,13 +16,13 @@ import type { Review } from "../types/Review";
 import type { Offer } from "../types/Offer";
 import type { SocialGroup } from "../types/SocialGroup";
 import type { CheckIn } from "../types/CheckIn";
+import { randomSizeSubset, randomFoodUrl } from "./random";
 
 interface ServerArgs {
   environment: string;
 }
 
 const gtCoords = [33.7697031, -84.3947155];
-const randomFoodUrl = "https://source.unsplash.com/collection/2311719";
 const foodTags = [
   "vegan",
   "vegetarian",
@@ -91,26 +91,16 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
 
       restaurants.forEach((restaurant) => {
         const count = faker.datatype.number(15) + 1;
-        const subset = faker.datatype.number(2);
 
         for (let i = 0; i < count; i += 1) {
           server.create("checkIn", {
             restaurant,
             user: users.sort(() => 0.5 - Math.random())[0],
             createdAt: faker.date.recent(-2).valueOf(),
-            withUsers: users.sort(() => 0.5 - Math.random()).slice(0, subset),
+            withUsers: randomSizeSubset(users, 2, 0),
           });
         }
       });
-
-      console.log(
-        server.schema
-          .all("checkIn")
-          .models.slice(0, 10)
-          .map((i) => JSON.stringify(i, null, 2))
-      );
-
-      console.log(server);
     },
     serializers: {
       review: RestSerializer.extend({
@@ -180,9 +170,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return faker.company.catchPhrase();
         },
         tags() {
-          const count = faker.datatype.number(3) + 1;
-
-          return [...foodTags].sort(() => 0.5 - Math.random()).slice(0, count);
+          return randomSizeSubset(foodTags, 4);
         },
         address() {
           const state = faker.address.state(true);
@@ -247,9 +235,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return faker.lorem.sentences(3);
         },
         tags() {
-          const count = faker.datatype.number(3) + 1;
-
-          return [...foodTags].sort(() => 0.5 - Math.random()).slice(0, count);
+          return randomSizeSubset(foodTags, 4);
         },
         photos(index) {
           const count = faker.datatype.number(3) + 1;
