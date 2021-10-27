@@ -1,15 +1,21 @@
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { User } from "../../types/User";
+import type { User } from "../../types/User";
+import type { Restaurant } from "../../types/Restaurant";
 
 export type TabNavParamList = {
   Home: Record<string, never>;
   RestaurantMap: Record<string, never>;
   Discover: Record<string, never>;
   Leaderboard: Record<string, never>;
-  Profile: {
+  UserProfile: {
     userId: User["id"];
+    isOwnProfile: boolean;
+    isFollowing: boolean;
+  };
+  RestaurantProfile: {
+    restaurantId: Restaurant["id"];
     isOwnProfile: boolean;
     isFollowing: boolean;
   };
@@ -17,7 +23,8 @@ export type TabNavParamList = {
 
 export type StackNavParamList = {
   Tabs: TabNavParamList;
-  UserProfile: TabNavParamList["Profile"];
+  UserProfile: TabNavParamList["UserProfile"];
+  RestaurantProfile: TabNavParamList["RestaurantProfile"];
   Preferences: Record<string, never>;
   AccountSettings: Record<string, never>;
 };

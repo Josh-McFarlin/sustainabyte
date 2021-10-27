@@ -17,16 +17,18 @@ const AccountSettingsScreen: React.FC<PropTypes> = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.section}>
-        <Text>Currently signed in as:</Text>
-        <Text>{user.name}</Text>
-      </View>
-      <View style={styles.section}>
-        <TouchableWithoutFeedback onPress={logout}>
-          <View style={styles.button}>
-            <Text style={styles.buttonText}>Logout</Text>
-          </View>
-        </TouchableWithoutFeedback>
+      <View style={styles.container}>
+        <View style={styles.section}>
+          <Text>Currently signed in as:</Text>
+          <Text>{user.name}</Text>
+        </View>
+        <View style={styles.section}>
+          <TouchableWithoutFeedback onPress={logout}>
+            <View style={styles.button}>
+              <Text style={styles.buttonText}>Logout</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
       </View>
     </SafeAreaView>
   );

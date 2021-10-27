@@ -6,7 +6,8 @@ import HomeScreen from "./screens/Home";
 import RestaurantMapScreen from "./screens/RestaurantMap";
 import DiscoverScreen from "./screens/Discover";
 import LeaderboardScreen from "./screens/Leaderboard";
-import ProfileScreen from "./screens/Profile";
+import UserProfileScreen from "./screens/UserProfile";
+import RestaurantProfileScreen from "./screens/RestaurantProfile";
 import type { TabNavParamList, StackNavParamList } from "./types";
 import { useAuth } from "../../utils/auth";
 import PreferencesScreen from "./screens/Preferences";
@@ -64,8 +65,8 @@ const TabbedNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="UserProfile"
+        component={UserProfileScreen}
         initialParams={{
           userId: user.id,
           isOwnProfile: true,
@@ -107,7 +108,14 @@ const AuthedNavigator: React.FC = () => {
       >
         <Stack.Screen
           name="UserProfile"
-          component={ProfileScreen}
+          component={UserProfileScreen}
+          options={{
+            headerTitle: "Profile",
+          }}
+        />
+        <Stack.Screen
+          name="RestaurantProfile"
+          component={RestaurantProfileScreen}
           options={{
             headerTitle: "Profile",
           }}

@@ -14,16 +14,16 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
-import type { TabNavParamList } from "../types";
 import { Review } from "../../../types/Review";
 import { fetchReviews } from "../../../actions/review";
 import { CheckIn } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
-import { fetchUser } from "../../../actions/user";
-import { User } from "../../../types/User";
+import { TabNavParamList } from "../types";
+import { fetchRestaurant } from "../../../actions/restaurant";
+import { Restaurant } from "../../../types/Restaurant";
 
-type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
+type PropTypes = BottomTabScreenProps<TabNavParamList, "RestaurantProfile">;
 
 enum TabTypes {
   GALLERY,
@@ -31,9 +31,12 @@ enum TabTypes {
   SAVED,
 }
 
-const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
-  const { userId, isOwnProfile, isFollowing } = route.params;
-  const { data: user } = useQuery<User, Error>(["user", userId], fetchUser);
+const RestaurantScreen: React.FC<PropTypes> = ({ route }) => {
+  const { restaurantId, isOwnProfile, isFollowing } = route.params;
+  const { data: restaurant } = useQuery<Restaurant, Error>(
+    ["restaurant", restaurantId],
+    fetchRestaurant
+  );
   const settingsSheetRef = useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const { data: reviews } = useQuery<Review[], Error>(
@@ -76,7 +79,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
     [checkIns, reviews]
   );
 
-  if (user == null) {
+  if (restaurant == null) {
     return null;
   }
 
@@ -105,7 +108,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
               <View style={styles.icon} />
             </View>
           )}
-          <Image style={styles.avatar} source={{ uri: user.avatarUrl }} />
+          <Image style={styles.avatar} source={{ uri: restaurant.avatarUrl }} />
           {isOwnProfile && (
             <View style={styles.hRow}>
               <TouchableOpacity>
@@ -129,7 +132,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
           )}
         </View>
         <View style={[styles.hRow, styles.center, styles.marginBottom]}>
-          <Text style={styles.name}>{user.username || user.name}</Text>
+          <Text style={styles.name}>{restaurant.name}</Text>
         </View>
         <View style={[styles.hRow, styles.spaceAround, styles.marginBottom]}>
           <View style={[styles.vRow, styles.center]}>
@@ -268,4 +271,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen;
+export default RestaurantScreen;
