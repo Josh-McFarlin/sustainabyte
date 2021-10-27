@@ -20,6 +20,8 @@ import { fetchReviews } from "../../../actions/review";
 import { CheckIn } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
+import { fetchUser } from "../../../actions/user";
+import { User } from "../../../types/User";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
@@ -30,7 +32,8 @@ enum TabTypes {
 }
 
 const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
-  const { user, isOwnProfile, isFollowing } = route.params;
+  const { userId, isOwnProfile, isFollowing } = route.params;
+  const { data: user } = useQuery<User, Error>(["user", userId], fetchUser);
   const settingsSheetRef = useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const { data: reviews } = useQuery<Review[], Error>(
@@ -72,6 +75,10 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
     }),
     [checkIns, reviews]
   );
+
+  if (user == null) {
+    return null;
+  }
 
   return (
     <SafeAreaView style={styles.container}>

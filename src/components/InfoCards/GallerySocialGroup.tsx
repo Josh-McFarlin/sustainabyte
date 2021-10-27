@@ -47,7 +47,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
               <TouchableWithoutFeedback
                 onPress={() =>
                   navigation.navigate("UserProfile", {
-                    user: data as User,
+                    userId: (data as User).id,
                     isOwnProfile: false,
                     isFollowing: false,
                   })

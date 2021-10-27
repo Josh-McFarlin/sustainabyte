@@ -4,10 +4,12 @@ import * as WebBrowser from "expo-web-browser";
 import jwtDecode from "jwt-decode";
 import { Alert, Platform } from "react-native";
 import { singletonHook } from "react-singleton-hook";
+import { useQuery } from "react-query";
 import * as SecureStore from "./SecureStore";
 import { v4 as uuid } from "./uuid";
-import type { User } from "../types/User";
 import type { AuthContextType, Auth0User } from "../types/Auth";
+import { fetchUser } from "../actions/user";
+import { User } from "../types/User";
 
 const authStorageKey = "AuthObject";
 const auth0ClientId = "g5aCxDpiXTWG4pqNSNPYyN06KBgw610q";
@@ -49,7 +51,15 @@ const clearAuthObject = (): Promise<void> =>
 
 export const useAuthBase = (): AuthContextType => {
   const [auth0User, setAuth0User] = React.useState<Auth0User | null>(null);
-  const [user, setUser] = React.useState<User | null>(null);
+  const [addedDB, setAddedDB] = React.useState<boolean>(false);
+  const { data: user, remove } = useQuery<User, Error>(
+    ["user", auth0User?.sub],
+    fetchUser,
+    {
+      enabled: auth0User?.sub != null && addedDB,
+      initialData: null,
+    }
+  );
   const [isInitializing, setIsInitializing] = React.useState<boolean>(true);
   const nonce = React.useRef<string>(uuid().replaceAll("-", ""));
 
@@ -58,7 +68,7 @@ export const useAuthBase = (): AuthContextType => {
       redirectUri,
       clientId: auth0ClientId,
       responseType: "id_token",
-      scopes: ["openid", "profile"],
+      scopes: ["openid", "profile", "name", "email"],
       extraParams: {
         nonce: nonce.current,
       },
@@ -75,7 +85,6 @@ export const useAuthBase = (): AuthContextType => {
         console.log("decoded", decoded);
         setAuth0User(decoded as any);
         saveAuthObject(decoded as any);
-        setUser(decoded as any);
 
         break;
       }
@@ -100,29 +109,47 @@ export const useAuthBase = (): AuthContextType => {
   );
 
   const logout = React.useCallback(() => {
-    setUser(null);
     setAuth0User(null);
     clearAuthObject();
-  }, []);
-
-  console.log({
-    user,
-    loading: request != null,
-    isLoggedIn: user != null,
-  });
+    remove();
+  }, [remove]);
 
   React.useEffect(() => {
     getAuthObject()
       .then((storedAuth: Auth0User | null) => {
         if (storedAuth) {
           setAuth0User(storedAuth);
-          setUser(storedAuth as any);
         }
       })
       .finally(() => {
         setIsInitializing(false);
       });
   }, []);
+
+  React.useEffect(() => {
+    if ((window as any).server && auth0User != null) {
+      (window as any).server.create("user", {
+        id: auth0User.sub,
+        name: auth0User.username || auth0User.nickname,
+        email: auth0User.email,
+        username: auth0User.username || auth0User.nickname,
+        avatarUrl: auth0User.picture,
+        score: 0,
+        locations: [],
+        groups: [],
+      });
+
+      setAddedDB(true);
+    }
+  }, [auth0User]);
+
+  console.log({
+    addedDB,
+    auth0User,
+    user,
+    isInitializing: !request || isInitializing,
+    isLoggedIn: user != null,
+  });
 
   return {
     user,

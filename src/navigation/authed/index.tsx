@@ -10,6 +10,7 @@ import ProfileScreen from "./screens/Profile";
 import type { TabNavParamList, StackNavParamList } from "./types";
 import { useAuth } from "../../utils/auth";
 import PreferencesScreen from "./screens/Preferences";
+import AccountSettingsScreen from "./screens/AccountSettings";
 
 const Stack = createNativeStackNavigator<StackNavParamList>();
 const Tab = createBottomTabNavigator<TabNavParamList>();
@@ -66,7 +67,7 @@ const TabbedNavigator: React.FC = () => {
         name="Profile"
         component={ProfileScreen}
         initialParams={{
-          user,
+          userId: user.id,
           isOwnProfile: true,
           isFollowing: true,
         }}
@@ -116,6 +117,14 @@ const AuthedNavigator: React.FC = () => {
           component={PreferencesScreen}
           options={{
             headerTitle: "Preferences",
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="AccountSettings"
+          component={AccountSettingsScreen}
+          options={{
+            headerTitle: "Account Settings",
             gestureEnabled: false,
           }}
         />

@@ -25,7 +25,7 @@ const settings: {
   {
     name: "Account Settings",
     icon: "gear" as const,
-    route: "Preferences",
+    route: "AccountSettings",
   },
   {
     name: "Your Preferences",

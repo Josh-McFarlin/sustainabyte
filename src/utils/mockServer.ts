@@ -17,6 +17,7 @@ import type { Offer } from "../types/Offer";
 import type { SocialGroup } from "../types/SocialGroup";
 import type { CheckIn } from "../types/CheckIn";
 import { randomSizeSubset, randomFoodUrl } from "./random";
+import { Location } from "../types/Location";
 
 interface ServerArgs {
   environment: string;
@@ -351,12 +352,15 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
   });
 };
 
-const runServer = (): void => {
+const runServer = (): Server => {
   if ((window as any).server) {
     (window as any).server.shutdown();
   }
 
-  (window as any).server = makeServer({ environment: "development" });
+  const server = makeServer({ environment: "development" });
+  (window as any).server = server;
+
+  return server;
 };
 
 export default runServer;

@@ -9,7 +9,7 @@ export type TabNavParamList = {
   Discover: Record<string, never>;
   Leaderboard: Record<string, never>;
   Profile: {
-    user: User;
+    userId: User["id"];
     isOwnProfile: boolean;
     isFollowing: boolean;
   };
@@ -19,6 +19,7 @@ export type StackNavParamList = {
   Tabs: TabNavParamList;
   UserProfile: TabNavParamList["Profile"];
   Preferences: Record<string, never>;
+  AccountSettings: Record<string, never>;
 };
 
 export type AuthNavigationProp = CompositeNavigationProp<
