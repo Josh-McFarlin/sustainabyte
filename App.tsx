@@ -4,7 +4,9 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { SingletonHooksContainer } from "react-singleton-hook";
 import { StatusBar } from "expo-status-bar";
 import { Asset } from "expo-asset";
+import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
+import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import AuthedNavigator from "./src/navigation/authed";
 import UnauthedNavigator from "./src/navigation/unauthed";
 import { useAuth } from "./src/utils/auth";
@@ -25,6 +27,8 @@ const queryClient = new QueryClient({
 const cacheImages = (images) =>
   images.map((image) => Asset.fromModule(image).downloadAsync());
 
+const cacheFonts = (fonts) => fonts.map((font) => Font.loadAsync(font));
+
 const Navigation: React.FC = () => {
   const { isInitializing, isLoggedIn } = useAuth();
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
@@ -39,7 +43,13 @@ const Navigation: React.FC = () => {
       require("./assets/icons/vegan.png"),
     ]);
 
-    await Promise.all(imageAssets);
+    const fontAssets = cacheFonts([
+      FontAwesome.font,
+      FontAwesome5.font,
+      Ionicons.font,
+    ]);
+
+    await Promise.all([...imageAssets, ...fontAssets]);
   };
 
   if (isInitializing || isLoading) {

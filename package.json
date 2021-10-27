@@ -68,7 +68,8 @@
     "react-query": "^3.25.1",
     "react-singleton-hook": "^3.2.1",
     "rn-range-slider": "^2.1.1",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "expo-font": "~9.2.1"
   },
   "devDependencies": {
     "@babel/core": "~7.15.5",
