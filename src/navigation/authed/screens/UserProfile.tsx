@@ -102,7 +102,9 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         >
           {isOwnProfile && (
             <View style={styles.hRow}>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("UploadPost" as any)}
+              >
                 <FontAwesome
                   style={styles.icon}
                   name="plus-square-o"
@@ -124,13 +126,12 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                   color="#3C8D90"
                 />
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={openSheet}>
                 <FontAwesome
                   style={styles.icon}
                   name="bars"
                   size={32}
                   color="#3C8D90"
-                  onPress={openSheet}
                 />
               </TouchableOpacity>
             </View>

@@ -26,6 +26,21 @@
           "apiKey": "AIzaSyAOruHlUpgRqfyqumGt_BcPTCSzpWtRjkM"
         }
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "The app accesses your camera to let you share them with your friends.",
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "The app accesses your camera to let you share them with your friends."
+        }
+      ]
+    ]
   }
 }

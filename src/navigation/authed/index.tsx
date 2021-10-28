@@ -12,6 +12,7 @@ import type { TabNavParamList, StackNavParamList } from "./types";
 import { useAuth } from "../../utils/auth";
 import PreferencesScreen from "./screens/Preferences";
 import AccountSettingsScreen from "./screens/AccountSettings";
+import UploadPostScreen from "./screens/UploadPost";
 
 const Stack = createNativeStackNavigator<StackNavParamList>();
 const Tab = createBottomTabNavigator<TabNavParamList>();
@@ -133,6 +134,14 @@ const AuthedNavigator: React.FC = () => {
           component={AccountSettingsScreen}
           options={{
             headerTitle: "Account Settings",
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="UploadPost"
+          component={UploadPostScreen}
+          options={{
+            headerTitle: "Upload Post",
             gestureEnabled: false,
           }}
         />

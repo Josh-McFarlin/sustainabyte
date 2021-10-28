@@ -30,6 +30,7 @@ export type StackNavParamList = {
   };
   Preferences: Record<string, never>;
   AccountSettings: Record<string, never>;
+  UploadPost: Record<string, never>;
 };
 
 export type AuthNavigationProp = CompositeNavigationProp<
