@@ -41,8 +41,8 @@ enum SectionType {
 
 const categories = [
   {
-    name: "Healthy",
-    icon: require("../../../../assets/icons/healthy.png"),
+    name: "Italian",
+    icon: require("../../../../assets/icons/italian.png"),
   },
   {
     name: "Mexican",
@@ -53,16 +53,16 @@ const categories = [
     icon: require("../../../../assets/icons/indian.png"),
   },
   {
-    name: "Vegan",
-    icon: require("../../../../assets/icons/vegan.png"),
+    name: "Lebanese",
+    icon: require("../../../../assets/icons/lebanese.png"),
   },
   {
     name: "Asian",
     icon: require("../../../../assets/icons/asian.png"),
   },
   {
-    name: "Sandwiches",
-    icon: require("../../../../assets/icons/sandwiches.png"),
+    name: "American",
+    icon: require("../../../../assets/icons/american.png"),
   },
 ];
 

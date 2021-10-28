@@ -35,9 +35,12 @@ const Navigation: React.FC = () => {
 
   const loadAssetsAsync = async () => {
     const imageAssets = cacheImages([
+      require("./assets/icons/american.png"),
       require("./assets/icons/asian.png"),
       require("./assets/icons/healthy.png"),
       require("./assets/icons/indian.png"),
+      require("./assets/icons/italian.png"),
+      require("./assets/icons/lebanese.png"),
       require("./assets/icons/mexican.png"),
       require("./assets/icons/sandwiches.png"),
       require("./assets/icons/vegan.png"),
