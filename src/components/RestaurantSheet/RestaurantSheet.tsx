@@ -10,7 +10,7 @@ interface PropTypes {
 
 const RestaurantSheet = React.forwardRef<BottomSheet, PropTypes>(
   ({ restaurant }, sheetRef) => {
-    const snapPoints = React.useMemo(() => ["25%", "60%"], []);
+    const snapPoints = React.useMemo(() => ["33%", "80%"], []);
 
     return (
       <BottomSheet

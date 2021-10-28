@@ -131,6 +131,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
       },
       {
         title: "Top updates for you",
+        subtitle: "Promoted offers from restaurants near you",
         key: "3",
         data: ["3", offers],
         type: SectionType.CIRCLE_OFFER,
@@ -183,10 +184,17 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
             </ScrollView>
           </View>
         )}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.title, styles.noMargin]}>{title}</Text>
-            <FontAwesome5 name="arrow-circle-right" size={24} color="#4b9193" />
+        renderSectionHeader={({ section: { title, subtitle } }) => (
+          <View>
+            <View style={[styles.hRow, styles.center, styles.spaceBetween]}>
+              <Text style={styles.title}>{title}</Text>
+              <FontAwesome5
+                name="arrow-circle-right"
+                size={24}
+                color="#4b9193"
+              />
+            </View>
+            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
           </View>
         )}
         renderItem={({ item: sectionData, section }) => (
@@ -256,10 +264,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
   },
+  spaceBetween: {
+    justifyContent: "space-between",
+  },
+  center: {
+    alignItems: "center",
+  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 4,
+    color: "#3C8D90",
+  },
+  hRow: {
+    display: "flex",
+    flexDirection: "row",
   },
   singleList: {
     paddingBottom: 16,
@@ -303,12 +326,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     borderRadius: 50,
   },
-  sectionHeader: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
+
   noMargin: {
     margin: 0,
   },
@@ -336,6 +354,9 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 13,
     fontWeight: "bold",
+  },
+  marginBottom: {
+    marginBottom: 8,
   },
 });
 

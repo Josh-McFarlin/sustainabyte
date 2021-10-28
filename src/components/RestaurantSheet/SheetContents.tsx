@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Image, ScrollView, Text, View, StyleSheet } from "react-native";
+import { Image, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Restaurant } from "../../types/Restaurant";
 
@@ -21,24 +21,25 @@ const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
         />
         <View style={styles.nameTags}>
           <Text style={styles.restName}>{restaurant.name}</Text>
-          <ScrollView horizontal>
+          <View style={styles.hRow}>
             {restaurant.tags.map((tag) => (
               <View key={tag} style={styles.tag}>
-                <Text>#{tag}</Text>
+                <Text style={styles.tagText}>#{tag}</Text>
               </View>
             ))}
-          </ScrollView>
+          </View>
         </View>
       </View>
-      <View style={styles.secondaryContainer}>
+      <View style={[styles.secondaryContainer, styles.marginBottom]}>
         <Text style={styles.secondary}>{rating}.0</Text>
         <View style={styles.secondaryContainer}>
           {Array.from(Array(5)).map((_, i) => (
             <FontAwesome
               key={i}
               name="star"
-              size={13}
-              color={i < rating ? "#cbb131" : "#585858"}
+              size={14}
+              color={i < rating ? "#3C8D90" : "#8B8B8B"}
+              style={styles.star}
             />
           ))}
         </View>
@@ -55,6 +56,36 @@ const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
         <Text style={styles.secondary}>
           {restaurant.sustainability.vegetarian}%
         </Text>
+        <Text style={styles.secondary}>•</Text>
+        <Text style={styles.secondary}>$$</Text>
+        <Text style={styles.secondary}>•</Text>
+        <Text style={styles.secondary}>0.5mi</Text>
+      </View>
+      <View style={[styles.secondaryContainer, styles.marginBottom]}>
+        <Text style={styles.secondary}>Open</Text>
+        <Text style={styles.secondary}>•</Text>
+        <Text style={styles.secondary}>Closes 2:30PM</Text>
+        <Text style={styles.secondary}>•</Text>
+        <Text style={styles.secondary}>Reopens 5:30PM</Text>
+      </View>
+      <View style={[styles.secondaryContainer, styles.marginBottom]}>
+        <Text style={styles.secondary}>Dine-in</Text>
+        <Text style={styles.secondary}>•</Text>
+        <Text style={styles.secondary}>Takeout</Text>
+        <Text style={styles.secondary}>•</Text>
+        <Text style={styles.secondary}>Delivery</Text>
+      </View>
+      <View style={[styles.secondaryContainer, styles.spaceBetween]}>
+        <TouchableOpacity style={styles.buttonContainer}>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>Reserve A Table</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonContainer}>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>Order Online</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -64,12 +95,15 @@ const styles = StyleSheet.create({
   restInfo: {
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
   },
   avatar: {
-    width: 50,
-    height: 50,
+    width: 64,
+    height: 64,
     borderRadius: 12,
     marginRight: 8,
+    backgroundColor: "#ccc",
   },
   nameTags: {
     flex: 1,
@@ -85,7 +119,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#77bd67",
     color: "#000",
-    marginHorizontal: 4,
+    marginRight: 8,
+  },
+  tagText: {
+    fontSize: 15,
   },
   image: {
     flex: 1,
@@ -110,8 +147,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   secondary: {
-    fontSize: 13,
+    fontSize: 15,
     marginRight: 4,
+    color: "#7C9293",
   },
   vegan: {
     width: 18,
@@ -122,6 +160,34 @@ const styles = StyleSheet.create({
     width: 18,
     height: 14,
     resizeMode: "contain",
+  },
+  star: {
+    marginHorizontal: 1,
+  },
+  spaceBetween: {
+    justifyContent: "space-between",
+  },
+  buttonContainer: {
+    flex: 1,
+    paddingHorizontal: 12,
+  },
+  button: {
+    borderWidth: 1,
+    borderColor: "#3B8D90",
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 80,
+  },
+  buttonText: {
+    color: "#3B8D90",
+    fontSize: 16,
+  },
+  marginBottom: {
+    marginBottom: 8,
+  },
+  hRow: {
+    flexDirection: "row",
   },
 });
 
