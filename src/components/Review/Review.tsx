@@ -111,16 +111,13 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#fff",
     marginBottom: 8,
   },
   bottomBar: {
-    // flex: 1,
     padding: 8,
     backgroundColor: "#ffffff",
   },
   restInfo: {
-    // flex: 1,
     display: "flex",
     flexDirection: "row",
   },
@@ -129,6 +126,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 12,
     marginRight: 8,
+    backgroundColor: "#ccc",
   },
   nameTags: {
     flex: 1,
@@ -147,7 +145,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   buttonRow: {
-    // flex: 1,
     display: "flex",
     flexDirection: "row",
     marginVertical: 4,
@@ -159,7 +156,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scoreRow: {
-    // flex: 1,
     fontWeight: "bold",
     fontSize: 12,
     marginVertical: 4,
@@ -174,7 +170,6 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   bodyRow: {
-    // flex: 1,
     fontSize: 14,
     marginVertical: 4,
   },

@@ -47,7 +47,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
               <TouchableWithoutFeedback
                 onPress={() =>
                   navigation.navigate("UserProfile", {
-                    userId: (data as User).id,
+                    id: (data as User).id,
                     isOwnProfile: false,
                     isFollowing: false,
                   })
@@ -66,10 +66,16 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
           <FontAwesome5 name="chevron-right" size={20} color="#4b9193" />
         </View>
         <View style={[styles.hContainer, styles.spaceBetween]}>
-          <Text style={styles.secondary}>
-            Followed by {(userQueries[0]?.data as User)?.username} +{" "}
-            {group.members.length - 1} more
-          </Text>
+          {userQueries.length > 0 ? (
+            <Text style={styles.secondary}>
+              Followed by {(userQueries[0]?.data as User)?.username}
+              {userQueries.length > 1
+                ? ` + ${group.members.length - 1} more`
+                : ""}
+            </Text>
+          ) : (
+            <View />
+          )}
           <TouchableWithoutFeedback>
             <View style={styles.button}>
               <Text style={styles.buttonText}>Follow</Text>

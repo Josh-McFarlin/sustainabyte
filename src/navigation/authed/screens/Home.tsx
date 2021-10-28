@@ -3,7 +3,7 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
   SafeAreaView,
   SectionList,
   View,
@@ -27,6 +27,7 @@ import type { SocialGroup } from "../../../types/SocialGroup";
 import { fetchOffers } from "../../../actions/offer";
 import { fetchSocialGroups } from "../../../actions/socialGroup";
 import { useAuth } from "../../../utils/auth";
+import OffersModal from "../../../components/OffersModal";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Home">;
 
@@ -65,9 +66,10 @@ const categories = [
   },
 ];
 
-const HomeScreen: React.FC<PropTypes> = () => {
+const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
   const { user } = useAuth();
   const coordinates = useLocation();
+  const [selOffer, setSelOffer] = React.useState<number | null>(null);
 
   const { data: offers } = useQuery<Offer[], Error>(
     ["offers", coordinates],
@@ -93,20 +95,23 @@ const HomeScreen: React.FC<PropTypes> = () => {
     }
   );
 
-  const onPressOffer = (offer: Offer) => {
-    console.log(offer.id);
-  };
+  const goForwardOffer = React.useCallback(
+    () => setSelOffer((prevState) => prevState + 1),
+    []
+  );
+  const goBackOffer = React.useCallback(
+    () => setSelOffer((prevState) => prevState - 1),
+    []
+  );
+  const handleCloseOffer = React.useCallback(() => setSelOffer(null), []);
 
-  const onPress = (restaurant: Restaurant) => {
-    console.log(restaurant.id);
-  };
-
-  const onPressCategory = (category: string) => {
+  const onPressCategory = React.useCallback((category: string) => {
     console.log(category);
-  };
+  }, []);
 
   console.log("offers:", offers);
   console.log("restaurants:", restaurants);
+  console.log("seloffer num:", selOffer);
 
   const data = React.useMemo(
     () => [
@@ -165,7 +170,7 @@ const HomeScreen: React.FC<PropTypes> = () => {
             </View>
             <ScrollView style={styles.categories} horizontal>
               {categories.map((category) => (
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                   key={category.name}
                   onPress={() => onPressCategory(category.name)}
                 >
@@ -173,7 +178,7 @@ const HomeScreen: React.FC<PropTypes> = () => {
                     <Image style={styles.categoryIcon} source={category.icon} />
                     <Text style={styles.categoryText}>{category.name}</Text>
                   </View>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
@@ -195,41 +200,51 @@ const HomeScreen: React.FC<PropTypes> = () => {
                 style={section.horizontal ? styles.spacerH : styles.spacerV}
               />
             )}
-            renderItem={({ item }) => {
+            renderItem={({ item, index }) => {
               if (section.type === SectionType.GALLERY_RESTAURANT) {
                 return (
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     key={item.id}
-                    onPress={() => onPress(item)}
+                    onPress={() =>
+                      navigation.navigate("RestaurantProfile" as any, {
+                        id: item.id,
+                        isFollowing: false,
+                        isOwnProfile: false,
+                      })
+                    }
                   >
                     <GalleryRestaurant
+                      key={item.id}
                       style={section.horizontal ? styles.hRest : styles.vRest}
                       restaurant={item}
                     />
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 );
               }
               if (section.type === SectionType.GALLERY_SOCIAL_GROUP) {
                 return (
-                  <TouchableWithoutFeedback
-                    key={item.id}
-                    onPress={() => onPress(item)}
-                  >
+                  <TouchableOpacity key={item.id}>
                     <GallerySocialGroup group={item} />
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 );
               }
               return (
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                   key={item.id}
-                  onPress={() => onPressOffer(item)}
+                  onPress={() => setSelOffer(index)}
                 >
                   <CircleOffer offer={item as unknown as Offer} />
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
               );
             }}
           />
         )}
+      />
+      <OffersModal
+        offer={offers?.[selOffer]}
+        goForward={goForwardOffer}
+        goBack={goBackOffer}
+        handleClose={handleCloseOffer}
       />
     </SafeAreaView>
   );

@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     maxWidth: 500,
     maxHeight: 500,
     resizeMode: "cover",
+    backgroundColor: "#ccc",
   },
 });
 

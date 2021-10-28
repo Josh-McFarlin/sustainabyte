@@ -8,6 +8,7 @@ type PropTypes = {
 };
 
 const TopBar: React.FC<PropTypes> = ({ user }) => {
+  const follows = false;
   const handlePlus = React.useCallback(() => {
     console.log("Pressed plus");
   }, []);
@@ -22,7 +23,9 @@ const TopBar: React.FC<PropTypes> = ({ user }) => {
       />
       <Text style={styles.username}>{user.username}</Text>
       <TouchableOpacity onPress={handlePlus}>
-        <FontAwesome5 name="plus" size={16} color="black" />
+        <Text style={styles.followText}>
+          {follows ? "Follow" : "Following"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -34,14 +37,14 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    padding: 8,
+    padding: 12,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: "#aaaaaa",
   },
   avatar: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: 50,
     marginRight: 8,
   },
@@ -49,6 +52,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
     flex: 1,
+  },
+  followText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#3C8D90",
   },
 });
 

@@ -9,13 +9,8 @@ export type TabNavParamList = {
   RestaurantMap: Record<string, never>;
   Discover: Record<string, never>;
   Leaderboard: Record<string, never>;
-  UserProfile: {
-    userId: User["id"];
-    isOwnProfile: boolean;
-    isFollowing: boolean;
-  };
-  RestaurantProfile: {
-    restaurantId: Restaurant["id"];
+  Profile: {
+    id: User["id"] | Restaurant["id"];
     isOwnProfile: boolean;
     isFollowing: boolean;
   };
@@ -23,8 +18,16 @@ export type TabNavParamList = {
 
 export type StackNavParamList = {
   Tabs: TabNavParamList;
-  UserProfile: TabNavParamList["UserProfile"];
-  RestaurantProfile: TabNavParamList["RestaurantProfile"];
+  UserProfile: {
+    id: User["id"];
+    isOwnProfile: boolean;
+    isFollowing: boolean;
+  };
+  RestaurantProfile: {
+    id: Restaurant["id"];
+    isOwnProfile: boolean;
+    isFollowing: boolean;
+  };
   Preferences: Record<string, never>;
   AccountSettings: Record<string, never>;
 };

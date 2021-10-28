@@ -4,6 +4,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -39,6 +40,7 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
             <SingleReview review={item} />
           </TouchableWithoutFeedback>
         )}
+        ItemSeparatorComponent={() => <View style={styles.spacer} />}
       />
     </SafeAreaView>
   );
@@ -50,6 +52,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  spacer: {
+    height: 8,
+    backgroundColor: "#D8D8D8",
   },
 });
 

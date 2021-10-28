@@ -26,7 +26,7 @@ const CircleOffer: React.FC<PropTypes> = ({ offer }) => {
   const [rightTransformerDegree, setRight] = React.useState<string>("0deg");
 
   React.useEffect(() => {
-    const timer = setInterval(() => {
+    const calcVal = () => {
       const newPercent = Math.abs(offer.expiresAt - Date.now()) / 36e5 / 0.24;
 
       if (newPercent >= 50) {
@@ -38,7 +38,11 @@ const CircleOffer: React.FC<PropTypes> = ({ offer }) => {
       }
 
       setPercent(newPercent);
-    }, 2000);
+    };
+
+    calcVal();
+
+    const timer = setInterval(calcVal, 2000);
 
     return () => {
       clearInterval(timer);

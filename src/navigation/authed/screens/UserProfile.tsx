@@ -23,7 +23,7 @@ import CheckInHistory from "../../../components/CheckInHistory";
 import { fetchUser } from "../../../actions/user";
 import { User } from "../../../types/User";
 
-type PropTypes = BottomTabScreenProps<TabNavParamList, "UserProfile">;
+type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
 enum TabTypes {
   GALLERY,
@@ -31,9 +31,9 @@ enum TabTypes {
   SAVED,
 }
 
-const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
-  const { userId, isOwnProfile, isFollowing } = route.params;
-  const { data: user } = useQuery<User, Error>(["user", userId], fetchUser);
+const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
+  const { id, isOwnProfile, isFollowing } = route.params;
+  const { data: user } = useQuery<User, Error>(["user", id], fetchUser);
   const settingsSheetRef = useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const { data: reviews } = useQuery<Review[], Error>(
@@ -75,6 +75,14 @@ const ProfileScreen: React.FC<PropTypes> = ({ route }) => {
     }),
     [checkIns, reviews]
   );
+
+  React.useEffect(() => {
+    if (user != null) {
+      navigation.setOptions({
+        headerTitle: user.username,
+      });
+    }
+  }, [user, navigation]);
 
   if (user == null) {
     return null;

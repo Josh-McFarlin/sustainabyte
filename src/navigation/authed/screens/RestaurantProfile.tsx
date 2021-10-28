@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
@@ -22,8 +23,12 @@ import CheckInHistory from "../../../components/CheckInHistory";
 import { TabNavParamList } from "../types";
 import { fetchRestaurant } from "../../../actions/restaurant";
 import { Restaurant } from "../../../types/Restaurant";
+import OffersModal from "../../../components/OffersModal";
+import { Offer } from "../../../types/Offer";
+import { fetchOffers } from "../../../actions/offer";
+import { CircleOffer } from "../../../components/InfoCards";
 
-type PropTypes = BottomTabScreenProps<TabNavParamList, "RestaurantProfile">;
+type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
 enum TabTypes {
   GALLERY,
@@ -31,11 +36,21 @@ enum TabTypes {
   SAVED,
 }
 
-const RestaurantScreen: React.FC<PropTypes> = ({ route }) => {
-  const { restaurantId, isOwnProfile, isFollowing } = route.params;
+const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
+  const { id, isOwnProfile, isFollowing } = route.params;
+  const [selOffer, setSelOffer] = React.useState<number | null>(null);
+
   const { data: restaurant } = useQuery<Restaurant, Error>(
-    ["restaurant", restaurantId],
+    ["restaurant", id],
     fetchRestaurant
+  );
+  const { data: offers } = useQuery<Offer[], Error>(
+    ["offers", [0, 0]],
+    fetchOffers,
+    {
+      enabled: restaurant != null,
+      initialData: [],
+    }
   );
   const settingsSheetRef = useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
@@ -78,6 +93,24 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route }) => {
     }),
     [checkIns, reviews]
   );
+
+  const goForwardOffer = React.useCallback(
+    () => setSelOffer((prevState) => prevState + 1),
+    []
+  );
+  const goBackOffer = React.useCallback(
+    () => setSelOffer((prevState) => prevState - 1),
+    []
+  );
+  const handleCloseOffer = React.useCallback(() => setSelOffer(null), []);
+
+  React.useEffect(() => {
+    if (restaurant != null) {
+      navigation.setOptions({
+        headerTitle: restaurant.name,
+      });
+    }
+  }, [restaurant, navigation]);
 
   if (restaurant == null) {
     return null;
@@ -159,6 +192,19 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route }) => {
       <View style={[styles.hRow, styles.center, styles.marginBottom]}>
         <Text style={styles.bio}>Tap to add a bio</Text>
       </View>
+      <View style={[styles.hRow, styles.marginBottom, styles.hPadding]}>
+        <FlatList
+          data={offers}
+          horizontal
+          keyExtractor={(item) => item.id}
+          ItemSeparatorComponent={() => <View style={styles.spacerH} />}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity key={item.id} onPress={() => setSelOffer(index)}>
+              <CircleOffer offer={item as unknown as Offer} />
+            </TouchableOpacity>
+          )}
+        />
+      </View>
       <View style={[styles.hRow, styles.border, styles.noPadding]}>
         {Object.values(tabs).map((tab) => (
           <TouchableOpacity
@@ -182,6 +228,12 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route }) => {
 
       {tabs[curTab].renderItem}
       <SettingsSheet ref={settingsSheetRef} />
+      <OffersModal
+        offer={offers?.[selOffer]}
+        goForward={goForwardOffer}
+        goBack={goBackOffer}
+        handleClose={handleCloseOffer}
+      />
     </SafeAreaView>
   );
 };
@@ -268,6 +320,12 @@ const styles = StyleSheet.create({
   },
   fullFlex: {
     flex: 1,
+  },
+  spacerH: {
+    marginRight: 16,
+  },
+  spacerV: {
+    marginBottom: 16,
   },
 });
 

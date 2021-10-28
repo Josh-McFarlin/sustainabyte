@@ -65,10 +65,10 @@ const TabbedNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="UserProfile"
+        name="Profile"
         component={UserProfileScreen}
         initialParams={{
-          userId: user.id,
+          id: user.id,
           isOwnProfile: true,
           isFollowing: true,
         }}
