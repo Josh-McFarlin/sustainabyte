@@ -17,7 +17,6 @@ import type { Offer } from "../types/Offer";
 import type { SocialGroup } from "../types/SocialGroup";
 import type { CheckIn } from "../types/CheckIn";
 import { randomSizeSubset, randomFoodUrl } from "./random";
-import { Location } from "../types/Location";
 
 interface ServerArgs {
   environment: string;

@@ -16,6 +16,7 @@ import { TabNavParamList } from "../types";
 import { Restaurant } from "../../../types/Restaurant";
 import type { Coordinates } from "../../../types/Location";
 import { mapStyle } from "../../../utils/map";
+import SearchBar from "../../../components/SearchBar";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "RestaurantMap">;
 const Marker = MarkerBase || (MapView as any).Marker;
@@ -78,8 +79,13 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
     refetch();
   }, [mapRegion, refetch]);
 
+  const handleSearch = (search: string, tags: string[]) => {
+    console.log(search, tags);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <SearchBar onChange={handleSearch} />
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -130,7 +136,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     position: "absolute",
     left: 0,
-    top: 60,
+    top: 200,
     alignItems: "center",
     justifyContent: "center",
   },

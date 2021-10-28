@@ -12,6 +12,7 @@ import SingleReview from "../../../components/Review";
 import type { TabNavParamList } from "../types";
 import { fetchReviews } from "../../../actions/review";
 import type { Review } from "../../../types/Review";
+import SearchBar from "../../../components/SearchBar";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Discover">;
 
@@ -30,9 +31,15 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
     console.log(review.id);
   };
 
+  const handleSearch = (search: string, tags: string[]) => {
+    console.log(search, tags);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <SearchBar onChange={handleSearch} />
       <FlatList
+        style={styles.list}
         data={reviews}
         keyExtractor={(i) => i.id}
         renderItem={({ item }) => (
@@ -50,12 +57,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
   },
   spacer: {
     height: 8,
     backgroundColor: "#D8D8D8",
+  },
+  list: {
+    flex: 1,
   },
 });
 
