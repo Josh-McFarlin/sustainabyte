@@ -26,7 +26,7 @@ const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {
         <FontAwesome5 name="heart" size={16} color="#585858" />
       </View>
       <View style={styles.secondaryContainer}>
-        <Text style={styles.secondary}>{rating}.0</Text>
+        <Text style={styles.secondary}>{rating.toFixed(1)}</Text>
         <View style={styles.secondaryContainer}>
           {Array.from(Array(5)).map((_, i) => (
             <FontAwesome

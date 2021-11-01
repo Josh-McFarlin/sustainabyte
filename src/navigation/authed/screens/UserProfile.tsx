@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { useRef } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
 import SettingsSheet from "../../../components/SettingsSheet";
@@ -34,7 +33,7 @@ enum TabTypes {
 const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { id, isOwnProfile, isFollowing } = route.params;
   const { data: user } = useQuery<User, Error>(["user", id], fetchUser);
-  const settingsSheetRef = useRef<BottomSheet>();
+  const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const { data: reviews } = useQuery<Review[], Error>(
     ["reviews"],
@@ -219,6 +218,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     marginHorizontal: 8,
+    textAlign: "center",
   },
   avatar: {
     width: 140,

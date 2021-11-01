@@ -58,7 +58,6 @@ const Navigation: React.FC = () => {
   if (isInitializing || isLoading) {
     return (
       <AppLoading
-        autoHideSplash
         startAsync={loadAssetsAsync}
         onFinish={() => setIsLoading(false)}
         onError={console.warn}

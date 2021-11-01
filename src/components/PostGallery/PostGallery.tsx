@@ -5,12 +5,15 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  View,
 } from "react-native";
 import type { Review } from "../../types/Review";
 
 type PropTypes = {
   posts: Review[];
 };
+
+const numColumns = 3;
 
 const PostGallery: React.FC<PropTypes> = ({ posts }) => {
   console.log("posts", posts);
@@ -24,24 +27,26 @@ const PostGallery: React.FC<PropTypes> = ({ posts }) => {
       style={styles.container}
       data={posts}
       keyExtractor={(i) => i.id}
-      numColumns={3}
+      numColumns={numColumns}
       renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.post}
-          key={item.id}
-          onPress={() => onPress(item)}
-        >
-          <Image
-            style={styles.image}
-            source={{
-              uri: item.photos[0],
-            }}
-          />
-        </TouchableOpacity>
+        <View key={item.id} style={styles.post}>
+          <TouchableOpacity style={styles.button} onPress={() => onPress(item)}>
+            <Image
+              style={styles.image}
+              source={{
+                uri: item.photos[0],
+              }}
+            />
+          </TouchableOpacity>
+        </View>
       )}
     />
   );
 };
+
+const screenWidth = Dimensions.get("window").width;
+const padding = 4;
+const tileSize = screenWidth / numColumns;
 
 const styles = StyleSheet.create({
   container: {
@@ -51,14 +56,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   post: {
-    width: Dimensions.get("screen").width / 3,
-    height: Dimensions.get("screen").width / 3,
-    padding: 2,
+    width: tileSize,
+    height: tileSize,
+    padding,
+  },
+  button: {
+    flex: 1,
   },
   image: {
     flex: 1,
-    width: "100%",
-    height: "100%",
     resizeMode: "cover",
     backgroundColor: "#ccc",
     borderRadius: 8,

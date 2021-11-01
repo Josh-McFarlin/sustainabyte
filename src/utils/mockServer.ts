@@ -11,7 +11,7 @@ import {
 import faker from "faker";
 import dayjs from "dayjs";
 import type { User } from "../types/User";
-import type { Restaurant } from "../types/Restaurant";
+import type { DayAvailability, Restaurant } from "../types/Restaurant";
 import type { Review } from "../types/Review";
 import type { Offer } from "../types/Offer";
 import type { SocialGroup } from "../types/SocialGroup";
@@ -42,6 +42,18 @@ const getRandomDate = (hours = 24, minutes = 60): Date =>
     .add(faker.datatype.number(hours), "hours")
     .add(faker.datatype.number(minutes), "minutes")
     .toDate();
+
+const getRandomHours = (): DayAvailability => {
+  const open = faker.datatype.number(13) + 7;
+  const close = faker.datatype.number(20 - open) + open;
+
+  return {
+    startHour: open,
+    startMinute: Math.round(Math.random()) === 1 ? 30 : 0,
+    endHour: close,
+    endMinute: Math.round(Math.random()) === 1 ? 30 : 0,
+  };
+};
 
 const makeServer = ({ environment = "development" }: ServerArgs): Server => {
   return createServer({
@@ -171,6 +183,19 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         },
         tags() {
           return randomSizeSubset(foodTags, 4);
+        },
+        openHours() {
+          const hours = getRandomHours();
+
+          return [
+            [hours],
+            [hours],
+            [hours],
+            [hours],
+            [hours],
+            [hours],
+            [hours],
+          ];
         },
         address() {
           const state = faker.address.state(true);
