@@ -9,7 +9,13 @@ import { StatusBar } from "expo-status-bar";
 import { Asset } from "expo-asset";
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
-import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import AuthedNavigator from "./src/navigation/authed";
 import UnauthedNavigator from "./src/navigation/unauthed";
 import { useAuth } from "./src/utils/auth";
@@ -51,12 +57,16 @@ const Navigation: React.FC = () => {
       require("./assets/icons/mexican.png"),
       require("./assets/icons/sandwiches.png"),
       require("./assets/icons/vegan.png"),
+      require("./assets/icons/camera-white.png"),
+      require("./assets/icons/camera-white-no-bg.png"),
     ]);
 
     const fontAssets = cacheFonts([
       FontAwesome.font,
       FontAwesome5.font,
       Ionicons.font,
+      MaterialIcons.font,
+      MaterialCommunityIcons.font,
     ]);
 
     await Promise.all([...imageAssets, ...fontAssets]);
