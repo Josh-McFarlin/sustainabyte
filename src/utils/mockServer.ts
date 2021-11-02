@@ -74,7 +74,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         restaurant: belongsTo(),
       }),
       socialGroup: Model.extend({
-        members: hasMany("user"),
+        members: hasMany("user", { polymorphic: false }),
         reviews: hasMany("review"),
       }),
       checkIn: Model.extend({
@@ -87,36 +87,30 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
     seeds(server) {
       server.createList("review", 20);
       server.createList("offer", 5);
-      // server.createList("socialGroup", 10).forEach((group) => {
-      //   const count = faker.datatype.number(9) + 1;
-      //   const subset = faker.datatype.number(4) + 1;
-      //
-      //   group.update({
-      //     members: server.createList("user", count, {
-      //       groups: [group] as any,
-      //     }) as any,
-      //     reviews: server.schema
-      //       .all("review")
-      //       .models.sort(() => 0.5 - Math.random())
-      //       .slice(0, subset) as any,
-      //   });
-      // });
 
       const users = server.schema.all("user").models;
+      const reviews = server.schema.all("review").models;
       const restaurants = server.schema.all("restaurant").models;
 
-      // restaurants.forEach((restaurant) => {
-      //   const count = faker.datatype.number(7) + 1;
-      //
-      //   for (let i = 0; i < count; i += 1) {
-      //     server.create("checkIn", {
-      //       restaurant,
-      //       // user: users.sort(() => 0.5 - Math.random())[0],
-      //       createdAt: faker.date.recent(-2).valueOf(),
-      //       // withUsers: randomSizeSubset(users, 2, 0),
-      //     });
-      //   }
-      // });
+      for (let i = 0; i < 4; i += 1) {
+        server.create("socialGroup", {
+          members: users.sort(() => 0.5 - Math.random()).slice(0, 4),
+          reviews: reviews.sort(() => 0.5 - Math.random()).slice(0, 4),
+        });
+      }
+
+      restaurants.forEach((restaurant) => {
+        const count = faker.datatype.number(7) + 1;
+
+        for (let i = 0; i < count; i += 1) {
+          server.create("checkIn", {
+            restaurant,
+            user: users.sort(() => 0.5 - Math.random())[0],
+            createdAt: faker.date.recent(-2).valueOf(),
+            withUsers: randomSizeSubset(users, 2, 0),
+          });
+        }
+      });
     },
     serializers: {
       user: RestSerializer.extend({
@@ -132,7 +126,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         embed: false,
       }),
       socialGroup: RestSerializer.extend({
-        include: ["members", "reviews"],
+        include: ["members.id", "reviews"],
         embed: false,
       }),
       checkIn: RestSerializer.extend({

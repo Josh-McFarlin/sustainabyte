@@ -1,3 +1,3 @@
-import CheckInHistory from "./CheckInHistory";
+import * as CheckInHistory from "./CheckInHistory";
 
 export default CheckInHistory;

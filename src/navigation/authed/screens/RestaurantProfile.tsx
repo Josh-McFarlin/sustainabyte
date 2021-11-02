@@ -78,41 +78,6 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     }
   );
 
-  const tabs = React.useMemo(
-    () => ({
-      [TabTypes.GALLERY]: {
-        type: TabTypes.GALLERY,
-        icon: (props) => <Ionicons name="grid" {...props} />,
-        renderItem: (props) => <PostGallery posts={reviews} {...props} />,
-      },
-      [TabTypes.MENU]: {
-        type: TabTypes.MENU,
-        icon: (props) => (
-          <View>
-            <MaterialCommunityIcons name="comment-outline" {...props} />
-            <MaterialCommunityIcons
-              name="food"
-              {...props}
-              style={styles.innerIcon}
-              size={14}
-            />
-          </View>
-        ),
-        renderItem: (props) => (
-          <CheckInHistory checkIns={checkIns} {...props} />
-        ),
-      },
-      [TabTypes.REVIEWS]: {
-        type: TabTypes.REVIEWS,
-        icon: (props) => <MaterialIcons name="rate-review" {...props} />,
-        renderItem: (props) => (
-          <ReviewHistory restaurant={restaurant} reviews={reviews} {...props} />
-        ),
-      },
-    }),
-    [restaurant, checkIns, reviews]
-  );
-
   React.useEffect(() => {
     if (restaurant != null) {
       navigation.setOptions({
@@ -147,178 +112,215 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     [restaurant]
   );
 
-  const Header = React.useCallback(
-    () => (
-      <View>
-        <View style={styles.vRow}>
-          <View
-            style={[
-              styles.hRow,
-              styles.spaceBetween,
-              styles.hPadding,
-              styles.topPadding,
-              styles.marginBottom,
-            ]}
-          >
-            {isOwnProfile ? (
-              <View style={styles.hRow}>
-                <TouchableOpacity>
-                  <FontAwesome
-                    style={styles.icon}
-                    name="plus-square-o"
-                    size={36}
-                    color="#3C8D90"
-                  />
-                </TouchableOpacity>
-                <View style={styles.icon} />
-              </View>
-            ) : (
-              <View style={styles.hRow}>
-                <View style={styles.icon} />
-                <View style={styles.icon} />
-              </View>
-            )}
-            <Image
-              style={styles.avatar}
-              source={{ uri: restaurant.avatarUrl }}
-            />
-            {isOwnProfile ? (
-              <View style={styles.hRow}>
-                <TouchableOpacity>
-                  <FontAwesome
-                    style={styles.icon}
-                    name="bell"
-                    size={32}
-                    color="#3C8D90"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={openSheet}>
-                  <FontAwesome
-                    style={styles.icon}
-                    name="bars"
-                    size={32}
-                    color="#3C8D90"
-                  />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.hRow}>
-                <TouchableOpacity onPress={() => setVisitOpen(true)}>
-                  <FontAwesome
-                    style={styles.icon}
-                    name="plus-square-o"
-                    size={36}
-                    color="#3C8D90"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <FontAwesome
-                    style={styles.icon}
-                    name={isFollowing ? "bookmark" : "bookmark-o"}
-                    size={32}
-                    color="#3C8D90"
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-          <View style={[styles.hRow, styles.center, styles.marginBottom]}>
-            <Text style={styles.name}>{restaurant.name}</Text>
-          </View>
-          <View style={[styles.hRow, styles.marginBottom, styles.hPadding]}>
-            <FlatList
-              data={offers}
-              horizontal
-              keyExtractor={(item) => item.id}
-              ItemSeparatorComponent={() => <View style={styles.spacerH} />}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  key={item.id}
-                  onPress={() => setSelOffer(index)}
-                >
-                  <CircleOffer offer={item as Offer} />
-                </TouchableOpacity>
-              )}
+  const tabs = React.useMemo(
+    () => ({
+      [TabTypes.GALLERY]: {
+        type: TabTypes.GALLERY,
+        icon: (props) => <Ionicons name="grid" {...props} />,
+        data: reviews,
+        listProps: PostGallery.listProps,
+        Header: () => null,
+        renderItem: PostGallery.renderItem,
+      },
+      [TabTypes.MENU]: {
+        type: TabTypes.MENU,
+        icon: (props) => (
+          <View>
+            <MaterialCommunityIcons name="comment-outline" {...props} />
+            <MaterialCommunityIcons
+              name="food"
+              {...props}
+              style={styles.innerIcon}
+              size={14}
             />
           </View>
-          <View style={[styles.hRow, styles.spaceAround, styles.marginBottom]}>
-            <View style={[styles.vRow, styles.center]}>
-              <FontAwesome name="map-pin" size={32} color="#3C8D90" />
-              <Text style={styles.statsText}>348</Text>
-              <Text style={styles.statsDetails}>Check ins</Text>
-            </View>
-            <View style={[styles.vRow, styles.center]}>
-              <FontAwesome name="square" size={32} color="#3C8D90" />
-              <Text style={styles.statsText}>1520</Text>
-              <Text style={styles.statsDetails}>Posts</Text>
-            </View>
-            <View style={[styles.vRow, styles.center]}>
-              <FontAwesome name="star" size={32} color="#3C8D90" />
-              <Text style={styles.statsText}>{rating.toFixed(1)}</Text>
-              <Text style={styles.statsDetails}>Rating</Text>
-            </View>
-          </View>
-        </View>
-        <View style={[styles.vRow, styles.marginBottom, styles.hPadding]}>
-          <View style={[styles.hRow]}>
-            <Text style={styles.bio}>$$</Text>
-            <View style={styles.bullet} />
-            <Text style={styles.bio}>{restaurant.tags.join(", ")}</Text>
-            <View style={styles.bullet} />
-            <Text style={[styles.bio, styles.openText]}>
-              {openStatus.open ? "Open Now" : "Currently Closed"}
-            </Text>
-          </View>
-          <View style={[styles.hRow]}>
-            <Text style={styles.bio}>{hoursFormatted}</Text>
-          </View>
-        </View>
-        <View style={[styles.hRow, styles.border]}>
-          {Object.values(tabs).map((tab) => (
-            <TouchableOpacity
-              key={tab.type}
-              style={[
-                styles.fullFlex,
-                curTab === tab.type ? styles.activeBorder : styles.iconBorder,
-                styles.center,
-              ]}
-              onPress={() => setCurTab(tab.type)}
-            >
-              <View style={[styles.center, styles.bottomPadding]}>
-                <tab.icon
-                  size={28}
-                  color={curTab === tab.type ? "#3C8D90" : "#9EC1C3"}
-                  style={styles.icon}
-                />
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    ),
-    [
-      curTab,
-      hoursFormatted,
-      openStatus,
-      isFollowing,
-      isOwnProfile,
-      offers,
-      openSheet,
-      restaurant,
-      rating,
-      tabs,
-    ]
+        ),
+        data: checkIns,
+        listProps: CheckInHistory.listProps,
+        Header: () => null,
+        renderItem: CheckInHistory.renderItem,
+      },
+      [TabTypes.REVIEWS]: {
+        type: TabTypes.REVIEWS,
+        icon: (props) => <MaterialIcons name="rate-review" {...props} />,
+        data: reviews,
+        listProps: ReviewHistory.listProps,
+        Header: () => <ReviewHistory.Header restaurant={restaurant} />,
+        renderItem: ReviewHistory.renderItem,
+      },
+    }),
+    [checkIns, reviews, restaurant]
   );
 
   if (restaurant == null) {
     return null;
   }
 
-  const CurTab = tabs[curTab].renderItem;
+  const { data, Header, renderItem, listProps } = tabs[curTab];
 
   return (
     <View style={styles.container}>
-      <CurTab header={<Header />} />
+      <FlatList<Review | CheckIn>
+        style={styles.container}
+        data={data}
+        keyExtractor={(i) => i.id}
+        renderItem={renderItem}
+        ListHeaderComponent={() => (
+          <View>
+            <View style={styles.vRow}>
+              <View
+                style={[
+                  styles.hRow,
+                  styles.spaceBetween,
+                  styles.hPadding,
+                  styles.topPadding,
+                  styles.marginBottom,
+                ]}
+              >
+                {isOwnProfile ? (
+                  <View style={styles.hRow}>
+                    <TouchableOpacity>
+                      <FontAwesome
+                        style={styles.icon}
+                        name="plus-square-o"
+                        size={36}
+                        color="#3C8D90"
+                      />
+                    </TouchableOpacity>
+                    <View style={styles.icon} />
+                  </View>
+                ) : (
+                  <View style={styles.hRow}>
+                    <View style={styles.icon} />
+                    <View style={styles.icon} />
+                  </View>
+                )}
+                <Image
+                  style={styles.avatar}
+                  source={{ uri: restaurant.avatarUrl }}
+                />
+                {isOwnProfile ? (
+                  <View style={styles.hRow}>
+                    <TouchableOpacity>
+                      <FontAwesome
+                        style={styles.icon}
+                        name="bell"
+                        size={32}
+                        color="#3C8D90"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={openSheet}>
+                      <FontAwesome
+                        style={styles.icon}
+                        name="bars"
+                        size={32}
+                        color="#3C8D90"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View style={styles.hRow}>
+                    <TouchableOpacity onPress={() => setVisitOpen(true)}>
+                      <FontAwesome
+                        style={styles.icon}
+                        name="plus-square-o"
+                        size={36}
+                        color="#3C8D90"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <FontAwesome
+                        style={styles.icon}
+                        name={isFollowing ? "bookmark" : "bookmark-o"}
+                        size={32}
+                        color="#3C8D90"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+              <View style={[styles.hRow, styles.center, styles.marginBottom]}>
+                <Text style={styles.name}>{restaurant.name}</Text>
+              </View>
+              <View style={[styles.hRow, styles.marginBottom, styles.hPadding]}>
+                <FlatList
+                  data={offers}
+                  horizontal
+                  keyExtractor={(item) => item.id}
+                  ItemSeparatorComponent={() => <View style={styles.spacerH} />}
+                  renderItem={({ item, index }) => (
+                    <TouchableOpacity
+                      key={item.id}
+                      onPress={() => setSelOffer(index)}
+                    >
+                      <CircleOffer offer={item} />
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+              <View
+                style={[styles.hRow, styles.spaceAround, styles.marginBottom]}
+              >
+                <View style={[styles.vRow, styles.center]}>
+                  <FontAwesome name="map-pin" size={32} color="#3C8D90" />
+                  <Text style={styles.statsText}>348</Text>
+                  <Text style={styles.statsDetails}>Check ins</Text>
+                </View>
+                <View style={[styles.vRow, styles.center]}>
+                  <FontAwesome name="square" size={32} color="#3C8D90" />
+                  <Text style={styles.statsText}>1520</Text>
+                  <Text style={styles.statsDetails}>Posts</Text>
+                </View>
+                <View style={[styles.vRow, styles.center]}>
+                  <FontAwesome name="star" size={32} color="#3C8D90" />
+                  <Text style={styles.statsText}>{rating.toFixed(1)}</Text>
+                  <Text style={styles.statsDetails}>Rating</Text>
+                </View>
+              </View>
+            </View>
+            <View style={[styles.vRow, styles.marginBottom, styles.hPadding]}>
+              <View style={[styles.hRow]}>
+                <Text style={styles.bio}>$$</Text>
+                <View style={styles.bullet} />
+                <Text style={styles.bio}>{restaurant.tags.join(", ")}</Text>
+                <View style={styles.bullet} />
+                <Text style={[styles.bio, styles.openText]}>
+                  {openStatus.open ? "Open Now" : "Currently Closed"}
+                </Text>
+              </View>
+              <View style={[styles.hRow]}>
+                <Text style={styles.bio}>{hoursFormatted}</Text>
+              </View>
+            </View>
+            <View style={[styles.hRow, styles.border]}>
+              {Object.values(tabs).map((tab) => (
+                <TouchableOpacity
+                  key={tab.type}
+                  style={[
+                    styles.fullFlex,
+                    curTab === tab.type
+                      ? styles.activeBorder
+                      : styles.iconBorder,
+                    styles.center,
+                  ]}
+                  onPress={() => setCurTab(tab.type)}
+                >
+                  <View style={[styles.center, styles.bottomPadding]}>
+                    <tab.icon
+                      size={28}
+                      color={curTab === tab.type ? "#3C8D90" : "#9EC1C3"}
+                      style={styles.icon}
+                    />
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Header />
+          </View>
+        )}
+        key={curTab}
+        {...listProps}
+      />
       <SettingsSheet ref={settingsSheetRef} />
       <OffersModal
         offer={offers?.[selOffer]}

@@ -1,50 +1,33 @@
 import * as React from "react";
 import {
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Image,
   Dimensions,
   View,
+  ListRenderItem,
 } from "react-native";
 import type { Review } from "../../types/Review";
 
-type PropTypes = {
-  posts: Review[];
-  header?: React.ReactChildren;
-};
-
 const numColumns = 3;
 
-const PostGallery: React.FC<PropTypes> = ({ posts, header }) => {
-  console.log("posts", posts);
-
-  const onPress = (review: Review) => {
-    console.log(review.id);
-  };
-
-  return (
-    <FlatList
-      style={styles.container}
-      data={posts}
-      keyExtractor={(i) => i.id}
-      numColumns={numColumns}
-      renderItem={({ item }) => (
-        <View key={item.id} style={styles.post}>
-          <TouchableOpacity style={styles.button} onPress={() => onPress(item)}>
-            <Image
-              style={styles.image}
-              source={{
-                uri: item.photos[0],
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-      )}
-      ListHeaderComponent={() => <View>{header}</View>}
-    />
-  );
-};
+export const renderItem: ListRenderItem<Review> = ({ item }) => (
+  <View key={item.id} style={styles.post}>
+    <TouchableOpacity
+      style={styles.button}
+      onPress={() => {
+        console.log(item.id);
+      }}
+    >
+      <Image
+        style={styles.image}
+        source={{
+          uri: item.photos[0],
+        }}
+      />
+    </TouchableOpacity>
+  </View>
+);
 
 const screenWidth = Dimensions.get("window").width;
 const padding = 4;
@@ -71,4 +54,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostGallery;
+export const listProps = {
+  style: styles.container,
+  numColumns,
+};

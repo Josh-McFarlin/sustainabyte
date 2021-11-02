@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
@@ -50,6 +51,14 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     }
   );
 
+  React.useEffect(() => {
+    if (user != null) {
+      navigation.setOptions({
+        headerTitle: user.username,
+      });
+    }
+  }, [user, navigation]);
+
   const openSheet = React.useCallback(() => {
     settingsSheetRef.current.expand();
   }, [settingsSheetRef]);
@@ -59,133 +68,151 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       [TabTypes.GALLERY]: {
         type: TabTypes.GALLERY,
         icon: ({ ...props }) => <Ionicons name="grid" {...props} />,
-        renderItem: <PostGallery posts={reviews} />,
+        data: reviews,
+        listProps: PostGallery.listProps,
+        Header: () => null,
+        renderItem: PostGallery.renderItem,
       },
       [TabTypes.CHECKINS]: {
         type: TabTypes.CHECKINS,
         icon: ({ ...props }) => <FontAwesome5 name="map-pin" {...props} />,
-        renderItem: <CheckInHistory checkIns={checkIns} />,
+        data: checkIns,
+        listProps: CheckInHistory.listProps,
+        Header: () => null,
+        renderItem: CheckInHistory.renderItem,
       },
       [TabTypes.SAVED]: {
         type: TabTypes.SAVED,
         icon: ({ ...props }) => <Ionicons name="bookmark" {...props} />,
-        renderItem: <PostGallery posts={reviews} />,
+        data: reviews,
+        listProps: PostGallery.listProps,
+        Header: () => null,
+        renderItem: PostGallery.renderItem,
       },
     }),
     [checkIns, reviews]
   );
 
-  React.useEffect(() => {
-    if (user != null) {
-      navigation.setOptions({
-        headerTitle: user.username,
-      });
-    }
-  }, [user, navigation]);
-
   if (user == null) {
     return null;
   }
 
+  const { data, Header, renderItem, listProps } = tabs[curTab];
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.vRow}>
-        <View
-          style={[
-            styles.hRow,
-            isOwnProfile ? styles.spaceBetween : styles.center,
-            styles.hPadding,
-            styles.topPadding,
-            styles.marginBottom,
-          ]}
-        >
-          {isOwnProfile && (
-            <View style={styles.hRow}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("UploadPost" as any)}
+      <FlatList<Review | CheckIn>
+        style={styles.container}
+        data={data}
+        keyExtractor={(i) => i.id}
+        renderItem={renderItem}
+        ListHeaderComponent={() => (
+          <View>
+            <View style={styles.vRow}>
+              <View
+                style={[
+                  styles.hRow,
+                  isOwnProfile ? styles.spaceBetween : styles.center,
+                  styles.hPadding,
+                  styles.topPadding,
+                  styles.marginBottom,
+                ]}
               >
-                <FontAwesome
-                  style={styles.icon}
-                  name="plus-square-o"
-                  size={36}
-                  color="#3C8D90"
-                />
-              </TouchableOpacity>
-              <View style={styles.icon} />
+                {isOwnProfile && (
+                  <View style={styles.hRow}>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("UploadPost" as any)}
+                    >
+                      <FontAwesome
+                        style={styles.icon}
+                        name="plus-square-o"
+                        size={36}
+                        color="#3C8D90"
+                      />
+                    </TouchableOpacity>
+                    <View style={styles.icon} />
+                  </View>
+                )}
+                <Image style={styles.avatar} source={{ uri: user.avatarUrl }} />
+                {isOwnProfile && (
+                  <View style={styles.hRow}>
+                    <TouchableOpacity>
+                      <FontAwesome
+                        style={styles.icon}
+                        name="bell"
+                        size={32}
+                        color="#3C8D90"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={openSheet}>
+                      <FontAwesome
+                        style={styles.icon}
+                        name="bars"
+                        size={32}
+                        color="#3C8D90"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+              <View style={[styles.hRow, styles.center, styles.marginBottom]}>
+                <Text style={styles.name}>{user.username || user.name}</Text>
+              </View>
+              <View
+                style={[styles.hRow, styles.spaceAround, styles.marginBottom]}
+              >
+                <View style={[styles.vRow, styles.center]}>
+                  <FontAwesome name="map-pin" size={32} color="#3C8D90" />
+                  <Text style={styles.statsText}>348</Text>
+                  <Text style={styles.statsDetails}>Check ins</Text>
+                </View>
+                <View style={[styles.vRow, styles.center]}>
+                  <FontAwesome name="square" size={32} color="#3C8D90" />
+                  <Text style={styles.statsText}>1520</Text>
+                  <Text style={styles.statsDetails}>Posts</Text>
+                </View>
+                <View style={[styles.vRow, styles.center]}>
+                  <FontAwesome
+                    name="user"
+                    size={32}
+                    color={isFollowing ? "#3C8D90" : "#9EC1C3"}
+                  />
+                  <Text style={styles.statsText}>439</Text>
+                  <Text style={styles.statsDetails}>Followers</Text>
+                </View>
+              </View>
             </View>
-          )}
-          <Image style={styles.avatar} source={{ uri: user.avatarUrl }} />
-          {isOwnProfile && (
-            <View style={styles.hRow}>
-              <TouchableOpacity>
-                <FontAwesome
-                  style={styles.icon}
-                  name="bell"
-                  size={32}
-                  color="#3C8D90"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={openSheet}>
-                <FontAwesome
-                  style={styles.icon}
-                  name="bars"
-                  size={32}
-                  color="#3C8D90"
-                />
-              </TouchableOpacity>
+            <View style={[styles.hRow, styles.center, styles.marginBottom]}>
+              <Text style={styles.bio}>Tap to add a bio</Text>
             </View>
-          )}
-        </View>
-        <View style={[styles.hRow, styles.center, styles.marginBottom]}>
-          <Text style={styles.name}>{user.username || user.name}</Text>
-        </View>
-        <View style={[styles.hRow, styles.spaceAround, styles.marginBottom]}>
-          <View style={[styles.vRow, styles.center]}>
-            <FontAwesome name="map-pin" size={32} color="#3C8D90" />
-            <Text style={styles.statsText}>348</Text>
-            <Text style={styles.statsDetails}>Check ins</Text>
-          </View>
-          <View style={[styles.vRow, styles.center]}>
-            <FontAwesome name="square" size={32} color="#3C8D90" />
-            <Text style={styles.statsText}>1520</Text>
-            <Text style={styles.statsDetails}>Posts</Text>
-          </View>
-          <View style={[styles.vRow, styles.center]}>
-            <FontAwesome
-              name="user"
-              size={32}
-              color={isFollowing ? "#3C8D90" : "#9EC1C3"}
-            />
-            <Text style={styles.statsText}>439</Text>
-            <Text style={styles.statsDetails}>Followers</Text>
-          </View>
-        </View>
-      </View>
-      <View style={[styles.hRow, styles.center, styles.marginBottom]}>
-        <Text style={styles.bio}>Tap to add a bio</Text>
-      </View>
-      <View style={[styles.hRow, styles.border, styles.noPadding]}>
-        {Object.values(tabs).map((tab) => (
-          <TouchableOpacity
-            key={tab.type}
-            style={[
-              styles.fullFlex,
-              curTab === tab.type ? styles.activeBorder : styles.iconBorder,
-              styles.center,
-            ]}
-            onPress={() => setCurTab(tab.type)}
-          >
-            <View style={[styles.center, styles.bottomPadding]}>
-              <tab.icon
-                size={24}
-                color={curTab === tab.type ? "#3C8D90" : "#9EC1C3"}
-              />
+            <View style={[styles.hRow, styles.border, styles.noPadding]}>
+              {Object.values(tabs).map((tab) => (
+                <TouchableOpacity
+                  key={tab.type}
+                  style={[
+                    styles.fullFlex,
+                    curTab === tab.type
+                      ? styles.activeBorder
+                      : styles.iconBorder,
+                    styles.center,
+                  ]}
+                  onPress={() => setCurTab(tab.type)}
+                >
+                  <View style={[styles.center, styles.bottomPadding]}>
+                    <tab.icon
+                      size={24}
+                      color={curTab === tab.type ? "#3C8D90" : "#9EC1C3"}
+                    />
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {tabs[curTab].renderItem}
+            <Header />
+          </View>
+        )}
+        key={curTab}
+        {...listProps}
+      />
       <SettingsSheet ref={settingsSheetRef} />
     </SafeAreaView>
   );
