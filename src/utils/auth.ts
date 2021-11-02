@@ -82,6 +82,8 @@ export const useAuthBase = (): AuthContextType => {
     getAuthObject().then((storedAuth: Auth0User | null) => {
       if (storedAuth) {
         setAuth0User(storedAuth);
+      } else {
+        setIsInitializing(false);
       }
     });
   }, []);
@@ -156,7 +158,7 @@ export const useAuthBase = (): AuthContextType => {
   return {
     user,
     isInitializing: !request || isInitializing,
-    isLoggedIn: user != null,
+    isLoggedIn: auth0User != null && user != null,
     login,
     logout,
   };

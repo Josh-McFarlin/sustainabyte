@@ -2,9 +2,9 @@ import * as React from "react";
 import {
   Text,
   StyleSheet,
-  TouchableWithoutFeedback,
   SafeAreaView,
   View,
+  TouchableOpacity,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StackNavParamList } from "../types";
@@ -23,11 +23,11 @@ const AccountSettingsScreen: React.FC<PropTypes> = () => {
           <Text>{user.name}</Text>
         </View>
         <View style={styles.section}>
-          <TouchableWithoutFeedback onPress={logout}>
+          <TouchableOpacity onPress={logout}>
             <View style={styles.button}>
               <Text style={styles.buttonText}>Logout</Text>
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
