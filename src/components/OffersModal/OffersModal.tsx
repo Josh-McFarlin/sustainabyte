@@ -53,8 +53,6 @@ const OffersModal: React.FC<PropTypes> = ({
     handleClose();
   }, [navigation, offer, handleClose]);
 
-  console.log("visible", offer != null);
-
   return (
     <Modal
       visible={offer != null}

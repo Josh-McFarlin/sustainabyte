@@ -111,21 +111,20 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
 
   console.log("offers:", offers);
   console.log("restaurants:", restaurants);
-  console.log("seloffer num:", selOffer);
 
   const data = React.useMemo(
     () => [
       {
         title: "You might like to follow",
         key: "1",
-        data: ["1", socialGroups],
+        data: socialGroups,
         type: SectionType.GALLERY_SOCIAL_GROUP,
         horizontal: true,
       },
       {
         title: "We thought you may like",
         key: "2",
-        data: ["2", restaurants],
+        data: restaurants,
         type: SectionType.GALLERY_RESTAURANT,
         horizontal: true,
       },
@@ -133,14 +132,14 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
         title: "Top updates for you",
         subtitle: "Promoted offers from restaurants near you",
         key: "3",
-        data: ["3", offers],
+        data: offers,
         type: SectionType.CIRCLE_OFFER,
         horizontal: true,
       },
       {
         title: "All Sustainabytes",
         key: "4",
-        data: ["4", restaurants],
+        data: restaurants,
         type: SectionType.GALLERY_RESTAURANT,
         horizontal: false,
       },
@@ -150,11 +149,10 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <SectionList
-        stickySectionHeadersEnabled={false}
+      <FlatList
         style={styles.container}
-        sections={data as any}
-        keyExtractor={(item) => item[0]}
+        data={data}
+        keyExtractor={(section) => section.key}
         ListHeaderComponent={() => (
           <View>
             <View style={styles.header}>
@@ -184,68 +182,74 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
             </ScrollView>
           </View>
         )}
-        renderSectionHeader={({ section: { title, subtitle } }) => (
+        renderItem={({ item: section }) => (
           <View>
-            <View style={[styles.hRow, styles.center, styles.spaceBetween]}>
-              <Text style={styles.title}>{title}</Text>
-              <FontAwesome5
-                name="arrow-circle-right"
-                size={24}
-                color="#4b9193"
-              />
+            <View>
+              <View style={[styles.hRow, styles.center, styles.spaceBetween]}>
+                <Text style={styles.title}>{section.title}</Text>
+                <FontAwesome5
+                  name="arrow-circle-right"
+                  size={24}
+                  color="#4b9193"
+                />
+              </View>
+              {section.subtitle && (
+                <Text style={styles.subtitle}>{section.subtitle}</Text>
+              )}
             </View>
-            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+            <FlatList<Restaurant | Offer | SocialGroup>
+              style={styles.singleList}
+              data={section.data}
+              horizontal={section.horizontal}
+              keyExtractor={(item) => item.id}
+              ItemSeparatorComponent={() => (
+                <View
+                  style={section.horizontal ? styles.spacerH : styles.spacerV}
+                />
+              )}
+              renderItem={({ item, index }) => {
+                switch (section.type) {
+                  case SectionType.GALLERY_RESTAURANT: {
+                    return (
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("RestaurantProfile" as any, {
+                            id: item.id,
+                            isFollowing: false,
+                            isOwnProfile: false,
+                          })
+                        }
+                      >
+                        <GalleryRestaurant
+                          style={
+                            section.horizontal ? styles.hRest : styles.vRest
+                          }
+                          restaurant={item as Restaurant}
+                        />
+                      </TouchableOpacity>
+                    );
+                  }
+                  case SectionType.GALLERY_SOCIAL_GROUP: {
+                    return (
+                      <TouchableOpacity>
+                        <GallerySocialGroup group={item as SocialGroup} />
+                      </TouchableOpacity>
+                    );
+                  }
+                  case SectionType.CIRCLE_OFFER: {
+                    return (
+                      <TouchableOpacity onPress={() => setSelOffer(index)}>
+                        <CircleOffer offer={item as Offer} />
+                      </TouchableOpacity>
+                    );
+                  }
+                  default: {
+                    return null;
+                  }
+                }
+              }}
+            />
           </View>
-        )}
-        renderItem={({ item: sectionData, section }) => (
-          <FlatList
-            style={styles.singleList}
-            data={sectionData.slice(1)}
-            horizontal={section.horizontal}
-            keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={() => (
-              <View
-                style={section.horizontal ? styles.spacerH : styles.spacerV}
-              />
-            )}
-            renderItem={({ item, index }) => {
-              if (section.type === SectionType.GALLERY_RESTAURANT) {
-                return (
-                  <TouchableOpacity
-                    key={item.id}
-                    onPress={() =>
-                      navigation.navigate("RestaurantProfile" as any, {
-                        id: item.id,
-                        isFollowing: false,
-                        isOwnProfile: false,
-                      })
-                    }
-                  >
-                    <GalleryRestaurant
-                      key={item.id}
-                      style={section.horizontal ? styles.hRest : styles.vRest}
-                      restaurant={item}
-                    />
-                  </TouchableOpacity>
-                );
-              }
-              if (section.type === SectionType.GALLERY_SOCIAL_GROUP) {
-                return (
-                  <TouchableOpacity key={item.id}>
-                    <GallerySocialGroup group={item} />
-                  </TouchableOpacity>
-                );
-              }
-              return (
-                <TouchableOpacity
-                  key={item.id}
-                  onPress={() => setSelOffer(index)}
-                >
-                  <CircleOffer offer={item as unknown as Offer} />
-                </TouchableOpacity>
-              );
-            }}
-          />
         )}
       />
       <OffersModal

@@ -6,24 +6,15 @@ import {
   hasMany,
   Model,
   RestSerializer,
-  Server,
 } from "miragejs";
 import faker from "faker";
 import dayjs from "dayjs";
-import type { User } from "../types/User";
-import type { DayAvailability, Restaurant } from "../types/Restaurant";
-import type { Review } from "../types/Review";
-import type { Offer } from "../types/Offer";
-import type { SocialGroup } from "../types/SocialGroup";
-import type { CheckIn } from "../types/CheckIn";
-import { randomSizeSubset, randomFoodUrl } from "./random";
-// import fixtures from "../generators/mirage-json";
-
-interface ServerArgs {
-  environment: string;
-}
+import fs from 'fs';
+import path from 'path'
+import util from 'util'
 
 faker.seed(100);
+const dir = path.dirname(new URL(import.meta.url).pathname);
 
 const gtCoords = [33.7697031, -84.3947155];
 const foodTags = [
@@ -40,13 +31,13 @@ const foodTags = [
   "popular",
 ];
 
-const getRandomDate = (hours = 24, minutes = 60): Date =>
+const getRandomDate = (hours = 24, minutes = 60) =>
   dayjs()
     .add(faker.datatype.number(hours), "hours")
     .add(faker.datatype.number(minutes), "minutes")
     .toDate();
 
-const getRandomHours = (): DayAvailability => {
+const getRandomHours = () => {
   const open = faker.datatype.number(13) + 7;
   const close = faker.datatype.number(20 - open) + open;
 
@@ -58,7 +49,18 @@ const getRandomHours = (): DayAvailability => {
   };
 };
 
-const makeServer = ({ environment = "development" }: ServerArgs): Server => {
+const randomSubset = (arr, count) =>
+[...arr].sort(() => 0.5 - Math.random()).slice(0, count);
+
+const randomSizeSubset = (arr, max, min = 1) => {
+  const count = faker.datatype.number(max - min) + min;
+
+  return randomSubset(arr, count);
+};
+
+const randomFoodUrl = "https://source.unsplash.com/collection/2311719";
+
+const makeServer = ({ environment = "development" }) => {
   return createServer({
     environment,
     models: {
@@ -83,40 +85,53 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         withUsers: hasMany("user"),
       }),
     },
-    // fixtures,
     seeds(server) {
-      server.createList("review", 20);
-      server.createList("offer", 5);
-      // server.createList("socialGroup", 10).forEach((group) => {
-      //   const count = faker.datatype.number(9) + 1;
-      //   const subset = faker.datatype.number(4) + 1;
-      //
-      //   group.update({
-      //     members: server.createList("user", count, {
-      //       groups: [group] as any,
-      //     }) as any,
-      //     reviews: server.schema
-      //       .all("review")
-      //       .models.sort(() => 0.5 - Math.random())
-      //       .slice(0, subset) as any,
-      //   });
-      // });
+      // server.createList("user", 10);
+      server.createList("review", 6);
+      server.createList("offer", 3);
 
       const users = server.schema.all("user").models;
+
+      server.createList("socialGroup", 5).forEach((group) => {
+        const memberCount = faker.datatype.number(4) + 1;
+        const reviewCount = faker.datatype.number(3) + 1;
+
+        const members = users.sort(() => 0.5 - Math.random()).slice(0, memberCount)
+
+        group.update({
+          members,
+          reviews: server.schema
+            .all("review")
+            .models.sort(() => 0.5 - Math.random())
+            .slice(0, reviewCount),
+        });
+
+        members.forEach((member) => {
+          member.update({
+            groups: [...member.groups.models, group]
+          })
+        })
+      });
+
       const restaurants = server.schema.all("restaurant").models;
 
-      // restaurants.forEach((restaurant) => {
-      //   const count = faker.datatype.number(7) + 1;
-      //
-      //   for (let i = 0; i < count; i += 1) {
-      //     server.create("checkIn", {
-      //       restaurant,
-      //       // user: users.sort(() => 0.5 - Math.random())[0],
-      //       createdAt: faker.date.recent(-2).valueOf(),
-      //       // withUsers: randomSizeSubset(users, 2, 0),
-      //     });
-      //   }
-      // });
+      restaurants.forEach((restaurant) => {
+        const count = faker.datatype.number(6) + 1;
+
+        for (let i = 0; i < count; i += 1) {
+          server.create("checkIn", {
+            restaurant,
+            user: users.sort(() => 0.5 - Math.random())[0],
+            createdAt: faker.date.recent(-2).valueOf(),
+            withUsers: randomSizeSubset(users, 2, 0),
+          });
+        }
+      });
+
+      let o = server.db.dump();
+      o.users.forEach(user => user.groupIds = [...new Set(user.groupIds)])
+      // fs.writeFileSync(dir + "/schema.json.js", JSON.stringify(o, null, 2))
+      fs.writeFileSync(dir + "/mirage-json.ts", "export default " + util.inspect(o, {compact: false, showHidden: false, depth: null, maxArrayLength: null, maxStringLength: null}), 'utf-8')
     },
     serializers: {
       user: RestSerializer.extend({
@@ -141,10 +156,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       }),
     },
     factories: {
-      user: Factory.extend<User>({
-        id() {
-          return faker.datatype.uuid();
-        },
+      user: Factory.extend({
         name(i) {
           const gender = i % 2 ? 0 : 1;
 
@@ -173,10 +185,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return [];
         },
       }),
-      restaurant: Factory.extend<Restaurant>({
-        id() {
-          return faker.datatype.uuid();
-        },
+      restaurant: Factory.extend({
         name() {
           return faker.company.companyName();
         },
@@ -193,17 +202,19 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return randomSizeSubset(foodTags, 4);
         },
         openHours() {
-          const hours = getRandomHours();
+          // const hours = getRandomHours();
+          //
+          // return [
+          //   [hours],
+          //   [hours],
+          //   [hours],
+          //   [hours],
+          //   [hours],
+          //   [hours],
+          //   [hours],
+          // ];
 
-          return [
-            [hours],
-            [hours],
-            [hours],
-            [hours],
-            [hours],
-            [hours],
-            [hours],
-          ];
+          return []
         },
         address() {
           const state = faker.address.state(true);
@@ -252,10 +263,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           };
         },
       }),
-      review: Factory.extend<Review>({
-        id() {
-          return faker.datatype.uuid();
-        },
+      review: Factory.extend({
         user: association(),
         restaurant: association(),
         createdAt() {
@@ -281,10 +289,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return faker.datatype.number(100);
         },
       }),
-      offer: Factory.extend<Offer>({
-        id() {
-          return faker.datatype.uuid();
-        },
+      offer: Factory.extend({
         restaurant: association(),
         createdAt() {
           return faker.date.recent().valueOf();
@@ -305,10 +310,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return "Order Now";
         },
       }),
-      socialGroup: Factory.extend<SocialGroup>({
-        id() {
-          return faker.datatype.uuid();
-        },
+      socialGroup: Factory.extend({
         createdAt() {
           return faker.date.recent().valueOf();
         },
@@ -328,10 +330,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return [];
         },
       }),
-      checkIn: Factory.extend<CheckIn>({
-        id() {
-          return faker.datatype.uuid();
-        },
+      checkIn: Factory.extend({
         user: association(),
         restaurant: association(),
         createdAt() {
@@ -384,15 +383,4 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
   });
 };
 
-const runServer = (): Server => {
-  if ((window as any).server) {
-    (window as any).server.shutdown();
-  }
-
-  const server = makeServer({ environment: "development" });
-  (window as any).server = server;
-
-  return server;
-};
-
-export default runServer;
+makeServer({ environment: "development" });

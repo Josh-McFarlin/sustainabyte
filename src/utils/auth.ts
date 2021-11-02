@@ -54,14 +54,14 @@ const clearAuthObject = (): Promise<void> =>
 export const useAuthBase = (): AuthContextType => {
   const [auth0User, setAuth0User] = React.useState<Auth0User | null>(null);
   const [addedDB, setAddedDB] = React.useState<boolean>(false);
-  const { data: user, remove } = useQuery<User, Error>(
-    ["user", auth0User?.sub],
-    fetchUser,
-    {
-      enabled: auth0User?.sub != null && addedDB,
-      initialData: null,
-    }
-  );
+  const {
+    data: user,
+    remove,
+    refetch,
+  } = useQuery<User, Error>(["user", auth0User?.sub], fetchUser, {
+    enabled: auth0User?.sub != null && addedDB,
+    initialData: null,
+  });
   const [isInitializing, setIsInitializing] = React.useState<boolean>(true);
   const nonce = React.useRef<string>(uuid().replace(/-/g, ""));
 
@@ -79,6 +79,41 @@ export const useAuthBase = (): AuthContextType => {
   );
 
   React.useEffect(() => {
+    getAuthObject().then((storedAuth: Auth0User | null) => {
+      if (storedAuth) {
+        setAuth0User(storedAuth);
+      }
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (result != null) {
+      switch (result?.type) {
+        case "success": {
+          const jwtToken = result.params.id_token;
+          const decoded = jwtDecode(jwtToken);
+
+          setAuth0User(decoded as any);
+          saveAuthObject(decoded as any);
+
+          break;
+        }
+        case "error": {
+          Alert.alert(
+            "Authentication error",
+            result.params.error_description || "something went wrong"
+          );
+
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    }
+  }, [result]);
+
+  React.useEffect(() => {
     if ((window as any).server && auth0User != null) {
       (window as any).server.create("user", {
         id: auth0User.sub,
@@ -92,46 +127,11 @@ export const useAuthBase = (): AuthContextType => {
       });
 
       setAddedDB(true);
-    }
-  }, [auth0User]);
-
-  React.useEffect(() => {
-    getAuthObject()
-      .then((storedAuth: Auth0User | null) => {
-        if (storedAuth) {
-          setAuth0User(storedAuth);
-          setIsInitializing(false);
-        }
-      })
-      .finally(() => {
+      refetch().then(() => {
         setIsInitializing(false);
       });
-  }, []);
-
-  React.useEffect(() => {
-    switch (result?.type) {
-      case "success": {
-        const jwtToken = result.params.id_token;
-        const decoded = jwtDecode(jwtToken);
-
-        setAuth0User(decoded as any);
-        saveAuthObject(decoded as any);
-
-        break;
-      }
-      case "error": {
-        Alert.alert(
-          "Authentication error",
-          result.params.error_description || "something went wrong"
-        );
-
-        break;
-      }
-      default: {
-        break;
-      }
     }
-  }, [result]);
+  }, [refetch, auth0User]);
 
   const login = React.useCallback(
     async (): Promise<AuthSession.AuthSessionResult> =>
@@ -149,7 +149,7 @@ export const useAuthBase = (): AuthContextType => {
   //   addedDB,
   //   auth0User,
   //   user,
-  //   isInitializing: !request || isInitializing,
+  //   isInitializing,
   //   isLoggedIn: user != null,
   // });
 

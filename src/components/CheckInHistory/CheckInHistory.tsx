@@ -12,9 +12,10 @@ import type { CheckIn } from "../../types/CheckIn";
 
 type PropTypes = {
   checkIns: CheckIn[];
+  header?: React.ReactChildren;
 };
 
-const CheckInHistory: React.FC<PropTypes> = ({ checkIns }) => {
+const CheckInHistory: React.FC<PropTypes> = ({ checkIns, header }) => {
   const sections = React.useMemo<SectionListData<CheckIn>[]>(() => {
     const result = new Map<
       string,
@@ -60,6 +61,7 @@ const CheckInHistory: React.FC<PropTypes> = ({ checkIns }) => {
             <View style={styles.circle} />
           </View>
         )}
+        ListHeaderComponent={() => <View>{header}</View>}
       />
     </View>
   );
@@ -69,7 +71,6 @@ const styles = StyleSheet.create({
   container: {
     position: "relative",
     flex: 1,
-    marginVertical: 4,
   },
   list: {
     position: "relative",

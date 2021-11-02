@@ -37,6 +37,8 @@ export const getOpenStatus = (
         closes: `Closes at ${end.format("LT")}`,
       };
     }
+
+    itemInd += 1;
   }
 
   dayInd = cur.add(1, "day").day();

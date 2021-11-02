@@ -24,7 +24,7 @@ const ListCheckIn: React.FC<PropTypes> = ({ checkIn }) => {
     checkIn?.withUsers?.map((user) => ({
       queryKey: ["user", user],
       queryFn: fetchUser,
-      enabled: checkIn?.withUsers != null,
+      enabled: user != null,
     })) || []
   ) as any;
 

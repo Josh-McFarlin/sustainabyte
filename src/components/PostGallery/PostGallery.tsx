@@ -11,11 +11,12 @@ import type { Review } from "../../types/Review";
 
 type PropTypes = {
   posts: Review[];
+  header?: React.ReactChildren;
 };
 
 const numColumns = 3;
 
-const PostGallery: React.FC<PropTypes> = ({ posts }) => {
+const PostGallery: React.FC<PropTypes> = ({ posts, header }) => {
   console.log("posts", posts);
 
   const onPress = (review: Review) => {
@@ -40,6 +41,7 @@ const PostGallery: React.FC<PropTypes> = ({ posts }) => {
           </TouchableOpacity>
         </View>
       )}
+      ListHeaderComponent={() => <View>{header}</View>}
     />
   );
 };
@@ -52,8 +54,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
-    marginVertical: 4,
-    marginHorizontal: 2,
   },
   post: {
     width: tileSize,

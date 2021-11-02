@@ -24,6 +24,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
     group.members.slice(0, 3).map((user) => ({
       queryKey: ["user", user],
       queryFn: fetchUser,
+      enabled: user != null,
     }))
   );
 
