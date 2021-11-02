@@ -9,23 +9,18 @@ import {
   Dimensions,
 } from "react-native";
 import { Camera } from "expo-camera";
-import {
-  manipulateAsync,
-  FlipType,
-  SaveFormat,
-  ImageResult,
-} from "expo-image-manipulator";
+import { manipulateAsync, ImageResult } from "expo-image-manipulator";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 
 type PropTypes = {
   onCapture: (picture: ImageResult) => void;
+  onCancel: () => void;
 };
 
-const CameraView: React.FC<PropTypes> = ({ onCapture }) => {
+const CameraView: React.FC<PropTypes> = ({ onCapture, onCancel }) => {
   const cameraRef = React.useRef<Camera>(null);
   const [hasPermission, setHasPermission] = React.useState(null);
   const [type, setType] = React.useState(Camera.Constants.Type.back);
-  const [size, setSize] = React.useState(null);
 
   React.useEffect(() => {
     (async () => {
@@ -82,20 +77,18 @@ const CameraView: React.FC<PropTypes> = ({ onCapture }) => {
 
   return (
     <View style={styles.container}>
-      <Camera
-        style={styles.camera}
-        ref={cameraRef}
-        type={type}
-        pictureSize={size}
-        autoFocus
-      >
+      <Camera style={styles.camera} ref={cameraRef} type={type} autoFocus>
         <View style={styles.fills}>
           <View style={styles.otherFills} />
           <View style={styles.square} />
           <View style={styles.otherFills} />
         </View>
         <View style={styles.buttonContainer}>
-          <View style={styles.button} />
+          <TouchableOpacity style={styles.button} onPress={onCancel}>
+            <View style={styles.iconWrapper}>
+              <FontAwesome name="close" size={36} color="#fff" />
+            </View>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={takePicture}>
             <View style={styles.iconWrapper}>
               <FontAwesome5 name="camera-retro" size={52} color="#fff" />

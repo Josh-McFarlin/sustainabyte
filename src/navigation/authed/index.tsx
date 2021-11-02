@@ -141,7 +141,7 @@ const AuthedNavigator: React.FC = () => {
           name="UploadPost"
           component={UploadPostScreen}
           options={{
-            headerTitle: "Upload Post",
+            headerTitle: "New Post",
             gestureEnabled: false,
           }}
         />
