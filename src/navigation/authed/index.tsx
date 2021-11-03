@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import HomeScreen from "./screens/Home";
-import RestaurantMapScreen from "./screens/RestaurantMap";
 import DiscoverScreen from "./screens/Discover";
 import LeaderboardScreen from "./screens/Leaderboard";
 import UserProfileScreen from "./screens/UserProfile";
@@ -42,16 +41,6 @@ const TabbedNavigator: React.FC = () => {
           title: "Discover",
           tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="search" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="RestaurantMap"
-        component={RestaurantMapScreen}
-        options={{
-          title: "Map",
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="map-marked-alt" color={color} size={size} />
           ),
         }}
       />

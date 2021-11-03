@@ -71,7 +71,7 @@ const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
             style={styles.clearIcon}
             name="close"
             size={18}
-            color="#3C8D90"
+            color="#8E8E8E"
             onPress={() => setSearch("")}
           />
         )}
