@@ -16,6 +16,7 @@ import type { Review } from "../types/Review";
 import type { Offer } from "../types/Offer";
 import type { SocialGroup } from "../types/SocialGroup";
 import type { CheckIn } from "../types/CheckIn";
+import type { Challenge } from "../types/Challenge";
 import { randomSizeSubset, randomFoodUrl } from "./random";
 // import fixtures from "../generators/mirage-json";
 
@@ -42,8 +43,8 @@ const foodTags = [
 
 const getRandomDate = (hours = 24, minutes = 60): Date =>
   dayjs()
-    .add(faker.datatype.number(hours), "hours")
-    .add(faker.datatype.number(minutes), "minutes")
+    .add(faker.datatype.number(hours), "hour")
+    .add(faker.datatype.number(minutes), "minute")
     .toDate();
 
 const getRandomHours = (): DayAvailability => {
@@ -77,40 +78,14 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         members: hasMany("user", { polymorphic: false }),
         reviews: hasMany("review"),
       }),
+      challenge: Model.extend({
+        completedBy: hasMany("user", { polymorphic: false }),
+      }),
       checkIn: Model.extend({
         user: belongsTo(),
         restaurant: belongsTo(),
         withUsers: hasMany("user"),
       }),
-    },
-    // fixtures,
-    seeds(server) {
-      server.createList("review", 20);
-      server.createList("offer", 5);
-
-      const users = server.schema.all("user").models;
-      const reviews = server.schema.all("review").models;
-      const restaurants = server.schema.all("restaurant").models;
-
-      for (let i = 0; i < 4; i += 1) {
-        server.create("socialGroup", {
-          members: users.sort(() => 0.5 - Math.random()).slice(0, 4),
-          reviews: reviews.sort(() => 0.5 - Math.random()).slice(0, 4),
-        });
-      }
-
-      restaurants.forEach((restaurant) => {
-        const count = faker.datatype.number(7) + 1;
-
-        for (let i = 0; i < count; i += 1) {
-          server.create("checkIn", {
-            restaurant,
-            user: users.sort(() => 0.5 - Math.random())[0],
-            createdAt: faker.date.recent(-2).valueOf(),
-            withUsers: randomSizeSubset(users, 2, 0),
-          });
-        }
-      });
     },
     serializers: {
       user: RestSerializer.extend({
@@ -131,6 +106,10 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       }),
       checkIn: RestSerializer.extend({
         include: ["user", "restaurant", "withUsers"],
+        embed: false,
+      }),
+      challenge: RestSerializer.extend({
+        include: ["completedBy"],
         embed: false,
       }),
     },
@@ -335,6 +314,32 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           return [];
         },
       }),
+      challenge: Factory.extend<Challenge>({
+        id() {
+          return faker.datatype.uuid();
+        },
+        title() {
+          return faker.lorem.words(3);
+        },
+        body() {
+          return faker.lorem.words(6);
+        },
+        icon() {
+          return "";
+        },
+        createdAt() {
+          return faker.date.recent().valueOf();
+        },
+        expiresAt() {
+          return faker.date.recent().valueOf();
+        },
+        score() {
+          return faker.datatype.number(80) + 20;
+        },
+        completedBy() {
+          return [];
+        },
+      }),
     },
     routes() {
       this.namespace = "api";
@@ -374,6 +379,76 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       this.post("/checkIn");
       this.patch("/checkIn/:id");
       this.del("/checkIn/:id");
+
+      this.get("/challenge");
+      this.get("/challenge/:id");
+      this.post("/checkIn");
+      this.patch("/checkIn/:id");
+      this.del("/checkIn/:id");
+    },
+    // fixtures,
+    fixtures: {
+      challenges: [
+        {
+          id: "1",
+          title: "Most Check In's",
+          body: "",
+          icon: require("../../assets/icons/pin.png"),
+          createdAt: getRandomDate(-24, -60).valueOf(),
+          expiresAt: getRandomDate(24 * 7, 60).valueOf(),
+          score: 30,
+          completedBy: [],
+        },
+        {
+          id: "2",
+          title: "Plant Pioneer",
+          body: "",
+          icon: require("../../assets/icons/vigilante.png"),
+          createdAt: getRandomDate(-24, -60).valueOf(),
+          expiresAt: getRandomDate(24 * 7, 60).valueOf(),
+          score: 30,
+          completedBy: [],
+        },
+        {
+          id: "3",
+          title: "Serious Sombrero",
+          body: "",
+          icon: require("../../assets/icons/sombrero.png"),
+          createdAt: getRandomDate(-24, -60).valueOf(),
+          expiresAt: getRandomDate(24 * 7, 60).valueOf(),
+          score: 30,
+          completedBy: [],
+        },
+      ],
+    },
+    seeds(server) {
+      server.loadFixtures();
+      server.createList("review", 20);
+      server.createList("offer", 5);
+
+      const users = server.schema.all("user").models;
+      const reviews = server.schema.all("review").models;
+      const restaurants = server.schema.all("restaurant").models;
+
+      for (let i = 0; i < 4; i += 1) {
+        server.create("socialGroup", {
+          members: users.sort(() => 0.5 - Math.random()).slice(0, 4),
+          reviews: reviews.sort(() => 0.5 - Math.random()).slice(0, 4),
+        });
+      }
+
+      restaurants.forEach((restaurant) => {
+        const count = faker.datatype.number(7) + 1;
+
+        for (let i = 0; i < count; i += 1) {
+          server.create("checkIn", {
+            restaurant,
+            user: users.sort(() => 0.5 - Math.random())[0],
+            createdAt: faker.date.recent(-2).valueOf(),
+            withUsers: randomSizeSubset(users, 2, 0),
+          });
+        }
+      });
     },
   });
 };

@@ -59,6 +59,10 @@ const Navigation: React.FC = () => {
       require("./assets/icons/vegan.png"),
       require("./assets/icons/camera-white.png"),
       require("./assets/icons/camera-white-no-bg.png"),
+      require("./assets/icons/sombrero.png"),
+      require("./assets/icons/pin.png"),
+      require("./assets/icons/vigilante.png"),
+      require("./assets/icons/hexagon.png"),
     ]);
 
     const fontAssets = cacheFonts([

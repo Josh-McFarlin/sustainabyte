@@ -7,14 +7,21 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import type { TabNavParamList } from "../types";
 import { fetchUsers } from "../../../actions/user";
-import { User } from "../../../types/User";
+import { fetchChallenges } from "../../../actions/challenge";
+import type { User } from "../../../types/User";
+import type { Challenge } from "../../../types/Challenge";
+
+dayjs.extend(relativeTime);
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Leaderboard">;
 
@@ -29,12 +36,18 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
   const { data: users } = useQuery<User[], Error>(["users"], fetchUsers, {
     initialData: [],
   });
+  const { data: challenges } = useQuery<Challenge[], Error>(
+    ["challenges"],
+    fetchChallenges,
+    {
+      initialData: [],
+    }
+  );
 
   const tabs = React.useMemo(
     () => ({
       [TabTypes.LEADERBOARD]: {
         type: TabTypes.LEADERBOARD,
-        icon: ({ ...props }) => <Ionicons name="grid" {...props} />,
         title: "Leaderboard",
         data: users,
         listProps: {},
@@ -124,9 +137,8 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
       },
       [TabTypes.CHALLENGES]: {
         type: TabTypes.CHALLENGES,
-        icon: ({ ...props }) => <FontAwesome5 name="map-pin" {...props} />,
         title: "Challenges",
-        data: users,
+        data: challenges,
         listProps: {},
         PrimaryActions: () => (
           <>
@@ -208,23 +220,31 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
             </View>
           </TouchableOpacity>
         ),
-        renderItem: ({ item, index }) => (
+        renderItem: ({ item }: { item: Challenge }) => (
           <View style={styles.listItem}>
-            <Text style={styles.itemText}>{index + 4}</Text>
-            <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
-            <Text style={styles.itemText}>@{item.username}</Text>
-            <FontAwesome5
-              style={styles.crown}
-              name="crown"
-              size={18}
-              color="#FFC601"
-            />
-            <Text style={styles.itemText}>{item.score}</Text>
+            <ImageBackground
+              style={styles.hexagon}
+              source={require("../../../../assets/icons/hexagon.png")}
+              resizeMode="contain"
+            >
+              <Image style={styles.challengeIcon} source={item.icon as any} />
+            </ImageBackground>
+            <View>
+              <Text style={styles.itemText}>{item.title}</Text>
+              <Text style={styles.itemSubtext}>
+                {dayjs().to(item.expiresAt, true)} Left
+              </Text>
+              {item?.completedBy?.length > 0 && (
+                <Text style={styles.itemSubtext}>
+                  @{item?.completedBy?.join(", @")}
+                </Text>
+              )}
+            </View>
           </View>
         ),
       },
     }),
-    [users]
+    [users, challenges]
   );
 
   const { data, PrimaryActions, Header, Footer, renderItem, listProps } =
@@ -264,13 +284,17 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
           </View>
         </View>
         <FlatList
-          style={styles.list}
           contentContainerStyle={styles.listContainer}
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           ListHeaderComponent={<Header />}
-          ListFooterComponent={<Footer />}
+          ListFooterComponent={() => (
+            <View style={styles.footerContainer}>
+              <Footer />
+            </View>
+          )}
+          ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
           {...listProps}
         />
       </View>
@@ -295,32 +319,19 @@ const styles = StyleSheet.create({
   grad: {
     paddingVertical: 32,
   },
-  list: {
-    // flex: 1,
-    // padding: 16,
-    // marginTop: 8,
-    // padding: 16,
-    // backgroundColor: "red",
-  },
   listContainer: {
-    padding: 16,
+    paddingVertical: 16,
   },
   listItem: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#9EC1C3",
-    padding: 24,
-    borderRadius: 64,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    paddingVertical: 24,
+    paddingHorizontal: 12,
+  },
+  listSeparator: {
+    height: 1,
+    backgroundColor: "#DBDBDB",
   },
   avatar: {
     width: 50,
@@ -332,6 +343,9 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  itemSubtext: {
+    fontSize: 16,
   },
   crown: {
     marginLeft: "auto",
@@ -438,11 +452,18 @@ const styles = StyleSheet.create({
     zIndex: 30,
   },
   headerContainer: {
-    marginBottom: 16,
+    paddingBottom: 16,
+    borderColor: "#DBDBDB",
+    borderBottomWidth: 1,
   },
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  footerContainer: {
+    paddingTop: 16,
+    borderColor: "#DBDBDB",
+    borderTopWidth: 1,
   },
   footerButton: {
     paddingVertical: 20,
@@ -457,6 +478,20 @@ const styles = StyleSheet.create({
   footerButtRad: {
     borderRadius: 64,
     overflow: "hidden",
+  },
+  challengeIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 32,
+    marginHorizontal: 12,
+    resizeMode: "contain",
+    padding: 4,
+  },
+  hexagon: {
+    width: 75,
+    height: 75,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
