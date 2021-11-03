@@ -1,18 +1,14 @@
 import * as React from "react";
 import {
   View,
-  ScrollView,
   Text,
-  Image,
   StyleSheet,
-  TouchableOpacity,
   TextInput,
   FlatList,
   TouchableWithoutFeedback,
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import debounce from "lodash/debounce";
-import { randomSizeSubset } from "../../utils/random";
 
 const foodTags = [
   "vegan",
@@ -28,37 +24,36 @@ const foodTags = [
   "popular",
 ];
 
+const returnTrue = (obj: Record<string, boolean>): string[] =>
+  Object.entries(obj).reduce((acc, [tag, sel]) => {
+    if (sel) {
+      acc.push(tag);
+    }
+
+    return acc;
+  }, []);
+
 type PropTypes = {
   onChange: (search: string, tags: string[]) => void;
 };
 
 const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
   const [search, setSearch] = React.useState<string>("");
-  const [selTags, setTags] = React.useState<string[]>(
-    randomSizeSubset(foodTags, 3)
+  const [selTags, setTagsBase] = React.useState<Record<string, boolean>>(
+    foodTags.reduce((acc, tag) => ({ ...acc, [tag]: false }), {})
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debChange = React.useCallback(debounce(onChange, 500), [onChange]);
-
-  const toggleTag = React.useCallback(
-    (item: string) =>
-      setTags((prevState) => {
-        const newTags = new Set(prevState);
-
-        if (newTags.has(item)) {
-          newTags.delete(item);
-        } else {
-          newTags.add(item);
-        }
-
-        return [...newTags];
-      }),
-    []
-  );
+  const debChange = React.useCallback(debounce(onChange, 250), [onChange]);
 
   React.useEffect(() => {
-    debChange(search, selTags);
+    debChange(search, returnTrue(selTags));
   }, [debChange, search, selTags]);
+
+  const setTags = (tag: string, selected: boolean) =>
+    setTagsBase((prevState) => ({
+      ...prevState,
+      [tag]: selected,
+    }));
 
   return (
     <View style={styles.container}>
@@ -71,29 +66,33 @@ const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
           placeholder={`Search "Curry"`}
           placeholderTextColor="#8E8E8E"
         />
+        {search.length > 0 && (
+          <FontAwesome
+            style={styles.clearIcon}
+            name="close"
+            size={18}
+            color="#3C8D90"
+            onPress={() => setSearch("")}
+          />
+        )}
       </View>
       <FlatList
         horizontal
-        data={foodTags}
-        keyExtractor={(i) => i}
-        renderItem={({ item }) => (
-          <TouchableWithoutFeedback onPress={() => toggleTag(item)}>
+        data={Object.entries(selTags)}
+        keyExtractor={(i) => i[0]}
+        renderItem={({ item: [tag, has] }) => (
+          <TouchableWithoutFeedback onPress={() => setTags(tag, !has)}>
             <View
               style={[
                 styles.touchable,
                 styles.selectableItem,
-                selTags.includes(item)
-                  ? styles.itemSelected
-                  : styles.itemUnselected,
+                has ? styles.itemSelected : styles.itemUnselected,
               ]}
             >
               <Text
-                style={[
-                  styles.text,
-                  selTags.includes(item) ? styles.whiteText : styles.blackText,
-                ]}
+                style={[styles.text, has ? styles.whiteText : styles.blackText]}
               >
-                #{item}
+                #{tag}
               </Text>
             </View>
           </TouchableWithoutFeedback>
@@ -125,6 +124,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     flex: 1,
     backgroundColor: "transparent",
+  },
+  clearIcon: {
+    //
   },
   selectableItem: {
     borderWidth: 1,
