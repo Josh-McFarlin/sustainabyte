@@ -1,8 +1,9 @@
 import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 if (Platform.OS === "web") {
-  console.log(
+  console.error(
     "WARNING:\n" +
       "SecureStore has been imported within a web context.\n" +
       "This is not a secure operation, and should be used for local testing only!\n" +
@@ -16,7 +17,7 @@ export const setItemAsync = async (
   options?: SecureStore.SecureStoreOptions
 ): Promise<void> => {
   if (Platform.OS === "web") {
-    return localStorage.setItem(key, value);
+    return AsyncStorage.setItem(key, value);
   }
 
   return SecureStore.setItemAsync(key, value, options);
@@ -27,7 +28,7 @@ export const getItemAsync = async (
   options?: SecureStore.SecureStoreOptions
 ): Promise<string> => {
   if (Platform.OS === "web") {
-    return localStorage.getItem(key);
+    return AsyncStorage.getItem(key);
   }
 
   return SecureStore.getItemAsync(key, options);
@@ -38,7 +39,7 @@ export const deleteItemAsync = async (
   options?: SecureStore.SecureStoreOptions
 ): Promise<void> => {
   if (Platform.OS === "web") {
-    return localStorage.removeItem(key);
+    return AsyncStorage.removeItem(key);
   }
 
   return SecureStore.deleteItemAsync(key, options);
