@@ -9,6 +9,7 @@ import {
   Server,
 } from "miragejs";
 import faker from "faker";
+import { inflections } from "inflected";
 import dayjs from "dayjs";
 import type { User } from "../types/User";
 import type { DayAvailability, Restaurant } from "../types/Restaurant";
@@ -58,6 +59,10 @@ const getRandomHours = (): DayAvailability => {
     endMinute: Math.round(Math.random()) === 1 ? 30 : 0,
   };
 };
+
+inflections("en", (inflect) => {
+  inflect.irregular("completedBy", "completedBy");
+});
 
 const makeServer = ({ environment = "development" }: ServerArgs): Server => {
   return createServer({
@@ -109,7 +114,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
         embed: false,
       }),
       challenge: RestSerializer.extend({
-        include: ["completedBy"],
+        include: ["completedBy", "completedBy.id"],
         embed: false,
       }),
     },
@@ -382,9 +387,9 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
 
       this.get("/challenge");
       this.get("/challenge/:id");
-      this.post("/checkIn");
-      this.patch("/checkIn/:id");
-      this.del("/checkIn/:id");
+      this.post("/challenge");
+      this.patch("/challenge/:id");
+      this.del("/challenge/:id");
     },
     // fixtures,
     fixtures: {
@@ -397,7 +402,6 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           createdAt: getRandomDate(-24, -60).valueOf(),
           expiresAt: getRandomDate(24 * 7, 60).valueOf(),
           score: 30,
-          completedBy: [],
         },
         {
           id: "2",
@@ -407,7 +411,6 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           createdAt: getRandomDate(-24, -60).valueOf(),
           expiresAt: getRandomDate(24 * 7, 60).valueOf(),
           score: 30,
-          completedBy: [],
         },
         {
           id: "3",
@@ -417,7 +420,6 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
           createdAt: getRandomDate(-24, -60).valueOf(),
           expiresAt: getRandomDate(24 * 7, 60).valueOf(),
           score: 30,
-          completedBy: [],
         },
       ],
     },
@@ -429,6 +431,7 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
       const users = server.schema.all("user").models;
       const reviews = server.schema.all("review").models;
       const restaurants = server.schema.all("restaurant").models;
+      const challenges = server.schema.all("challenge").models;
 
       for (let i = 0; i < 4; i += 1) {
         server.create("socialGroup", {
@@ -448,6 +451,14 @@ const makeServer = ({ environment = "development" }: ServerArgs): Server => {
             withUsers: randomSizeSubset(users, 2, 0),
           });
         }
+      });
+
+      challenges.forEach((challenge) => {
+        challenge.update({
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          completedBy: users.sort(() => 0.5 - Math.random()).slice(0, 2),
+        });
       });
     },
   });

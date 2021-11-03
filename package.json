@@ -34,6 +34,7 @@
   "dependencies": {
     "@expo/vector-icons": "^12.0.0",
     "@gorhom/bottom-sheet": "^4.1.1",
+    "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
@@ -42,8 +43,11 @@
     "expo-app-loading": "1.1.2",
     "expo-asset": "~8.3.3",
     "expo-auth-session": "~3.3.1",
+    "expo-camera": "~11.2.2",
     "expo-crypto": "~9.2.0",
     "expo-font": "~9.2.1",
+    "expo-image-manipulator": "~9.2.2",
+    "expo-image-picker": "~10.2.2",
     "expo-linear-gradient": "~9.2.0",
     "expo-location": "~12.1.2",
     "expo-random": "~11.2.0",
@@ -52,6 +56,7 @@
     "expo-web-browser": "~9.2.0",
     "faker": "^5.5.3",
     "firebase": "8.2.3",
+    "inflected": "^2.1.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "miragejs": "^0.1.42",
@@ -71,11 +76,7 @@
     "react-query": "^3.25.1",
     "react-singleton-hook": "^3.2.1",
     "rn-range-slider": "^2.1.1",
-    "uuid": "^3.4.0",
-    "expo-camera": "~11.2.2",
-    "@react-native-async-storage/async-storage": "~1.15.0",
-    "expo-image-picker": "~10.2.2",
-    "expo-image-manipulator": "~9.2.2"
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@babel/core": "~7.15.5",

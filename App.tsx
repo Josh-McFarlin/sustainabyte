@@ -63,6 +63,8 @@ const Navigation: React.FC = () => {
       require("./assets/icons/pin.png"),
       require("./assets/icons/vigilante.png"),
       require("./assets/icons/hexagon.png"),
+      require("./assets/icons/leafs.png"),
+      require("./assets/icons/mountain.png"),
     ]);
 
     const fontAssets = cacheFonts([

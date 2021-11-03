@@ -31,6 +31,24 @@ enum TabTypes {
   MONTH,
 }
 
+const badges = [
+  {
+    id: "1",
+    title: "Vegan Vigilantes",
+    icon: require("../../../../assets/icons/leafs.png"),
+  },
+  {
+    id: "2",
+    title: "Big Brunch Fans",
+    icon: require("../../../../assets/icons/pancake.png"),
+  },
+  {
+    id: "3",
+    title: "Desi Divas",
+    icon: require("../../../../assets/icons/mountain.png"),
+  },
+];
+
 const LeaderboardScreen: React.FC<PropTypes> = () => {
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.LEADERBOARD);
   const { data: users } = useQuery<User[], Error>(["users"], fetchUsers, {
@@ -141,67 +159,32 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
         data: challenges,
         listProps: {},
         PrimaryActions: () => (
-          <>
-            <View style={[styles.hRow, styles.center, styles.marginBottom]}>
-              <FontAwesome5 name="crown" size={32} color="#FFC601" />
-            </View>
-            <View style={[styles.hRow, styles.center, styles.alignEnd]}>
-              <View style={[styles.vRow, styles.center]}>
-                <View style={styles.avatarShadow}>
-                  <Image
-                    style={[styles.topAvatar, styles.otherAvatars]}
-                    source={{
-                      uri: users?.[1]?.avatarUrl,
-                    }}
-                  />
-                </View>
-                <View style={styles.placeWrapper}>
-                  <LinearGradient
-                    colors={["#27F9FF", "#3C8D90"]}
-                    style={styles.placeCircle}
-                  >
-                    <Text style={styles.placeCircleText}>2</Text>
-                  </LinearGradient>
-                </View>
-              </View>
-              <View style={[styles.vRow, styles.center, styles.taZindex]}>
-                <View style={styles.avatarShadow}>
-                  <Image
-                    style={[styles.topAvatar, styles.firstAvatar]}
-                    source={{
-                      uri: users?.[0]?.avatarUrl,
-                    }}
-                  />
-                </View>
-                <View style={styles.placeWrapper}>
-                  <LinearGradient
-                    colors={["#27F9FF", "#3C8D90"]}
-                    style={styles.placeCircle}
-                  >
-                    <Text style={styles.placeCircleText}>1</Text>
-                  </LinearGradient>
-                </View>
-              </View>
-              <View style={[styles.vRow, styles.center]}>
-                <View style={styles.avatarShadow}>
-                  <Image
-                    style={[styles.topAvatar, styles.otherAvatars]}
-                    source={{
-                      uri: users?.[2]?.avatarUrl,
-                    }}
-                  />
-                </View>
-                <View style={styles.placeWrapper}>
-                  <LinearGradient
-                    colors={["#27F9FF", "#3C8D90"]}
-                    style={styles.placeCircle}
-                  >
-                    <Text style={styles.placeCircleText}>3</Text>
-                  </LinearGradient>
-                </View>
-              </View>
-            </View>
-          </>
+          <View>
+            <Text style={[styles.headerText, styles.marginBottom]}>
+              Join a badge challenge
+            </Text>
+            <FlatList
+              contentContainerStyle={styles.center}
+              horizontal
+              data={badges}
+              renderItem={({ item }) => (
+                <TouchableOpacity>
+                  <View style={styles.badge}>
+                    <ImageBackground
+                      style={[styles.badgeHex, styles.marginBottom]}
+                      source={require("../../../../assets/icons/hexagon.png")}
+                      resizeMode="contain"
+                    >
+                      <Image style={styles.badgeIcon} source={item.icon} />
+                    </ImageBackground>
+                    <Text style={styles.badgeText} numberOfLines={1}>
+                      {item.title}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
         ),
         Header: () => (
           <View style={styles.headerContainer}>
@@ -236,7 +219,10 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
               </Text>
               {item?.completedBy?.length > 0 && (
                 <Text style={styles.itemSubtext}>
-                  @{item?.completedBy?.join(", @")}
+                  @
+                  {item?.completedBy
+                    ?.map((id) => users.find((i) => i.id === id).username)
+                    .join(", @")}
                 </Text>
               )}
             </View>
@@ -459,6 +445,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
+    color: "#fff",
   },
   footerContainer: {
     paddingTop: 16,
@@ -492,6 +479,30 @@ const styles = StyleSheet.create({
     height: 75,
     justifyContent: "center",
     alignItems: "center",
+  },
+  badge: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 100,
+    marginHorizontal: 8,
+  },
+  badgeHex: {
+    width: 100,
+    height: 100,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeIcon: {
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
+  },
+  badgeText: {
+    width: 84,
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+    overflow: "hidden",
   },
 });
 
