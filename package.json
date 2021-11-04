@@ -2,6 +2,7 @@
   "name": "sustainabyte",
   "description": "An Expo/React Native app for encouraging sustainable eating",
   "version": "0.0.1",
+  "license": "MIT",
   "private": true,
   "repository": {
     "type": "git",
