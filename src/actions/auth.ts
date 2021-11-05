@@ -1,4 +1,5 @@
 import type { QueryFunction } from "react-query";
+import axios from "axios";
 import urls from "../utils/urls";
 import type { UserType } from "../types/User";
 
@@ -7,13 +8,7 @@ export const fetchAuth: QueryFunction<UserType, [string, string]> = async ({
 }): Promise<UserType> => {
   const [_key, id] = queryKey;
 
-  const response = await fetch(`${urls.api}/auth/${id}?type=USER`);
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok!");
-  }
-
-  const json = await response.json();
+  const { data: json } = await axios.get(`${urls.api}/auth/${id}?type=USER`);
 
   return json.auth;
 };

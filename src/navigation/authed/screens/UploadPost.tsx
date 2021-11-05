@@ -23,6 +23,7 @@ import {
   FontAwesome,
 } from "@expo/vector-icons";
 import debounce from "lodash/debounce";
+import { createPost } from "../../../actions/post";
 import { StackNavParamList } from "../types";
 
 const hashtags = [
@@ -31,7 +32,6 @@ const hashtags = [
   "local",
   "yummy",
   "fancy",
-  "boring",
   "delicious",
   "breakfast",
   "lunch",
@@ -41,7 +41,7 @@ const hashtags = [
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "UploadPost">;
 
-const UploadPostScreen: React.FC<PropTypes> = () => {
+const UploadPostScreen: React.FC<PropTypes> = ({ navigation }) => {
   const [picture, setPicture] = React.useState<string | null>(null);
   const [restaurant, setRestaurant] = React.useState<string>("");
   const [caption, setCaption] = React.useState<string>("");
@@ -49,6 +49,30 @@ const UploadPostScreen: React.FC<PropTypes> = () => {
   const [tagSearch, setTagSearch] = React.useState<string>("");
   const [showingSearch, setShowingSearchBase] = React.useState<string>("");
   const [rating, setRating] = React.useState<number>(3);
+
+  const handleUpload = React.useCallback(async () => {
+    try {
+      await createPost({
+        ownerType: "User",
+        body: caption,
+        photoUrls: [picture],
+        tags: selTags,
+      });
+      await navigation.navigate("Tabs");
+    } catch (error) {
+      console.log("Error", error?.message || error);
+    }
+  }, [navigation, picture, caption, selTags]);
+
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleUpload}>
+          <Text>Next</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, handleUpload]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debChange = React.useCallback(debounce(setTagSearch, 500), [
@@ -80,7 +104,7 @@ const UploadPostScreen: React.FC<PropTypes> = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.8,
+      quality: 1,
       base64: true,
     });
 
@@ -94,7 +118,7 @@ const UploadPostScreen: React.FC<PropTypes> = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.8,
+      quality: 1,
       base64: true,
     });
 

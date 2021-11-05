@@ -1,16 +1,11 @@
 import type { QueryFunction } from "react-query";
+import axios from "axios";
 import urls from "../utils/urls";
 import type { ChallengeType } from "../types/Challenge";
 
 export const fetchChallenges: QueryFunction<ChallengeType[], [string]> =
   async (): Promise<ChallengeType[]> => {
-    const response = await fetch(`${urls.api}/challenge`);
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok!");
-    }
-
-    const json = await response.json();
+    const { data: json } = await axios.get(`${urls.api}/challenge`);
 
     return json.challenges;
   };
@@ -19,13 +14,9 @@ export const fetchChallenge: QueryFunction<ChallengeType, [string, string]> =
   async ({ queryKey }): Promise<ChallengeType> => {
     const [_key, challengeId] = queryKey;
 
-    const response = await fetch(`${urls.api}/challenge/${challengeId}`);
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok!");
-    }
-
-    const json = await response.json();
+    const { data: json } = await axios.get(
+      `${urls.api}/challenge/${challengeId}`
+    );
 
     return json.challenge;
   };
@@ -33,19 +24,15 @@ export const fetchChallenge: QueryFunction<ChallengeType, [string, string]> =
 export const createChallenge = async (
   challenge: ChallengeType
 ): Promise<ChallengeType> => {
-  const response = await fetch(`${urls.api}/challenge`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(challenge),
-  });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok!");
-  }
-
-  const json = await response.json();
+  const { data: json } = await axios.post(
+    `${urls.api}/challenge`,
+    JSON.stringify(challenge),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   return json.challenge;
 };
