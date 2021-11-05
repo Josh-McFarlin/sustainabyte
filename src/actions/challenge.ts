@@ -1,9 +1,9 @@
 import type { QueryFunction } from "react-query";
 import urls from "../utils/urls";
-import type { Challenge } from "../types/Challenge";
+import type { ChallengeType } from "../types/Challenge";
 
-export const fetchChallenges: QueryFunction<Challenge[], [string]> =
-  async (): Promise<Challenge[]> => {
+export const fetchChallenges: QueryFunction<ChallengeType[], [string]> =
+  async (): Promise<ChallengeType[]> => {
     const response = await fetch(`${urls.api}/challenge`);
 
     if (!response.ok) {
@@ -15,8 +15,8 @@ export const fetchChallenges: QueryFunction<Challenge[], [string]> =
     return json.challenges;
   };
 
-export const fetchChallenge: QueryFunction<Challenge, [string, string]> =
-  async ({ queryKey }): Promise<Challenge> => {
+export const fetchChallenge: QueryFunction<ChallengeType, [string, string]> =
+  async ({ queryKey }): Promise<ChallengeType> => {
     const [_key, challengeId] = queryKey;
 
     const response = await fetch(`${urls.api}/challenge/${challengeId}`);
@@ -30,7 +30,9 @@ export const fetchChallenge: QueryFunction<Challenge, [string, string]> =
     return json.challenge;
   };
 
-export const createChallenge = async (challenge: Challenge) => {
+export const createChallenge = async (
+  challenge: ChallengeType
+): Promise<ChallengeType> => {
   const response = await fetch(`${urls.api}/challenge`, {
     method: "POST",
     headers: {

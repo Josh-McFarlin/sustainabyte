@@ -1,9 +1,9 @@
 import type { QueryFunction } from "react-query";
 import urls from "../utils/urls";
-import type { Review } from "../types/Review";
+import type { ReviewType } from "../types/Review";
 
-export const fetchReviews: QueryFunction<Review[], [string]> =
-  async (): Promise<Review[]> => {
+export const fetchReviews: QueryFunction<ReviewType[], [string]> =
+  async (): Promise<ReviewType[]> => {
     const response = await fetch(`${urls.api}/review`);
 
     if (!response.ok) {
@@ -15,9 +15,9 @@ export const fetchReviews: QueryFunction<Review[], [string]> =
     return json.reviews;
   };
 
-export const fetchReview: QueryFunction<Review, [string, string]> = async ({
+export const fetchReview: QueryFunction<ReviewType, [string, string]> = async ({
   queryKey,
-}): Promise<Review> => {
+}): Promise<ReviewType> => {
   const [_key, reviewId] = queryKey;
 
   const response = await fetch(`${urls.api}/review/${reviewId}`);
@@ -31,7 +31,7 @@ export const fetchReview: QueryFunction<Review, [string, string]> = async ({
   return json.review;
 };
 
-export const createReview = async (review: Review): Promise<Review> => {
+export const createReview = async (review: ReviewType): Promise<ReviewType> => {
   const response = await fetch(`${urls.api}/review`, {
     method: "POST",
     headers: {

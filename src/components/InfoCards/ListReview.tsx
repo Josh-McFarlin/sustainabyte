@@ -3,15 +3,15 @@ import { StyleSheet, Image, View, Text } from "react-native";
 import dayjs from "dayjs";
 import { useQuery } from "react-query";
 import { fetchUser } from "../../actions/user";
-import { User } from "../../types/User";
-import { Review } from "../../types/Review";
+import { UserType } from "../../types/User";
+import { ReviewType } from "../../types/Review";
 
 type PropTypes = {
-  review: Review;
+  review: ReviewType;
 };
 
 const ListCheckIn: React.FC<PropTypes> = ({ review }) => {
-  const { data: user } = useQuery<User, Error>(
+  const { data: user } = useQuery<UserType, Error>(
     ["user", review.user],
     fetchUser,
     {

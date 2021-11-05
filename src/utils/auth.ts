@@ -8,8 +8,8 @@ import { useQuery } from "react-query";
 import * as SecureStore from "./SecureStore";
 import { v4 as uuid } from "./uuid";
 import type { AuthContextType, Auth0User } from "../types/Auth";
-import { fetchUser } from "../actions/user";
-import { User } from "../types/User";
+import { fetchAuth } from "../actions/auth";
+import { UserType } from "../types/User";
 
 const authStorageKey = "AuthObject";
 const auth0ClientId = "g5aCxDpiXTWG4pqNSNPYyN06KBgw610q";
@@ -52,18 +52,20 @@ const clearAuthObject = (): Promise<void> =>
   SecureStore.deleteItemAsync(authStorageKey);
 
 export const useAuthBase = (): AuthContextType => {
-  const [auth0User, setAuth0User] = React.useState<Auth0User | null>(null);
-  const [addedDB, setAddedDB] = React.useState<boolean>(false);
-  const {
-    data: user,
-    remove,
-    refetch,
-  } = useQuery<User, Error>(["user", auth0User?.sub], fetchUser, {
-    enabled: auth0User?.sub != null && addedDB,
-    initialData: null,
-  });
-  const [isInitializing, setIsInitializing] = React.useState<boolean>(true);
   const nonce = React.useRef<string>(uuid().replace(/-/g, ""));
+  const [auth0User, setAuth0User] = React.useState<Auth0User | null>(null);
+  const [isInitializing, setIsInitializing] = React.useState<boolean>(true);
+  const { data: user, remove } = useQuery<UserType, Error>(
+    ["user", auth0User?.sub],
+    fetchAuth,
+    {
+      enabled: auth0User?.sub != null,
+      initialData: null,
+      onSuccess: () => {
+        setIsInitializing(false);
+      },
+    }
+  );
 
   const [request, result, promptAsync] = AuthSession.useAuthRequest(
     {
@@ -115,40 +117,19 @@ export const useAuthBase = (): AuthContextType => {
     }
   }, [result]);
 
-  React.useEffect(() => {
-    if ((window as any).server && auth0User != null) {
-      (window as any).server.create("user", {
-        id: auth0User.sub,
-        name: auth0User.username || auth0User.nickname,
-        email: auth0User.email,
-        username: auth0User.username || auth0User.nickname,
-        avatarUrl: auth0User.picture,
-        score: 0,
-        locations: [],
-        groups: [],
-      });
-
-      setAddedDB(true);
-      refetch().then(() => {
-        setIsInitializing(false);
-      });
-    }
-  }, [refetch, auth0User]);
-
   const login = React.useCallback(
     async (): Promise<AuthSession.AuthSessionResult> =>
       promptAsync({ useProxy }),
     [promptAsync]
   );
 
-  const logout = React.useCallback(() => {
+  const logout = React.useCallback(async () => {
     setAuth0User(null);
-    clearAuthObject();
+    await clearAuthObject();
     remove();
   }, [remove]);
 
   // console.log({
-  //   addedDB,
   //   auth0User,
   //   user,
   //   isInitializing,

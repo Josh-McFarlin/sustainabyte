@@ -1,12 +1,12 @@
 import type { QueryFunction } from "react-query";
 import urls from "../utils/urls";
-import type { SocialGroup } from "../types/SocialGroup";
-import type { Coordinates } from "../types/Location";
+import type { SocialGroupType } from "../types/SocialGroup";
+import type { CoordinatesType } from "../types/Location";
 
 export const fetchSocialGroups: QueryFunction<
-  SocialGroup[],
-  [string, Coordinates]
-> = async ({ queryKey }): Promise<SocialGroup[]> => {
+  SocialGroupType[],
+  [string, CoordinatesType]
+> = async ({ queryKey }): Promise<SocialGroupType[]> => {
   const [_key] = queryKey;
 
   const response = await fetch(`${urls.api}/socialGroup`);
@@ -20,24 +20,26 @@ export const fetchSocialGroups: QueryFunction<
   return json.socialGroups;
 };
 
-export const fetchSocialGroup: QueryFunction<SocialGroup, [string, string]> =
-  async ({ queryKey }): Promise<SocialGroup> => {
-    const [_key, socialGroupId] = queryKey;
+export const fetchSocialGroup: QueryFunction<
+  SocialGroupType,
+  [string, string]
+> = async ({ queryKey }): Promise<SocialGroupType> => {
+  const [_key, socialGroupId] = queryKey;
 
-    const response = await fetch(`${urls.api}/socialGroup/${socialGroupId}`);
+  const response = await fetch(`${urls.api}/socialGroup/${socialGroupId}`);
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok!");
-    }
+  if (!response.ok) {
+    throw new Error("Network response was not ok!");
+  }
 
-    const json = await response.json();
+  const json = await response.json();
 
-    return json.socialGroup;
-  };
+  return json.socialGroup;
+};
 
 export const createSocialGroup = async (
-  socialGroup: SocialGroup
-): Promise<SocialGroup> => {
+  socialGroup: SocialGroupType
+): Promise<SocialGroupType> => {
   const response = await fetch(`${urls.api}/socialGroup`, {
     method: "POST",
     headers: {

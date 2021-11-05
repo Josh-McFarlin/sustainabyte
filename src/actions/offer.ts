@@ -1,28 +1,30 @@
 import type { QueryFunction } from "react-query";
 import urls from "../utils/urls";
-import type { Offer } from "../types/Offer";
-import type { Coordinates } from "../types/Location";
+import type { OfferType } from "../types/Offer";
+import type { CoordinatesType } from "../types/Location";
 
-export const fetchOffers: QueryFunction<Offer[], [string, Coordinates]> =
-  async ({ queryKey }): Promise<Offer[]> => {
-    const [_key, coordinates] = queryKey;
+export const fetchOffers: QueryFunction<
+  OfferType[],
+  [string, CoordinatesType]
+> = async ({ queryKey }): Promise<OfferType[]> => {
+  const [_key, coordinates] = queryKey;
 
-    const response = await fetch(
-      `${urls.api}/offer?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}`
-    );
+  const response = await fetch(
+    `${urls.api}/offer?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}`
+  );
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok!");
-    }
+  if (!response.ok) {
+    throw new Error("Network response was not ok!");
+  }
 
-    const json = await response.json();
+  const json = await response.json();
 
-    return json.offers;
-  };
+  return json.offers;
+};
 
-export const fetchOffer: QueryFunction<Offer, [string, string]> = async ({
+export const fetchOffer: QueryFunction<OfferType, [string, string]> = async ({
   queryKey,
-}): Promise<Offer> => {
+}): Promise<OfferType> => {
   const [_key, offerId] = queryKey;
 
   const response = await fetch(`${urls.api}/offer/${offerId}`);
@@ -36,7 +38,7 @@ export const fetchOffer: QueryFunction<Offer, [string, string]> = async ({
   return json.offer;
 };
 
-export const createOffer = async (offer: Offer) => {
+export const createOffer = async (offer: OfferType): Promise<OfferType> => {
   const response = await fetch(`${urls.api}/offer`, {
     method: "POST",
     headers: {

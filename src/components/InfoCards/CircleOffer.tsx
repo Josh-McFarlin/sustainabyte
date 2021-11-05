@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View, StyleSheet, Image } from "react-native";
-import type { Offer } from "../../types/Offer";
+import type { OfferType } from "../../types/Offer";
 
 /**
  * This code is an updated version of the React Native Percentage Circle
@@ -11,7 +11,7 @@ import type { Offer } from "../../types/Offer";
  */
 
 type PropTypes = {
-  offer: Offer;
+  offer: OfferType;
 };
 
 const radius = 40;

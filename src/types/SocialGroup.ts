@@ -1,12 +1,14 @@
-import type { User } from "./User";
-import type { Review } from "./Review";
+import type { UserType } from "./User";
+import type { ReviewType } from "./Review";
 
-export interface SocialGroup {
+export interface SocialGroupType {
   id: string;
-  createdAt: number;
   name: string;
   description: string;
-  icon: string;
-  members: User["id"][];
-  reviews: Review[];
+  tags: string[];
+  iconUrl: string;
+  owner: UserType["id"];
+  members: UserType["id"][];
+  reviews: ReviewType["id"][];
+  createdAt: Date;
 }

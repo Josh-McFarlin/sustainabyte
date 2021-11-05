@@ -7,10 +7,10 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import type { Offer } from "../../types/Offer";
+import type { OfferType } from "../../types/Offer";
 
 type PropTypes = {
-  offer: Offer;
+  offer: OfferType;
   onPress: () => void;
 };
 

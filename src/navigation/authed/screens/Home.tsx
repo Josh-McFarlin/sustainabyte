@@ -5,7 +5,6 @@ import {
   FlatList,
   TouchableOpacity,
   SafeAreaView,
-  SectionList,
   View,
   Image,
   ScrollView,
@@ -16,14 +15,14 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import type { TabNavParamList } from "../types";
-import { Restaurant } from "../../../types/Restaurant";
+import { RestaurantType } from "../../../types/Restaurant";
 import {
   GalleryRestaurant,
   CircleOffer,
   GallerySocialGroup,
 } from "../../../components/InfoCards";
-import type { Offer } from "../../../types/Offer";
-import type { SocialGroup } from "../../../types/SocialGroup";
+import type { OfferType } from "../../../types/Offer";
+import type { SocialGroupType } from "../../../types/SocialGroup";
 import { fetchOffers } from "../../../actions/offer";
 import { fetchSocialGroups } from "../../../actions/socialGroup";
 import { useAuth } from "../../../utils/auth";
@@ -71,7 +70,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
   const coordinates = useLocation();
   const [selOffer, setSelOffer] = React.useState<number | null>(null);
 
-  const { data: offers } = useQuery<Offer[], Error>(
+  const { data: offers } = useQuery<OfferType[], Error>(
     ["offers", coordinates],
     fetchOffers,
     {
@@ -79,7 +78,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
       initialData: [],
     }
   );
-  const { data: restaurants } = useQuery<Restaurant[], Error>(
+  const { data: restaurants } = useQuery<RestaurantType[], Error>(
     ["restaurants", coordinates],
     fetchRestaurants,
     {
@@ -87,7 +86,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
       initialData: [],
     }
   );
-  const { data: socialGroups } = useQuery<SocialGroup[], Error>(
+  const { data: socialGroups } = useQuery<SocialGroupType[], Error>(
     ["socialGroups"],
     fetchSocialGroups,
     {
@@ -199,7 +198,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
                 <Text style={styles.subtitle}>{section.subtitle}</Text>
               )}
             </View>
-            <FlatList<Restaurant | Offer | SocialGroup>
+            <FlatList<RestaurantType | OfferType | SocialGroupType>
               style={styles.singleList}
               data={section.data}
               horizontal={section.horizontal}
@@ -226,7 +225,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
                           style={
                             section.horizontal ? styles.hRest : styles.vRest
                           }
-                          restaurant={item as Restaurant}
+                          restaurant={item as RestaurantType}
                         />
                       </TouchableOpacity>
                     );
@@ -234,14 +233,14 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
                   case SectionType.GALLERY_SOCIAL_GROUP: {
                     return (
                       <TouchableOpacity>
-                        <GallerySocialGroup group={item as SocialGroup} />
+                        <GallerySocialGroup group={item as SocialGroupType} />
                       </TouchableOpacity>
                     );
                   }
                   case SectionType.CIRCLE_OFFER: {
                     return (
                       <TouchableOpacity onPress={() => setSelOffer(index)}>
-                        <CircleOffer offer={item as Offer} />
+                        <CircleOffer offer={item as OfferType} />
                       </TouchableOpacity>
                     );
                   }

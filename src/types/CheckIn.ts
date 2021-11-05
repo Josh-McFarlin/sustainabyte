@@ -1,10 +1,10 @@
-import type { Restaurant } from "./Restaurant";
-import type { User } from "./User";
+import type { RestaurantType } from "./Restaurant";
+import type { UserType } from "./User";
 
-export interface CheckIn {
+export interface CheckInType {
   id: string;
-  user: User["id"];
-  restaurant: Restaurant["id"];
+  user: UserType["id"];
+  restaurant: RestaurantType["id"];
+  withUsers: UserType["id"][];
   createdAt: number;
-  withUsers: User["id"][];
 }

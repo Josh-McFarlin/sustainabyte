@@ -1,24 +1,23 @@
 import type { QueryFunction } from "react-query";
 import urls from "../utils/urls";
-import type { User } from "../types/User";
+import type { UserType } from "../types/User";
 
-export const fetchUsers: QueryFunction<User[], [string]> = async (): Promise<
-  User[]
-> => {
-  const response = await fetch(`${urls.api}/user`);
+export const fetchUsers: QueryFunction<UserType[], [string]> =
+  async (): Promise<UserType[]> => {
+    const response = await fetch(`${urls.api}/user`);
 
-  if (!response.ok) {
-    throw new Error("Network response was not ok!");
-  }
+    if (!response.ok) {
+      throw new Error("Network response was not ok!");
+    }
 
-  const json = await response.json();
+    const json = await response.json();
 
-  return json.users;
-};
+    return json.users;
+  };
 
-export const fetchUser: QueryFunction<User, [string, string]> = async ({
+export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
   queryKey,
-}): Promise<User> => {
+}): Promise<UserType> => {
   const [_key, userId] = queryKey;
 
   const response = await fetch(`${urls.api}/user/${userId}`);
@@ -32,7 +31,7 @@ export const fetchUser: QueryFunction<User, [string, string]> = async ({
   return json.user;
 };
 
-export const updateUser = async (user: User): Promise<User> => {
+export const updateUser = async (user: UserType): Promise<UserType> => {
   const response = await fetch(`${urls.api}/user/${user.id}`, {
     method: "PUT",
     headers: {

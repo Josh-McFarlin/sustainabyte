@@ -2,14 +2,14 @@ import * as React from "react";
 import { StyleSheet, View, Text, ListRenderItem } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { ListReview } from "../InfoCards";
-import type { Review } from "../../types/Review";
-import { Restaurant } from "../../types/Restaurant";
+import type { ReviewType } from "../../types/Review";
+import { RestaurantType } from "../../types/Restaurant";
 
 type PropTypes = {
-  restaurant: Restaurant;
+  restaurant: RestaurantType;
 };
 
-export const renderItem: ListRenderItem<Review> = ({ item }) => (
+export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
   <ListReview review={item} />
 );
 

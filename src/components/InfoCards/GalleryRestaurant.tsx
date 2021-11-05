@@ -2,12 +2,12 @@
 import * as React from "react";
 import { View, Image, StyleSheet, Text, ViewStyle } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import type { Restaurant } from "../../types/Restaurant";
+import type { RestaurantType } from "../../types/Restaurant";
 
 type PropTypes = {
   // eslint-disable-next-line react/require-default-props
   style?: ViewStyle;
-  restaurant: Restaurant;
+  restaurant: RestaurantType;
 };
 
 const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {

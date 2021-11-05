@@ -2,25 +2,25 @@ import * as React from "react";
 import { StyleSheet, Image, View, Text } from "react-native";
 import dayjs from "dayjs";
 import { QueryObserverResult, useQueries, useQuery } from "react-query";
-import type { CheckIn } from "../../types/CheckIn";
+import type { CheckInType } from "../../types/CheckIn";
 import { fetchUser } from "../../actions/user";
-import { Restaurant } from "../../types/Restaurant";
+import { RestaurantType } from "../../types/Restaurant";
 import { fetchRestaurant } from "../../actions/restaurant";
-import { User } from "../../types/User";
+import { UserType } from "../../types/User";
 
 type PropTypes = {
-  checkIn: CheckIn;
+  checkIn: CheckInType;
 };
 
 const ListCheckIn: React.FC<PropTypes> = ({ checkIn }) => {
-  const { data: restaurant } = useQuery<Restaurant, Error>(
+  const { data: restaurant } = useQuery<RestaurantType, Error>(
     ["restaurant", checkIn?.restaurant],
     fetchRestaurant,
     {
       enabled: checkIn?.restaurant != null,
     }
   );
-  const userQueries: QueryObserverResult<User, Error>[] = useQueries(
+  const userQueries: QueryObserverResult<UserType, Error>[] = useQueries(
     checkIn?.withUsers?.map((user) => ({
       queryKey: ["user", user],
       queryFn: fetchUser,

@@ -1,12 +1,13 @@
-import type { User } from "./User";
+import type { UserType } from "./User";
 
-export interface Challenge {
+export interface ChallengeType {
   id: string;
-  title: string;
-  body: string;
-  icon: string;
-  createdAt: number;
-  expiresAt: number;
+  owner: UserType["id"];
+  name: string;
+  body?: string;
+  iconUrl: string;
   score: number;
-  completedBy: User["id"][];
+  completedBy: UserType["id"][];
+  createdAt: Date;
+  expiresAt: Date;
 }

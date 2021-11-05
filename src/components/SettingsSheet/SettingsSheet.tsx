@@ -1,11 +1,5 @@
 import * as React from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  TouchableHighlight,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableHighlight } from "react-native";
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetBackdrop,

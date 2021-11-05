@@ -18,8 +18,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import type { TabNavParamList } from "../types";
 import { fetchUsers } from "../../../actions/user";
 import { fetchChallenges } from "../../../actions/challenge";
-import type { User } from "../../../types/User";
-import type { Challenge } from "../../../types/Challenge";
+import type { UserType } from "../../../types/User";
+import type { ChallengeType } from "../../../types/Challenge";
 
 dayjs.extend(relativeTime);
 
@@ -51,10 +51,10 @@ const badges = [
 
 const LeaderboardScreen: React.FC<PropTypes> = () => {
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.LEADERBOARD);
-  const { data: users } = useQuery<User[], Error>(["users"], fetchUsers, {
+  const { data: users } = useQuery<UserType[], Error>(["users"], fetchUsers, {
     initialData: [],
   });
-  const { data: challenges } = useQuery<Challenge[], Error>(
+  const { data: challenges } = useQuery<ChallengeType[], Error>(
     ["challenges"],
     fetchChallenges,
     {
@@ -203,7 +203,7 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
             </View>
           </TouchableOpacity>
         ),
-        renderItem: ({ item }: { item: Challenge }) => (
+        renderItem: ({ item }: { item: ChallengeType }) => (
           <View style={styles.listItem}>
             <ImageBackground
               style={styles.hexagon}

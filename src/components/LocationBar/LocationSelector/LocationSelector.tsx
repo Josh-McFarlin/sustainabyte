@@ -10,11 +10,11 @@ import {
 import { FontAwesome5 } from "@expo/vector-icons";
 import LocationCreator from "../LocationCreator";
 import { useAuth } from "../../../utils/auth";
-import type { Location } from "../../../types/Location";
+import type { LocationType } from "../../../types/Location";
 
 type PropTypes = {
   open: boolean;
-  onSelect: (location: Location) => void;
+  onSelect: (location: LocationType) => void;
   onClose: () => void;
 };
 

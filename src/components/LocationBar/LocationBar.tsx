@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import LocationSelector from "./LocationSelector";
 import { useAuth } from "../../utils/auth";
-import type { Location } from "../../types/Location";
+import type { LocationType } from "../../types/Location";
 
 const LocationBar: React.FC = () => {
   const { user } = useAuth();
@@ -11,7 +11,7 @@ const LocationBar: React.FC = () => {
   const [locOpen, setLocOpen] = React.useState<boolean>(false);
   const openLoc = React.useCallback(() => setLocOpen(true), [setLocOpen]);
   const closeLoc = React.useCallback(() => setLocOpen(false), [setLocOpen]);
-  const setLoc = (location: Location) => {
+  const setLoc = (location: LocationType) => {
     console.log("New loc:", location);
   };
 

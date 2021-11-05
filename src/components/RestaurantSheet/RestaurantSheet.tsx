@@ -2,10 +2,10 @@ import * as React from "react";
 import { StyleSheet } from "react-native";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import SheetContents from "./SheetContents";
-import { Restaurant } from "../../types/Restaurant";
+import { RestaurantType } from "../../types/Restaurant";
 
 interface PropTypes {
-  restaurant: Restaurant | null;
+  restaurant: RestaurantType | null;
 }
 
 const RestaurantSheet = React.forwardRef<BottomSheet, PropTypes>(

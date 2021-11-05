@@ -8,14 +8,15 @@ import {
   Alert,
 } from "react-native";
 import { lookupAddress } from "../../../utils/location";
-import type { Address } from "../../../types/Location";
+import type { AddressType } from "../../../types/Location";
 
 const LocationCreator: React.FC = () => {
-  const [street, setStreet] = React.useState<Address["street"]>("");
-  const [city, setCity] = React.useState<Address["city"]>("");
-  const [state, setState] = React.useState<Address["state"]>("");
-  const [country, setCountry] = React.useState<Address["country"]>("");
-  const [zipCode, setZipCode] = React.useState<Address["zipCode"]>(undefined);
+  const [street, setStreet] = React.useState<AddressType["street"]>("");
+  const [city, setCity] = React.useState<AddressType["city"]>("");
+  const [state, setState] = React.useState<AddressType["state"]>("");
+  const [country, setCountry] = React.useState<AddressType["country"]>("");
+  const [zipCode, setZipCode] =
+    React.useState<AddressType["zipCode"]>(undefined);
 
   const handleCreate = React.useCallback(async () => {
     console.log("Pressed create");

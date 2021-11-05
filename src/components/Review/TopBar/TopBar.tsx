@@ -1,10 +1,9 @@
 import * as React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
-import type { User } from "../../../types/User";
+import type { UserType } from "../../../types/User";
 
 type PropTypes = {
-  user: User;
+  user: UserType;
 };
 
 const TopBar: React.FC<PropTypes> = ({ user }) => {

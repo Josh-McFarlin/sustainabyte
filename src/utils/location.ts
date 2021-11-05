@@ -8,9 +8,9 @@ import {
   watchPositionAsync,
   LocationOptions,
 } from "expo-location";
-import { Address, Coordinates, Location } from "../types/Location";
+import { AddressType, CoordinatesType, LocationType } from "../types/Location";
 
-const formatAddress = (address: Address): string => {
+const formatAddress = (address: AddressType): string => {
   if (address == null) {
     throw new Error("Invalid address!");
   }
@@ -18,7 +18,9 @@ const formatAddress = (address: Address): string => {
   return `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`;
 };
 
-export const lookupAddress = async (address: Address): Promise<Location> => {
+export const lookupAddress = async (
+  address: AddressType
+): Promise<LocationType> => {
   try {
     const formatted = formatAddress(address);
     const results = await geocodeAsync(formatted);
@@ -39,8 +41,8 @@ export const lookupAddress = async (address: Address): Promise<Location> => {
   }
 };
 
-export const useLocation = (): Coordinates => {
-  const [coordinates, setCoordinates] = React.useState<Coordinates | null>({
+export const useLocation = (): CoordinatesType => {
+  const [coordinates, setCoordinates] = React.useState<CoordinatesType | null>({
     latitude: 33.7695028,
     longitude: -84.385734,
   });
@@ -72,8 +74,8 @@ export const useCurrentLocation = (
     timeInterval: 60000,
     distanceInterval: 200,
   }
-): Coordinates => {
-  const [coordinates, setCoordinates] = React.useState<Coordinates | null>({
+): CoordinatesType => {
+  const [coordinates, setCoordinates] = React.useState<CoordinatesType | null>({
     latitude: 33.7695028,
     longitude: -84.385734,
   });

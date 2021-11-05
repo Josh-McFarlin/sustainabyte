@@ -7,7 +7,7 @@ import {
   SectionListRenderItem,
 } from "react-native";
 import { ListCheckIn } from "../InfoCards";
-import { CheckIn } from "../../types/CheckIn";
+import { CheckInType } from "../../types/CheckIn";
 
 // const sections = React.useMemo<SectionListData<CheckIn>[]>(() => {
 //   const result = new Map<
@@ -34,14 +34,14 @@ import { CheckIn } from "../../types/CheckIn";
 //   return [...result.values()];
 // }, [checkIns]);
 
-export const renderItem: ListRenderItem<CheckIn> = ({ item }) => (
+export const renderItem: ListRenderItem<CheckInType> = ({ item }) => (
   <View style={styles.item}>
     <View style={styles.line} />
     <ListCheckIn checkIn={item} />
   </View>
 );
 
-export const renderSectionHeader: SectionListRenderItem<CheckIn> = ({
+export const renderSectionHeader: SectionListRenderItem<CheckInType> = ({
   section: { title },
 }) => (
   <View style={styles.header}>

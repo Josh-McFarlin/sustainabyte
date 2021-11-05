@@ -2,10 +2,10 @@
 import * as React from "react";
 import { View, Image, StyleSheet, Text } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import type { Restaurant } from "../../types/Restaurant";
+import type { RestaurantType } from "../../types/Restaurant";
 
 type PropTypes = {
-  restaurant: Restaurant;
+  restaurant: RestaurantType;
 };
 
 const ListRestaurant: React.FC<PropTypes> = ({ restaurant }) => {

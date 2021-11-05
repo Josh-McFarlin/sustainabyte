@@ -1,11 +1,13 @@
-import type { User } from "./User";
-import type { Restaurant } from "./Restaurant";
+import type { UserType } from "./User";
+import type { RestaurantType } from "./Restaurant";
 
-export interface Post {
+export interface PostType {
   id: string;
-  user: User["id"];
-  restaurant: Restaurant["id"];
-  createdAt: number;
+  user?: UserType["id"];
+  restaurant?: RestaurantType["id"];
+  ownerType: "User" | "Restaurant";
   body: string;
-  pictures: string[];
+  photoUrls: string[];
+  tags: string[];
+  createdAt: Date;
 }

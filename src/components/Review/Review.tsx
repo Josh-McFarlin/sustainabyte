@@ -14,12 +14,12 @@ import TopBar from "./TopBar";
 import PhotoGallery from "./PhotoGallery";
 import { fetchUser } from "../../actions/user";
 import { fetchRestaurant } from "../../actions/restaurant";
-import type { User } from "../../types/User";
-import type { Review } from "../../types/Review";
-import { Restaurant } from "../../types/Restaurant";
+import type { UserType } from "../../types/User";
+import type { ReviewType } from "../../types/Review";
+import { RestaurantType } from "../../types/Restaurant";
 
 type PropTypes = {
-  review: Review;
+  review: ReviewType;
 };
 
 const crownColor = (selected: boolean) => (selected ? "#d7bd38" : "#b4b4b4");
@@ -36,8 +36,8 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
     createdAt,
     tags,
   } = review;
-  const { data: user } = useQuery<User, Error>(["user", userId], fetchUser);
-  const { data: restaurant } = useQuery<Restaurant, Error>(
+  const { data: user } = useQuery<UserType, Error>(["user", userId], fetchUser);
+  const { data: restaurant } = useQuery<RestaurantType, Error>(
     ["restaurant", restaurantId],
     fetchRestaurant
   );

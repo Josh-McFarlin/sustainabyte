@@ -1,10 +1,10 @@
 import type { QueryFunction } from "react-query";
 import urls from "../utils/urls";
-import type { Offer } from "../types/Offer";
+import type { UserType } from "../types/User";
 
-export const fetchAuth: QueryFunction<Offer, [string, string]> = async ({
+export const fetchAuth: QueryFunction<UserType, [string, string]> = async ({
   queryKey,
-}): Promise<Offer> => {
+}): Promise<UserType> => {
   const [_key, id] = queryKey;
 
   const response = await fetch(`${urls.api}/auth/${id}?type=USER`);
@@ -15,5 +15,5 @@ export const fetchAuth: QueryFunction<Offer, [string, string]> = async ({
 
   const json = await response.json();
 
-  return json.offer;
+  return json.auth;
 };

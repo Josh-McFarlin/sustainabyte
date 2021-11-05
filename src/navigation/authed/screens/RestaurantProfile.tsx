@@ -18,16 +18,16 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
-import { Review } from "../../../types/Review";
+import { ReviewType } from "../../../types/Review";
 import { fetchReviews } from "../../../actions/review";
-import { CheckIn } from "../../../types/CheckIn";
+import { CheckInType } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
 import { TabNavParamList } from "../types";
 import { fetchRestaurant } from "../../../actions/restaurant";
-import { Restaurant } from "../../../types/Restaurant";
+import { RestaurantType } from "../../../types/Restaurant";
 import OffersModal from "../../../components/OffersModal";
-import { Offer } from "../../../types/Offer";
+import { OfferType } from "../../../types/Offer";
 import { fetchOffers } from "../../../actions/offer";
 import { CircleOffer } from "../../../components/InfoCards";
 import { getOpenStatus, formatOpenHours } from "../../../utils/date";
@@ -49,11 +49,11 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
 
-  const { data: restaurant } = useQuery<Restaurant, Error>(
+  const { data: restaurant } = useQuery<RestaurantType, Error>(
     ["restaurant", id],
     fetchRestaurant
   );
-  const { data: offers } = useQuery<Offer[], Error>(
+  const { data: offers } = useQuery<OfferType[], Error>(
     ["offers", [0, 0]],
     fetchOffers,
     {
@@ -61,7 +61,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       initialData: [],
     }
   );
-  const { data: reviews } = useQuery<Review[], Error>(
+  const { data: reviews } = useQuery<ReviewType[], Error>(
     ["reviews"],
     fetchReviews,
     {
@@ -69,7 +69,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       initialData: [],
     }
   );
-  const { data: checkIns } = useQuery<CheckIn[], Error>(
+  const { data: checkIns } = useQuery<CheckInType[], Error>(
     ["checkIns"],
     fetchCheckIns,
     {
@@ -160,7 +160,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FlatList<Review | CheckIn>
+      <FlatList<ReviewType | CheckInType>
         style={styles.container}
         data={data}
         keyExtractor={(i) => i.id}

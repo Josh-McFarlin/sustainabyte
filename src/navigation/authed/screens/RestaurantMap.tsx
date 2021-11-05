@@ -13,8 +13,8 @@ import { useLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import RestaurantSheet from "../../../components/RestaurantSheet";
 import { TabNavParamList } from "../types";
-import { Restaurant } from "../../../types/Restaurant";
-import type { Coordinates } from "../../../types/Location";
+import { RestaurantType } from "../../../types/Restaurant";
+import type { CoordinatesType } from "../../../types/Location";
 import { mapStyle } from "../../../utils/map";
 import SearchBar from "../../../components/SearchBar";
 
@@ -29,15 +29,17 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
     latitudeDelta: 0.04,
     longitudeDelta: 0.05,
   });
-  const [searchRegion, setSearchRegion] = React.useState<Coordinates>({
+  const [searchRegion, setSearchRegion] = React.useState<CoordinatesType>({
     latitude: mapRegion.latitude,
     longitude: mapRegion.longitude,
   });
-  const [selectedRest, setRestaurant] = React.useState<Restaurant | null>(null);
+  const [selectedRest, setRestaurant] = React.useState<RestaurantType | null>(
+    null
+  );
   const sheetRef = React.useRef<BottomSheet>(null);
   const mapRef = React.useRef<MapView>(null);
 
-  const { data: restaurants, refetch } = useQuery<Restaurant[], Error>(
+  const { data: restaurants, refetch } = useQuery<RestaurantType[], Error>(
     ["restaurants", searchRegion],
     fetchRestaurants,
     {

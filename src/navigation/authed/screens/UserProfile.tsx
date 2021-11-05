@@ -15,13 +15,13 @@ import { useQuery } from "react-query";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
 import type { TabNavParamList } from "../types";
-import { Review } from "../../../types/Review";
+import { ReviewType } from "../../../types/Review";
 import { fetchReviews } from "../../../actions/review";
-import { CheckIn } from "../../../types/CheckIn";
+import { CheckInType } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
 import { fetchUser } from "../../../actions/user";
-import { User } from "../../../types/User";
+import { UserType } from "../../../types/User";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
@@ -33,17 +33,17 @@ enum TabTypes {
 
 const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { id, isOwnProfile, isFollowing } = route.params;
-  const { data: user } = useQuery<User, Error>(["user", id], fetchUser);
+  const { data: user } = useQuery<UserType, Error>(["user", id], fetchUser);
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
-  const { data: reviews } = useQuery<Review[], Error>(
+  const { data: reviews } = useQuery<ReviewType[], Error>(
     ["reviews"],
     fetchReviews,
     {
       initialData: [],
     }
   );
-  const { data: checkIns } = useQuery<CheckIn[], Error>(
+  const { data: checkIns } = useQuery<CheckInType[], Error>(
     ["checkIns"],
     fetchCheckIns,
     {
@@ -101,7 +101,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList<Review | CheckIn>
+      <FlatList<ReviewType | CheckInType>
         style={styles.container}
         data={data}
         keyExtractor={(i) => i.id}

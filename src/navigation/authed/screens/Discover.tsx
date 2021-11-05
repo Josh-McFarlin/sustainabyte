@@ -20,9 +20,9 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import SingleReview from "../../../components/Review";
 import type { TabNavParamList } from "../types";
 import { fetchReviews } from "../../../actions/review";
-import type { Review } from "../../../types/Review";
+import type { ReviewType } from "../../../types/Review";
 import SearchBar from "../../../components/SearchBar";
-import { Restaurant } from "../../../types/Restaurant";
+import { RestaurantType } from "../../../types/Restaurant";
 import { useLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import RestaurantSheet from "../../../components/RestaurantSheet";
@@ -43,21 +43,23 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
   const mapRef = React.useRef<MapView>(null);
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.RECENT);
   const [wasMoved, setWasMoved] = React.useState<boolean>(false);
-  const [selectedRest, setRestaurant] = React.useState<Restaurant | null>(null);
+  const [selectedRest, setRestaurant] = React.useState<RestaurantType | null>(
+    null
+  );
   const [searchRegion, setSearchRegion] = React.useState<Region>({
     latitude: coordinates.latitude,
     longitude: coordinates.longitude,
     latitudeDelta: 0.04,
     longitudeDelta: 0.05,
   });
-  const { data: reviews } = useQuery<Review[], Error>(
+  const { data: reviews } = useQuery<ReviewType[], Error>(
     ["reviews"],
     fetchReviews,
     {
       initialData: [],
     }
   );
-  const { data: restaurants } = useQuery<Restaurant[], Error>(
+  const { data: restaurants } = useQuery<RestaurantType[], Error>(
     ["restaurants", searchRegion],
     fetchRestaurants,
     {

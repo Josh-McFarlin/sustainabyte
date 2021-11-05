@@ -1,4 +1,4 @@
-export interface Address {
+export interface AddressType {
   street: string;
   city: string;
   state: string;
@@ -6,12 +6,12 @@ export interface Address {
   country: string;
 }
 
-export interface Coordinates {
+export interface CoordinatesType {
   latitude: number;
   longitude: number;
 }
 
-export interface Location {
-  address: Address;
-  coordinates: Coordinates;
+export interface LocationType {
+  address: AddressType;
+  coordinates: CoordinatesType;
 }

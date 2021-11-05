@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Image, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { Restaurant } from "../../types/Restaurant";
+import { RestaurantType } from "../../types/Restaurant";
 
 interface PropTypes {
-  restaurant: Restaurant;
+  restaurant: RestaurantType;
 }
 
 const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {

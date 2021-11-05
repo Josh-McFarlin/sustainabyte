@@ -15,15 +15,15 @@ import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import type { Offer } from "../../types/Offer";
+import type { OfferType } from "../../types/Offer";
 import { AuthNavigationProp } from "../../navigation/authed/types";
-import { Restaurant } from "../../types/Restaurant";
+import { RestaurantType } from "../../types/Restaurant";
 import { fetchRestaurant } from "../../actions/restaurant";
 
 dayjs.extend(relativeTime);
 
 type PropTypes = {
-  offer: Offer | null;
+  offer: OfferType | null;
   goForward: () => void;
   goBack: () => void;
   handleClose: () => void;
@@ -36,7 +36,7 @@ const OffersModal: React.FC<PropTypes> = ({
   handleClose,
 }) => {
   const navigation = useNavigation<AuthNavigationProp>();
-  const { data: restaurant } = useQuery<Restaurant, Error>(
+  const { data: restaurant } = useQuery<RestaurantType, Error>(
     ["restaurant", offer?.restaurant],
     fetchRestaurant,
     {

@@ -1,12 +1,12 @@
 import type { QueryFunction } from "react-query";
 import urls from "../utils/urls";
-import type { Restaurant } from "../types/Restaurant";
-import type { Coordinates } from "../types/Location";
+import type { RestaurantType } from "../types/Restaurant";
+import type { CoordinatesType } from "../types/Location";
 
 export const fetchRestaurants: QueryFunction<
-  Restaurant[],
-  [string, Coordinates]
-> = async ({ queryKey }): Promise<Restaurant[]> => {
+  RestaurantType[],
+  [string, CoordinatesType]
+> = async ({ queryKey }): Promise<RestaurantType[]> => {
   const [_key, coordinates] = queryKey;
 
   const response = await fetch(
@@ -22,8 +22,8 @@ export const fetchRestaurants: QueryFunction<
   return json.restaurants;
 };
 
-export const fetchRestaurant: QueryFunction<Restaurant, [string, string]> =
-  async ({ queryKey }): Promise<Restaurant> => {
+export const fetchRestaurant: QueryFunction<RestaurantType, [string, string]> =
+  async ({ queryKey }): Promise<RestaurantType> => {
     const [_key, restaurantId] = queryKey;
 
     const response = await fetch(`${urls.api}/restaurant/${restaurantId}`);
@@ -37,7 +37,9 @@ export const fetchRestaurant: QueryFunction<Restaurant, [string, string]> =
     return json.restaurant;
   };
 
-export const updateRestaurant = async (restaurant: Restaurant) => {
+export const updateRestaurant = async (
+  restaurant: RestaurantType
+): Promise<RestaurantType> => {
   const response = await fetch(`${urls.api}/restaurant/${restaurant.id}`, {
     method: "PUT",
     headers: {

@@ -1,13 +1,17 @@
-import type { Location } from "./Location";
-import type { SocialGroup } from "./SocialGroup";
+import type { LocationType } from "./Location";
+import type { SocialGroupType } from "./SocialGroup";
 
-export interface User {
+export interface UserType {
   id: string;
+  auth0Id: string;
   name: string;
   email: string;
   username: string;
   avatarUrl: string;
   score: number;
-  locations: Location[];
-  groups: SocialGroup[];
+  locations: LocationType[];
+  groups: SocialGroupType["id"][];
+  followers: UserType["id"][];
+  following: UserType["id"][];
+  createdAt: Date;
 }

@@ -1,19 +1,12 @@
 import * as React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigationProp } from "../../navigation/authed/types";
-import { Restaurant } from "../../types/Restaurant";
+import { RestaurantType } from "../../types/Restaurant";
 
 type PropTypes = {
-  restaurant: Restaurant;
+  restaurant: RestaurantType;
   open: boolean;
   handleClose: () => void;
 };

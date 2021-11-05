@@ -1,9 +1,6 @@
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "react-query";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { persistQueryClient } from "react-query/persistQueryClient-experimental";
-// import { createAsyncStoragePersistor } from "react-query/createAsyncStoragePersistor-experimental";
 import { SingletonHooksContainer } from "react-singleton-hook";
 import { StatusBar } from "expo-status-bar";
 import { Asset } from "expo-asset";
@@ -19,19 +16,11 @@ import {
 import AuthedNavigator from "./src/navigation/authed";
 import UnauthedNavigator from "./src/navigation/unauthed";
 import { useAuth } from "./src/utils/auth";
-import runServer from "./src/utils/mockServer";
-
-// if (process.env.NODE_ENV === "development") {
-runServer();
-// }
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       keepPreviousData: true,
-      // staleTime: 300000, // 5 minutes
-      // staleTime: 10000, // 10 seconds
-      // cacheTime: 1000 * 60 * 60 * 24, // 24 hours,
       refetchOnWindowFocus: false,
     },
   },

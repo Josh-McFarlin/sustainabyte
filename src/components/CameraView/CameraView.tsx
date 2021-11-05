@@ -4,8 +4,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  SafeAreaView,
-  Alert,
   Dimensions,
 } from "react-native";
 import { Camera } from "expo-camera";

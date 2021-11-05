@@ -10,12 +10,12 @@ import { useQueries } from "react-query";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { fetchUser } from "../../actions/user";
-import { SocialGroup } from "../../types/SocialGroup";
-import { User } from "../../types/User";
+import { SocialGroupType } from "../../types/SocialGroup";
+import { UserType } from "../../types/User";
 import { AuthNavigationProp } from "../../navigation/authed/types";
 
 type PropTypes = {
-  group: SocialGroup;
+  group: SocialGroupType;
 };
 
 const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
@@ -48,7 +48,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
               <TouchableWithoutFeedback
                 onPress={() =>
                   navigation.navigate("UserProfile", {
-                    id: (data as User).id,
+                    id: (data as UserType).id,
                     isOwnProfile: false,
                     isFollowing: false,
                   })
@@ -57,7 +57,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
                 <Image
                   style={styles.userAvatar}
                   source={{
-                    uri: (data as User)?.avatarUrl,
+                    uri: (data as UserType)?.avatarUrl,
                   }}
                 />
               </TouchableWithoutFeedback>
@@ -69,7 +69,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
         <View style={[styles.hContainer, styles.spaceBetween]}>
           {userQueries.length > 0 ? (
             <Text style={styles.secondary}>
-              Followed by {(userQueries[0]?.data as User)?.username}
+              Followed by {(userQueries[0]?.data as UserType)?.username}
               {userQueries.length > 1
                 ? ` + ${group.members.length - 1} more`
                 : ""}

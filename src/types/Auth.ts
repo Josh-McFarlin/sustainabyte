@@ -1,4 +1,5 @@
-import type { User } from "./User";
+import type { AuthSessionResult } from "expo-auth-session";
+import type { UserType } from "./User";
 
 export interface Auth0User {
   aud: string;
@@ -17,9 +18,9 @@ export interface Auth0User {
 }
 
 export interface AuthContextType {
-  user: User | null;
+  user: UserType | null;
   isInitializing: boolean;
   isLoggedIn: boolean;
-  login: () => void;
-  logout: () => void;
+  login: () => Promise<AuthSessionResult>;
+  logout: () => Promise<void>;
 }

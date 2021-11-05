@@ -1,10 +1,10 @@
 import type { QueryFunction } from "react-query";
 import urls from "../utils/urls";
-import type { Post } from "../types/Post";
+import type { PostType } from "../types/Post";
 
-export const fetchPosts: QueryFunction<Post[], [string]> = async ({
+export const fetchPosts: QueryFunction<PostType[], [string]> = async ({
   queryKey,
-}): Promise<Post[]> => {
+}): Promise<PostType[]> => {
   const [_key] = queryKey;
 
   const response = await fetch(`${urls.api}/post`);
@@ -18,9 +18,9 @@ export const fetchPosts: QueryFunction<Post[], [string]> = async ({
   return json.posts;
 };
 
-export const fetchPost: QueryFunction<Post, [string, string]> = async ({
+export const fetchPost: QueryFunction<PostType, [string, string]> = async ({
   queryKey,
-}): Promise<Post> => {
+}): Promise<PostType> => {
   const [_key, postId] = queryKey;
 
   const response = await fetch(`${urls.api}/post/${postId}`);
@@ -34,7 +34,7 @@ export const fetchPost: QueryFunction<Post, [string, string]> = async ({
   return json.post;
 };
 
-export const createPost = async (post: Post) => {
+export const createPost = async (post: PostType): Promise<PostType> => {
   const response = await fetch(`${urls.api}/post`, {
     method: "POST",
     headers: {

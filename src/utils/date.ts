@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import isBetween from "dayjs/plugin/isBetween";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import type { OpenHours } from "../types/Restaurant";
+import type { OpenHoursType } from "../types/Restaurant";
 
 dayjs.extend(weekday);
 dayjs.extend(isBetween);
@@ -11,7 +11,7 @@ dayjs.extend(localizedFormat);
 const indToDay = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
 
 export const getOpenStatus = (
-  hours: OpenHours
+  hours: OpenHoursType
 ):
   | {
       open: true;
@@ -52,7 +52,7 @@ export const getOpenStatus = (
   };
 };
 
-export const formatOpenHours = (hours: OpenHours): string => {
+export const formatOpenHours = (hours: OpenHoursType): string => {
   const times = Array(7).fill("");
 
   for (let i = 0; i < times.length; i += 1) {

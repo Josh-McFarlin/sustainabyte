@@ -1,47 +1,42 @@
-import type { Address, Coordinates } from "./Location";
+import type { AddressType, CoordinatesType } from "./Location";
 
-export interface DayAvailability {
+export interface DayAvailabilityType {
   startHour: number;
   startMinute: number;
   endHour: number;
   endMinute: number;
 }
 
-export type OpenHours = [
+export type OpenHoursType = [
   // Sunday
-  DayAvailability[],
+  DayAvailabilityType[],
   // Monday
-  DayAvailability[],
+  DayAvailabilityType[],
   // Tuesday
-  DayAvailability[],
+  DayAvailabilityType[],
   // Wednesday
-  DayAvailability[],
+  DayAvailabilityType[],
   // Thursday
-  DayAvailability[],
+  DayAvailabilityType[],
   // Friday
-  DayAvailability[],
+  DayAvailabilityType[],
   // Saturday
-  DayAvailability[]
+  DayAvailabilityType[]
 ];
 
-export interface Restaurant {
+export interface RestaurantType {
   id: string;
+  auth0Id: string;
   name: string;
+  email: string;
   avatarUrl: string;
   headerUrl: string;
-  description: string;
+  bio?: string;
   tags: string[];
-  openHours: OpenHours;
-  address: Address;
-  coordinates: Coordinates;
+  openHours: OpenHoursType;
+  address: AddressType;
+  coordinates: CoordinatesType;
   website?: string;
   phoneNumber?: string;
-  ratings: {
-    sum: number;
-    count: number;
-  };
-  sustainability: {
-    vegan: number;
-    vegetarian: number;
-  };
+  createdAt: Date;
 }
