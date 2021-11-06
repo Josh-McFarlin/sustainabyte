@@ -10,6 +10,7 @@ import { v4 as uuid } from "./uuid";
 import type { AuthContextType, Auth0User } from "../types/Auth";
 import { fetchAuth } from "../actions/auth";
 import { UserType } from "../types/User";
+import { authRequest } from "./request";
 
 const authStorageKey = "AuthObject";
 const auth0ClientId = "g5aCxDpiXTWG4pqNSNPYyN06KBgw610q";
@@ -116,6 +117,23 @@ export const useAuthBase = (): AuthContextType => {
       }
     }
   }, [result]);
+
+  React.useEffect(() => {
+    const interceptor = authRequest.interceptors.request.use(async (config) => {
+      // eslint-disable-next-line no-param-reassign
+      config.headers = {
+        Authorization: `Bearer ${auth0User.sub}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      };
+
+      return config;
+    }, Promise.reject);
+
+    return () => {
+      authRequest.interceptors.request.eject(interceptor);
+    };
+  }, [auth0User]);
 
   const login = React.useCallback(
     async (): Promise<AuthSession.AuthSessionResult> =>

@@ -1,11 +1,11 @@
 import type { QueryFunction } from "react-query";
-import axios from "axios";
+import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { ReviewType } from "../types/Review";
 
 export const fetchReviews: QueryFunction<ReviewType[], [string]> =
   async (): Promise<ReviewType[]> => {
-    const { data: json } = await axios.get(`${urls.api}/review`);
+    const { data: json } = await authRequest.get(`${urls.api}/review`);
 
     return json.reviews;
   };
@@ -15,13 +15,15 @@ export const fetchReview: QueryFunction<ReviewType, [string, string]> = async ({
 }): Promise<ReviewType> => {
   const [_key, reviewId] = queryKey;
 
-  const { data: json } = await axios.get(`${urls.api}/review/${reviewId}`);
+  const { data: json } = await authRequest.get(
+    `${urls.api}/review/${reviewId}`
+  );
 
   return json.review;
 };
 
 export const createReview = async (review: ReviewType): Promise<ReviewType> => {
-  const { data: json } = await axios.post(
+  const { data: json } = await authRequest.post(
     `${urls.api}/review`,
     JSON.stringify(review),
     {

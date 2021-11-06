@@ -1,5 +1,5 @@
 import type { QueryFunction } from "react-query";
-import axios from "axios";
+import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { SocialGroupType } from "../types/SocialGroup";
 import type { CoordinatesType } from "../types/Location";
@@ -10,7 +10,7 @@ export const fetchSocialGroups: QueryFunction<
 > = async ({ queryKey }): Promise<SocialGroupType[]> => {
   const [_key] = queryKey;
 
-  const { data: json } = await axios.get(`${urls.api}/socialGroup`);
+  const { data: json } = await authRequest.get(`${urls.api}/socialGroup`);
 
   return json.socialGroups;
 };
@@ -21,7 +21,7 @@ export const fetchSocialGroup: QueryFunction<
 > = async ({ queryKey }): Promise<SocialGroupType> => {
   const [_key, socialGroupId] = queryKey;
 
-  const { data: json } = await axios.get(
+  const { data: json } = await authRequest.get(
     `${urls.api}/socialGroup/${socialGroupId}`
   );
 
@@ -31,7 +31,7 @@ export const fetchSocialGroup: QueryFunction<
 export const createSocialGroup = async (
   socialGroup: SocialGroupType
 ): Promise<SocialGroupType> => {
-  const { data: json } = await axios.post(
+  const { data: json } = await authRequest.post(
     `${urls.api}/socialGroup`,
     JSON.stringify(socialGroup),
     {

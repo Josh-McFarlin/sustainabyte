@@ -1,5 +1,5 @@
 import type { QueryFunction } from "react-query";
-import axios from "axios";
+import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import { uploadImage } from "../utils/image";
 import type { PostType } from "../types/Post";
@@ -9,7 +9,7 @@ export const fetchPosts: QueryFunction<PostType[], [string]> = async ({
 }): Promise<PostType[]> => {
   const [_key] = queryKey;
 
-  const { data: json } = await axios.get(`${urls.api}/post`);
+  const { data: json } = await authRequest.get(`${urls.api}/post`);
 
   return json.posts;
 };
@@ -19,7 +19,7 @@ export const fetchPost: QueryFunction<PostType, [string, string]> = async ({
 }): Promise<PostType> => {
   const [_key, postId] = queryKey;
 
-  const { data: json } = await axios.get(`${urls.api}/post/${postId}`);
+  const { data: json } = await authRequest.get(`${urls.api}/post/${postId}`);
 
   return json.post;
 };
@@ -27,7 +27,7 @@ export const fetchPost: QueryFunction<PostType, [string, string]> = async ({
 export const createPost = async (
   post: Pick<PostType, "ownerType" | "body" | "photoUrls" | "tags">
 ): Promise<PostType> => {
-  const { data: json } = await axios.post(
+  const { data: json } = await authRequest.post(
     `${urls.api}/post`,
     JSON.stringify({
       ...post,

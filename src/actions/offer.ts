@@ -1,5 +1,5 @@
 import type { QueryFunction } from "react-query";
-import axios from "axios";
+import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { OfferType } from "../types/Offer";
 import type { CoordinatesType } from "../types/Location";
@@ -10,7 +10,7 @@ export const fetchOffers: QueryFunction<
 > = async ({ queryKey }): Promise<OfferType[]> => {
   const [_key, coordinates] = queryKey;
 
-  const { data: json } = await axios.get(
+  const { data: json } = await authRequest.get(
     `${urls.api}/offer?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}`
   );
 
@@ -22,13 +22,13 @@ export const fetchOffer: QueryFunction<OfferType, [string, string]> = async ({
 }): Promise<OfferType> => {
   const [_key, offerId] = queryKey;
 
-  const { data: json } = await axios.get(`${urls.api}/offer/${offerId}`);
+  const { data: json } = await authRequest.get(`${urls.api}/offer/${offerId}`);
 
   return json.offer;
 };
 
 export const createOffer = async (offer: OfferType): Promise<OfferType> => {
-  const { data: json } = await axios.post(
+  const { data: json } = await authRequest.post(
     `${urls.api}/offer`,
     JSON.stringify(offer),
     {
