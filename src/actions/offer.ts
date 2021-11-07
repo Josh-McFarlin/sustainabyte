@@ -32,7 +32,12 @@ export const fetchOffer: QueryFunction<OfferType, [string, string]> = async ({
   return json.offer;
 };
 
-export const createOffer = async (offer: OfferType): Promise<OfferType> => {
+export const createOffer = async (
+  offer: Pick<
+    OfferType,
+    "restaurant" | "photoUrl" | "title" | "body" | "prompt" | "expiresAt"
+  >
+): Promise<OfferType> => {
   const { data: json } = await authRequest.post(
     `${urls.api}/offer`,
     JSON.stringify(offer),

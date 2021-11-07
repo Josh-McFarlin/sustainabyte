@@ -32,10 +32,22 @@ export const fetchRestaurant: QueryFunction<RestaurantType, [string, string]> =
   };
 
 export const updateRestaurant = async (
-  restaurant: RestaurantType
+  restaurant: Pick<
+    RestaurantType,
+    | "name"
+    | "avatarUrl"
+    | "headerUrl"
+    | "bio"
+    | "tags"
+    | "openHours"
+    | "address"
+    | "coordinates"
+    | "website"
+    | "phoneNumber"
+  >
 ): Promise<RestaurantType> => {
   const { data: json } = await authRequest.put(
-    `${urls.api}/restaurant/${encodeURIComponent(restaurant._id)}`,
+    `${urls.api}/restaurant`,
     JSON.stringify(restaurant),
     {
       headers: {

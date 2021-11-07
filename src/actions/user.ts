@@ -22,9 +22,14 @@ export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
   return json.user;
 };
 
-export const updateUser = async (user: UserType): Promise<UserType> => {
+export const updateUser = async (
+  user: Pick<
+    UserType,
+    "name" | "avatarUrl" | "locations" | "groups" | "followers" | "following"
+  >
+): Promise<UserType> => {
   const { data: json } = await authRequest.put(
-    `${urls.api}/user/${encodeURIComponent(user._id)}`,
+    `${urls.api}/user`,
     JSON.stringify(user),
     {
       headers: {

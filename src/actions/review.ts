@@ -22,7 +22,12 @@ export const fetchReview: QueryFunction<ReviewType, [string, string]> = async ({
   return json.review;
 };
 
-export const createReview = async (review: ReviewType): Promise<ReviewType> => {
+export const createReview = async (
+  review: Pick<
+    ReviewType,
+    "restaurant" | "stars" | "body" | "tags" | "photoUrls"
+  >
+): Promise<ReviewType> => {
   const { data: json } = await authRequest.post(
     `${urls.api}/review`,
     JSON.stringify(review),

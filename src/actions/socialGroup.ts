@@ -29,7 +29,10 @@ export const fetchSocialGroup: QueryFunction<
 };
 
 export const createSocialGroup = async (
-  socialGroup: SocialGroupType
+  socialGroup: Pick<
+    SocialGroupType,
+    "name" | "description" | "tags" | "iconUrl"
+  >
 ): Promise<SocialGroupType> => {
   const { data: json } = await authRequest.post(
     `${urls.api}/socialGroup`,

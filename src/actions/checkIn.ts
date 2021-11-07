@@ -22,7 +22,7 @@ export const fetchCheckIn: QueryFunction<CheckInType, [string, string]> =
   };
 
 export const createCheckIn = async (
-  checkIn: CheckInType
+  checkIn: Pick<CheckInType, "restaurant" | "withUsers">
 ): Promise<CheckInType> => {
   const { data: json } = await authRequest.post(
     `${urls.api}/checkIn`,

@@ -22,7 +22,10 @@ export const fetchChallenge: QueryFunction<ChallengeType, [string, string]> =
   };
 
 export const createChallenge = async (
-  challenge: ChallengeType
+  challenge: Pick<
+    ChallengeType,
+    "name" | "body" | "iconUrl" | "score" | "expiresAt"
+  >
 ): Promise<ChallengeType> => {
   const { data: json } = await authRequest.post(
     `${urls.api}/challenge`,
