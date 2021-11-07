@@ -10,9 +10,12 @@ export const fetchOffers: QueryFunction<
 > = async ({ queryKey }): Promise<OfferType[]> => {
   const [_key, coordinates] = queryKey;
 
-  const { data: json } = await authRequest.get(
-    `${urls.api}/offer?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}`
-  );
+  const { data: json } = await authRequest.get(`${urls.api}/offer`, {
+    params: {
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+    },
+  });
 
   return json.offers;
 };
@@ -22,7 +25,9 @@ export const fetchOffer: QueryFunction<OfferType, [string, string]> = async ({
 }): Promise<OfferType> => {
   const [_key, offerId] = queryKey;
 
-  const { data: json } = await authRequest.get(`${urls.api}/offer/${offerId}`);
+  const { data: json } = await authRequest.get(
+    `${urls.api}/offer/${encodeURIComponent(offerId)}`
+  );
 
   return json.offer;
 };

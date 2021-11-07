@@ -22,7 +22,7 @@ export const fetchSocialGroup: QueryFunction<
   const [_key, socialGroupId] = queryKey;
 
   const { data: json } = await authRequest.get(
-    `${urls.api}/socialGroup/${socialGroupId}`
+    `${urls.api}/socialGroup/${encodeURIComponent(socialGroupId)}`
   );
 
   return json.socialGroup;

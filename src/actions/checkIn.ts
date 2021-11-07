@@ -15,7 +15,7 @@ export const fetchCheckIn: QueryFunction<CheckInType, [string, string]> =
     const [_key, checkInId] = queryKey;
 
     const { data: json } = await authRequest.get(
-      `${urls.api}/checkIn/${checkInId}`
+      `${urls.api}/checkIn/${encodeURIComponent(checkInId)}`
     );
 
     return json.checkIn;

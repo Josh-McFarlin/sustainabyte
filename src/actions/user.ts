@@ -15,14 +15,16 @@ export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
 }): Promise<UserType> => {
   const [_key, userId] = queryKey;
 
-  const { data: json } = await authRequest.get(`${urls.api}/user/${userId}`);
+  const { data: json } = await authRequest.get(
+    `${urls.api}/user/${encodeURIComponent(userId)}`
+  );
 
   return json.user;
 };
 
 export const updateUser = async (user: UserType): Promise<UserType> => {
   const { data: json } = await authRequest.put(
-    `${urls.api}/user/${user.id}`,
+    `${urls.api}/user/${encodeURIComponent(user.id)}`,
     JSON.stringify(user),
     {
       headers: {

@@ -16,7 +16,7 @@ export const fetchReview: QueryFunction<ReviewType, [string, string]> = async ({
   const [_key, reviewId] = queryKey;
 
   const { data: json } = await authRequest.get(
-    `${urls.api}/review/${reviewId}`
+    `${urls.api}/review/${encodeURIComponent(reviewId)}`
   );
 
   return json.review;

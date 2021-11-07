@@ -9,7 +9,12 @@ export const fetchAuth: QueryFunction<UserType, [string, string]> = async ({
   const [_key, id] = queryKey;
 
   const { data: json } = await authRequest.get(
-    `${urls.api}/auth/${id}?type=USER`
+    `${urls.api}/auth/${encodeURIComponent(id)}`,
+    {
+      params: {
+        type: "USER",
+      },
+    }
   );
 
   return json.auth;

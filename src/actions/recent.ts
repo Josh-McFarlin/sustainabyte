@@ -10,9 +10,12 @@ export const fetchRecent: QueryFunction<
 > = async ({ queryKey }): Promise<RecentType[]> => {
   const [_key, coordinates] = queryKey;
 
-  const { data: json } = await authRequest.get(
-    `${urls.api}/recent?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}`
-  );
+  const { data: json } = await authRequest.get(`${urls.api}/recent`, {
+    params: {
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+    },
+  });
 
   return json.recents;
 };

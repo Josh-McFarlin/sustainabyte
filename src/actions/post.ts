@@ -19,7 +19,9 @@ export const fetchPost: QueryFunction<PostType, [string, string]> = async ({
 }): Promise<PostType> => {
   const [_key, postId] = queryKey;
 
-  const { data: json } = await authRequest.get(`${urls.api}/post/${postId}`);
+  const { data: json } = await authRequest.get(
+    `${urls.api}/post/${encodeURIComponent(postId)}`
+  );
 
   return json.post;
 };

@@ -15,7 +15,7 @@ export const fetchChallenge: QueryFunction<ChallengeType, [string, string]> =
     const [_key, challengeId] = queryKey;
 
     const { data: json } = await authRequest.get(
-      `${urls.api}/challenge/${challengeId}`
+      `${urls.api}/challenge/${encodeURIComponent(challengeId)}`
     );
 
     return json.challenge;
