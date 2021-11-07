@@ -3,9 +3,9 @@ import * as React from "react";
 import { View, Image, StyleSheet, Text, ViewStyle } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import type { RestaurantType } from "../../types/Restaurant";
+import { hashtagsToIcons } from "../../utils/tags";
 
 type PropTypes = {
-  // eslint-disable-next-line react/require-default-props
   style?: ViewStyle;
   restaurant: RestaurantType;
 };
@@ -38,18 +38,23 @@ const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {
           ))}
         </View>
         <Text style={styles.secondary}>({restaurant.ratings.count})</Text>
-        <Image
-          style={styles.vegan}
-          source={require("../../../assets/icons/vegan.png")}
-        />
-        <Text style={styles.secondary}>{restaurant.sustainability.vegan}%</Text>
-        <Image
-          style={styles.healthy}
-          source={require("../../../assets/icons/healthy.png")}
-        />
-        <Text style={styles.secondary}>
-          {restaurant.sustainability.vegetarian}%
-        </Text>
+        {restaurant.tags.map((tag) => (
+          <React.Fragment key={tag}>
+            {Object.prototype.hasOwnProperty.call(hashtagsToIcons, tag) ? (
+              <Image style={styles.tagIcon} source={hashtagsToIcons[tag]} />
+            ) : (
+              <Text style={styles.tagIcon}>{tag.charAt(0).toUpperCase()}</Text>
+            )}
+            {Object.prototype.hasOwnProperty.call(
+              restaurant.menuPercents,
+              tag
+            ) && (
+              <Text style={styles.secondary}>
+                {restaurant.menuPercents[tag]}%
+              </Text>
+            )}
+          </React.Fragment>
+        ))}
       </View>
     </View>
   );
@@ -88,12 +93,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginRight: 4,
   },
-  vegan: {
-    width: 18,
-    height: 14,
-    resizeMode: "contain",
-  },
-  healthy: {
+  tagIcon: {
     width: 18,
     height: 14,
     resizeMode: "contain",

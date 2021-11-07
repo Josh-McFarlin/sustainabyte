@@ -2,13 +2,13 @@ import type { UserType } from "./User";
 import type { ReviewType } from "./Review";
 
 export interface SocialGroupType {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   tags: string[];
   iconUrl: string;
-  owner: UserType["id"];
-  members: UserType["id"][];
-  reviews: ReviewType["id"][];
+  owner: UserType["_id"];
+  members: UserType["_id"][];
+  reviews: ReviewType["_id"][];
   createdAt: Date;
 }

@@ -1,8 +1,8 @@
 import type { RestaurantType } from "./Restaurant";
 
 export interface OfferType {
-  id: string;
-  restaurant: RestaurantType["id"];
+  _id: string;
+  restaurant: RestaurantType["_id"];
   photoUrl: string;
   title: string;
   body: string;

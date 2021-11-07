@@ -35,7 +35,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
           <Image
             style={styles.image}
             source={{
-              uri: group.icon,
+              uri: group.iconUrl,
             }}
           />
           <Text style={styles.name}>{group.name}</Text>
@@ -48,7 +48,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
               <TouchableWithoutFeedback
                 onPress={() =>
                   navigation.navigate("UserProfile", {
-                    id: (data as UserType).id,
+                    id: (data as UserType)._id,
                     isOwnProfile: false,
                     isFollowing: false,
                   })

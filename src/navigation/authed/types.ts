@@ -10,7 +10,7 @@ export type TabNavParamList = {
   Discover: Record<string, never>;
   Leaderboard: Record<string, never>;
   Profile: {
-    id: UserType["id"] | RestaurantType["id"];
+    id: UserType["_id"] | RestaurantType["_id"];
     isOwnProfile: boolean;
     isFollowing: boolean;
   };
@@ -19,12 +19,12 @@ export type TabNavParamList = {
 export type StackNavParamList = {
   Tabs: TabNavParamList;
   UserProfile: {
-    id: UserType["id"];
+    id: UserType["_id"];
     isOwnProfile: boolean;
     isFollowing: boolean;
   };
   RestaurantProfile: {
-    id: RestaurantType["id"];
+    id: RestaurantType["_id"];
     isOwnProfile: boolean;
     isFollowing: boolean;
   };

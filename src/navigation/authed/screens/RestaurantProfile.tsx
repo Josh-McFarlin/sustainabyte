@@ -163,7 +163,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       <FlatList<ReviewType | CheckInType>
         style={styles.container}
         data={data}
-        keyExtractor={(i) => i.id}
+        keyExtractor={(i) => i._id}
         renderItem={renderItem}
         ListHeaderComponent={() => (
           <View>
@@ -246,11 +246,11 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                 <FlatList
                   data={offers}
                   horizontal
-                  keyExtractor={(item) => item.id}
+                  keyExtractor={(item) => item._id}
                   ItemSeparatorComponent={() => <View style={styles.spacerH} />}
                   renderItem={({ item, index }) => (
                     <TouchableOpacity
-                      key={item.id}
+                      key={item._id}
                       onPress={() => setSelOffer(index)}
                     >
                       <CircleOffer offer={item} />

@@ -30,9 +30,8 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
   const {
     user: userId,
     restaurant: restaurantId,
-    photos,
+    photoUrls,
     body,
-    score,
     createdAt,
     tags,
   } = review;
@@ -61,7 +60,7 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
   return (
     <View style={styles.container}>
       <TopBar user={user} />
-      <PhotoGallery photos={photos} />
+      <PhotoGallery photos={photoUrls} />
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
           <Image
@@ -95,7 +94,7 @@ const SingleReview: React.FC<PropTypes> = ({ review }) => {
           <FontAwesome5 name="map-marker-alt" size={24} color={iconColor} />
         </View>
         <Text style={styles.scoreRow}>
-          Earned {score} sustainabytes * level 6
+          Earned 20 sustainabytes
           <Text style={styles.date}>{dayjs(createdAt).format("MMM D")}</Text>
         </Text>
         <View style={styles.spacer} />

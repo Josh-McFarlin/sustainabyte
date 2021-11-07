@@ -46,7 +46,7 @@ const GalleryOffer: React.FC<PropTypes> = ({ offer, onPress }) => (
     <Image
       style={styles.image}
       source={{
-        uri: offer.photo,
+        uri: offer.photoUrl,
       }}
     />
   </View>

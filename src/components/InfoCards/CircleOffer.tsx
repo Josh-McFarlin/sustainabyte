@@ -27,7 +27,10 @@ const CircleOffer: React.FC<PropTypes> = ({ offer }) => {
 
   React.useEffect(() => {
     const calcVal = () => {
-      const newPercent = Math.abs(offer.expiresAt - Date.now()) / 36e5 / 0.24;
+      const newPercent =
+        Math.abs(new Date(offer.expiresAt).valueOf() - Date.now()) /
+        36e5 /
+        0.24;
 
       if (newPercent >= 50) {
         setRight("180deg");
@@ -123,7 +126,7 @@ const CircleOffer: React.FC<PropTypes> = ({ offer }) => {
         <Image
           style={styles.image}
           source={{
-            uri: offer.photo,
+            uri: offer.photoUrl,
           }}
         />
       </View>

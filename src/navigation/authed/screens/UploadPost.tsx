@@ -25,19 +25,7 @@ import {
 import debounce from "lodash/debounce";
 import { createPost } from "../../../actions/post";
 import { StackNavParamList } from "../types";
-
-const hashtags = [
-  "vegan",
-  "vegetarian",
-  "local",
-  "yummy",
-  "fancy",
-  "delicious",
-  "breakfast",
-  "lunch",
-  "dinner",
-  "popular",
-];
+import { hashtags } from "../../../utils/tags";
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "UploadPost">;
 

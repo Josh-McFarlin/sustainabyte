@@ -51,7 +51,7 @@ const ListCheckIn: React.FC<PropTypes> = ({ checkIn }) => {
             {userQueries
               .filter(({ data }) => data != null)
               .map(({ data: user }) => (
-                <View key={user.id} style={styles.withUser}>
+                <View key={user._id} style={styles.withUser}>
                   <Image
                     style={styles.withAvatar}
                     source={{ uri: user.avatarUrl }}

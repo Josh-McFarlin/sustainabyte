@@ -116,12 +116,12 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
           <FlatList
             style={styles.list}
             data={reviews}
-            keyExtractor={(i) => i.id}
+            keyExtractor={(i) => i._id}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
-                key={item.id}
+                key={item._id}
                 onPress={() => {
-                  console.log(item.id);
+                  console.log(item._id);
                 }}
               >
                 <SingleReview review={item} />
@@ -155,7 +155,7 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
             >
               {restaurants?.map((restaurant) => (
                 <Marker
-                  key={restaurant.id}
+                  key={restaurant._id}
                   coordinate={restaurant.coordinates}
                   onPress={() => handleMarkerPress(restaurant)}
                 />

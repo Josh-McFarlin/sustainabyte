@@ -12,17 +12,17 @@ import type { ReviewType } from "../../types/Review";
 const numColumns = 3;
 
 export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
-  <View key={item.id} style={styles.post}>
+  <View key={item._id} style={styles.post}>
     <TouchableOpacity
       style={styles.button}
       onPress={() => {
-        console.log(item.id);
+        console.log(item._id);
       }}
     >
       <Image
         style={styles.image}
         source={{
-          uri: item.photos[0],
+          uri: item.photoUrls[0],
         }}
       />
     </TouchableOpacity>

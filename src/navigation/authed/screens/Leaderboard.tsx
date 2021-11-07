@@ -210,10 +210,15 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
               source={require("../../../../assets/icons/hexagon.png")}
               resizeMode="contain"
             >
-              <Image style={styles.challengeIcon} source={item.icon as any} />
+              <Image
+                style={styles.challengeIcon}
+                source={{
+                  uri: item.iconUrl,
+                }}
+              />
             </ImageBackground>
             <View>
-              <Text style={styles.itemText}>{item.title}</Text>
+              <Text style={styles.itemText}>{item.name}</Text>
               <Text style={styles.itemSubtext}>
                 {dayjs().to(item.expiresAt, true)} Left
               </Text>
@@ -221,7 +226,7 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
                 <Text style={styles.itemSubtext}>
                   @
                   {item?.completedBy
-                    ?.map((id) => users.find((i) => i.id === id).username)
+                    ?.map((id) => users.find((i) => i._id === id).username)
                     .join(", @")}
                 </Text>
               )}

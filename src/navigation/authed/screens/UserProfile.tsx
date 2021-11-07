@@ -104,7 +104,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       <FlatList<ReviewType | CheckInType>
         style={styles.container}
         data={data}
-        keyExtractor={(i) => i.id}
+        keyExtractor={(i) => i._id}
         renderItem={renderItem}
         ListHeaderComponent={() => (
           <View>

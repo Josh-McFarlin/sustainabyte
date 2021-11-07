@@ -25,7 +25,7 @@ export type OpenHoursType = [
 ];
 
 export interface RestaurantType {
-  id: string;
+  _id: string;
   auth0Id: string;
   name: string;
   email: string;
@@ -38,5 +38,10 @@ export interface RestaurantType {
   coordinates: CoordinatesType;
   website?: string;
   phoneNumber?: string;
+  ratings: {
+    count: number;
+    sum: number;
+  };
+  menuPercents: Record<string, number>;
   createdAt: Date;
 }

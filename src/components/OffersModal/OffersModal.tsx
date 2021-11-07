@@ -63,7 +63,7 @@ const OffersModal: React.FC<PropTypes> = ({
       <View style={styles.content}>
         <SafeAreaView style={styles.content}>
           <ImageBackground
-            source={{ uri: offer?.photo }}
+            source={{ uri: offer?.photoUrl }}
             resizeMode="cover"
             style={styles.image}
           >

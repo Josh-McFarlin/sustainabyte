@@ -2,9 +2,9 @@ import type { UserType } from "./User";
 import type { RestaurantType } from "./Restaurant";
 
 export interface PostType {
-  id: string;
-  user?: UserType["id"];
-  restaurant?: RestaurantType["id"];
+  _id: string;
+  user?: UserType["_id"];
+  restaurant?: RestaurantType["_id"];
   ownerType: "User" | "Restaurant";
   body: string;
   photoUrls: string[];

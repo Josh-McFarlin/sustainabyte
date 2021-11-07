@@ -2,9 +2,9 @@ import type { UserType } from "./User";
 import type { RestaurantType } from "./Restaurant";
 
 export interface ReviewType {
-  id: string;
-  user: UserType["id"];
-  restaurant: RestaurantType["id"];
+  _id: string;
+  user: UserType["_id"];
+  restaurant: RestaurantType["_id"];
   stars: number;
   body: string;
   tags: string[];

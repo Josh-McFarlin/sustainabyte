@@ -104,7 +104,7 @@ const RestaurantMapScreen: React.FC<PropTypes> = () => {
       >
         {restaurants?.map((restaurant) => (
           <Marker
-            key={restaurant.id}
+            key={restaurant._id}
             coordinate={restaurant.coordinates}
             onPress={() => handleMarkerPress(restaurant)}
           />

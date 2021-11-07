@@ -108,9 +108,6 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
     console.log(category);
   }, []);
 
-  console.log("offers:", offers);
-  console.log("restaurants:", restaurants);
-
   const data = React.useMemo(
     () => [
       {
@@ -146,7 +143,9 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
     [restaurants, offers, socialGroups]
   );
 
-  console.log("sg", socialGroups);
+  console.log("offers:", offers);
+  console.log("restaurants:", restaurants);
+  console.log("socialGroups:", socialGroups);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -202,7 +201,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
               style={styles.singleList}
               data={section.data}
               horizontal={section.horizontal}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
               ItemSeparatorComponent={() => (
                 <View
                   style={section.horizontal ? styles.spacerH : styles.spacerV}
@@ -215,7 +214,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
                       <TouchableOpacity
                         onPress={() =>
                           navigation.navigate("RestaurantProfile" as any, {
-                            id: item.id,
+                            id: item._id,
                             isFollowing: false,
                             isOwnProfile: false,
                           })

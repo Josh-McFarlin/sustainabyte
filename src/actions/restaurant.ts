@@ -35,7 +35,7 @@ export const updateRestaurant = async (
   restaurant: RestaurantType
 ): Promise<RestaurantType> => {
   const { data: json } = await authRequest.put(
-    `${urls.api}/restaurant/${encodeURIComponent(restaurant.id)}`,
+    `${urls.api}/restaurant/${encodeURIComponent(restaurant._id)}`,
     JSON.stringify(restaurant),
     {
       headers: {

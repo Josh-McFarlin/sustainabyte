@@ -9,20 +9,7 @@ import {
 } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import debounce from "lodash/debounce";
-
-const foodTags = [
-  "vegan",
-  "vegetarian",
-  "local",
-  "yummy",
-  "fancy",
-  "boring",
-  "delicious",
-  "breakfast",
-  "lunch",
-  "dinner",
-  "popular",
-];
+import { hashtags } from "../../utils/tags";
 
 const returnTrue = (obj: Record<string, boolean>): string[] =>
   Object.entries(obj).reduce((acc, [tag, sel]) => {
@@ -40,7 +27,7 @@ type PropTypes = {
 const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
   const [search, setSearch] = React.useState<string>("");
   const [selTags, setTagsBase] = React.useState<Record<string, boolean>>(
-    foodTags.reduce((acc, tag) => ({ ...acc, [tag]: false }), {})
+    hashtags.reduce((acc, tag) => ({ ...acc, [tag]: false }), {})
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debChange = React.useCallback(debounce(onChange, 250), [onChange]);

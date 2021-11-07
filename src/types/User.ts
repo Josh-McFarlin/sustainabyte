@@ -2,7 +2,7 @@ import type { LocationType } from "./Location";
 import type { SocialGroupType } from "./SocialGroup";
 
 export interface UserType {
-  id: string;
+  _id: string;
   auth0Id: string;
   name: string;
   email: string;
@@ -10,8 +10,8 @@ export interface UserType {
   avatarUrl: string;
   score: number;
   locations: LocationType[];
-  groups: SocialGroupType["id"][];
-  followers: UserType["id"][];
-  following: UserType["id"][];
+  groups: SocialGroupType["_id"][];
+  followers: UserType["_id"][];
+  following: UserType["_id"][];
   createdAt: Date;
 }

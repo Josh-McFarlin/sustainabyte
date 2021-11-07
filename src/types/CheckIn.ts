@@ -2,9 +2,9 @@ import type { RestaurantType } from "./Restaurant";
 import type { UserType } from "./User";
 
 export interface CheckInType {
-  id: string;
-  user: UserType["id"];
-  restaurant: RestaurantType["id"];
-  withUsers: UserType["id"][];
+  _id: string;
+  user: UserType["_id"];
+  restaurant: RestaurantType["_id"];
+  withUsers: UserType["_id"][];
   createdAt: number;
 }

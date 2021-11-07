@@ -3,6 +3,7 @@ import { ReviewType } from "./Review";
 import { CheckInType } from "./CheckIn";
 
 export interface RecentType {
-  type: "POST" | "REVIEW" | "CHECKIN";
+  _id: string;
+  type: "Post" | "Review" | "CheckIn";
   data: PostType | ReviewType | CheckInType;
 }

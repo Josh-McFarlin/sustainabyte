@@ -24,7 +24,7 @@ export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
 
 export const updateUser = async (user: UserType): Promise<UserType> => {
   const { data: json } = await authRequest.put(
-    `${urls.api}/user/${encodeURIComponent(user.id)}`,
+    `${urls.api}/user/${encodeURIComponent(user._id)}`,
     JSON.stringify(user),
     {
       headers: {
