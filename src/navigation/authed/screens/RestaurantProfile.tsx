@@ -33,6 +33,7 @@ import { CircleOffer } from "../../../components/InfoCards";
 import { getOpenStatus, formatOpenHours } from "../../../utils/date";
 import VisitModal from "../../../components/VisitModal";
 import ReviewHistory from "../../../components/ReviewHistory";
+import { useLocation } from "../../../utils/location";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
@@ -44,6 +45,7 @@ enum TabTypes {
 
 const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { id, isOwnProfile, isFollowing } = route.params;
+  const coordinates = useLocation();
   const [selOffer, setSelOffer] = React.useState<number | null>(null);
   const [visitOpen, setVisitOpen] = React.useState<boolean>(false);
   const settingsSheetRef = React.useRef<BottomSheet>();
@@ -54,7 +56,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     fetchRestaurant
   );
   const { data: offers } = useQuery<OfferType[], Error>(
-    ["offers", [0, 0]],
+    ["offers", coordinates, { restaurant: restaurant?._id }],
     fetchOffers,
     {
       enabled: restaurant != null,

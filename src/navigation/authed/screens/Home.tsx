@@ -143,10 +143,6 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
     [restaurants, offers, socialGroups]
   );
 
-  console.log("offers:", offers);
-  console.log("restaurants:", restaurants);
-  console.log("socialGroups:", socialGroups);
-
   return (
     <SafeAreaView style={styles.container}>
       <FlatList

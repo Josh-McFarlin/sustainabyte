@@ -46,9 +46,10 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
           <View style={styles.hContainer}>
             {userQueries.map(({ data }) => (
               <TouchableWithoutFeedback
+                key={data?._id}
                 onPress={() =>
                   navigation.navigate("UserProfile", {
-                    id: (data as UserType)._id,
+                    id: data?._id,
                     isOwnProfile: false,
                     isFollowing: false,
                   })
@@ -57,7 +58,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
                 <Image
                   style={styles.userAvatar}
                   source={{
-                    uri: (data as UserType)?.avatarUrl,
+                    uri: data?.avatarUrl,
                   }}
                 />
               </TouchableWithoutFeedback>
