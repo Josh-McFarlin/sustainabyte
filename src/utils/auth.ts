@@ -22,23 +22,14 @@ WebBrowser.maybeCompleteAuthSession({
   skipRedirectCheck: true,
 });
 
-const setupInterceptor = (authToken: string) =>
-  authRequest.interceptors.request.use(async (config) => {
-    // eslint-disable-next-line no-param-reassign
-    config.headers = {
-      Authorization: `Bearer ${authToken}`,
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    };
-
-    return config;
-  }, Promise.reject);
-
 const saveAuthToken = async (authToken: string) => {
   await SecureStore.setItemAsync(authStorageKey, authToken);
 };
 
-const getAuthObject = async (): Promise<Auth0User | null> => {
+const getAuthObject = async (): Promise<{
+  token: string;
+  object: Auth0User;
+} | null> => {
   const res = await SecureStore.getItemAsync(authStorageKey);
 
   if (res == null) {
@@ -47,13 +38,15 @@ const getAuthObject = async (): Promise<Auth0User | null> => {
 
   try {
     const decodedObj: Auth0User = jwtDecode(res);
-    setupInterceptor(res);
 
     if (decodedObj.exp == null || decodedObj.exp * 1000 < Date.now()) {
       throw new Error("Auth Object has expired!");
     }
 
-    return decodedObj;
+    return {
+      token: res,
+      object: decodedObj,
+    };
   } catch (error) {
     console.error("Auth Error:", error?.message || error);
     return null;
@@ -65,6 +58,7 @@ const clearAuthObject = (): Promise<void> =>
 
 export const useAuthBase = (): AuthContextType => {
   const nonce = React.useRef<string>(uuid().replace(/-/g, ""));
+  const [auth0Token, setAuth0Token] = React.useState<string | null>(null);
   const [auth0User, setAuth0User] = React.useState<Auth0User | null>(null);
   const [isInitializing, setIsInitializing] = React.useState<boolean>(true);
   const { data: user, remove } = useQuery<UserType, Error>(
@@ -93,9 +87,10 @@ export const useAuthBase = (): AuthContextType => {
   );
 
   React.useEffect(() => {
-    getAuthObject().then((storedAuth: Auth0User | null) => {
-      if (storedAuth) {
-        setAuth0User(storedAuth);
+    getAuthObject().then((storedAuth) => {
+      if (storedAuth != null) {
+        setAuth0Token(storedAuth.token);
+        setAuth0User(storedAuth.object);
       } else {
         setIsInitializing(false);
       }
@@ -107,12 +102,10 @@ export const useAuthBase = (): AuthContextType => {
       switch (result?.type) {
         case "success": {
           const jwtToken = result.params.id_token;
-          const decoded = jwtDecode(jwtToken);
+          const decoded = jwtDecode<Auth0User>(jwtToken);
 
-          console.log(jwtToken);
-
-          setAuth0User(decoded as any);
-          setupInterceptor(jwtToken);
+          setAuth0Token(jwtToken);
+          setAuth0User(decoded);
           saveAuthToken(jwtToken);
 
           break;
@@ -140,16 +133,44 @@ export const useAuthBase = (): AuthContextType => {
 
   const logout = React.useCallback(async () => {
     setAuth0User(null);
+    setAuth0Token(null);
     await clearAuthObject();
     remove();
   }, [remove]);
 
-  // console.log({
-  //   auth0User,
-  //   user,
-  //   isInitializing,
-  //   isLoggedIn: user != null,
-  // });
+  React.useEffect(() => {
+    const interceptor = authRequest.interceptors.request.use(
+      async (config) => {
+        // eslint-disable-next-line no-param-reassign
+        config.headers = {
+          Authorization: `Bearer ${auth0Token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        };
+
+        return config;
+      },
+      async (error) => {
+        if (
+          error.config &&
+          error.response &&
+          (error.response.status === 401 || error.response.status === 403)
+        ) {
+          try {
+            await login();
+          } catch (_) {
+            return Promise.reject(error);
+          }
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      authRequest.interceptors.request.eject(interceptor);
+    };
+  }, [auth0Token, login]);
 
   return {
     user,
