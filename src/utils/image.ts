@@ -1,10 +1,5 @@
-import axios from "axios";
-
-export const convertImageToBlob = async (imageUri: string): Promise<Blob> => {
-  const resp = await fetch(imageUri);
-
-  return resp.blob();
-};
+import { Platform } from "react-native";
+import * as FileSystem from "expo-file-system";
 
 export interface ImageUploadInfo {
   url: string;
@@ -18,18 +13,25 @@ export interface ImageUploadInfo {
 export const uploadImage = async (
   imageUri: string,
   uploadInfo: ImageUploadInfo
-): Promise<Response> => {
-  const imageBlob = await convertImageToBlob(imageUri);
+): Promise<void> => {
+  if (Platform.OS === "web") {
+    const imageBlob = await fetch(imageUri).then((res) => res.blob());
 
-  const formData = new FormData();
-  Object.entries(uploadInfo.fields).forEach(([k, v]) => {
-    formData.append(k, v);
-  });
-  formData.append("file", imageBlob);
+    const formData = new FormData();
+    Object.entries(uploadInfo.fields).forEach(([k, v]) => {
+      formData.append(k, v);
+    });
+    formData.append("file", imageBlob);
 
-  return axios.post(uploadInfo.url, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    await fetch(uploadInfo.url, {
+      method: "POST",
+      body: formData,
+    });
+  } else {
+    await FileSystem.uploadAsync(uploadInfo.url, imageUri, {
+      uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+      fieldName: "file",
+      parameters: uploadInfo.fields,
+    });
+  }
 };
