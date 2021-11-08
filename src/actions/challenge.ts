@@ -2,6 +2,7 @@ import type { QueryFunction } from "react-query";
 import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { ChallengeType } from "../types/Challenge";
+import { uploadImage } from "../utils/image";
 
 export const fetchChallenges: QueryFunction<
   ChallengeType[],
@@ -43,13 +44,18 @@ export const createChallenge = async (
 ): Promise<ChallengeType> => {
   const { data: json } = await authRequest.post(
     `${urls.api}/challenge`,
-    JSON.stringify(challenge),
+    JSON.stringify({
+      ...challenge,
+      iconUrl: null,
+    }),
     {
       headers: {
         "Content-Type": "application/json",
       },
     }
   );
+
+  await uploadImage(challenge.iconUrl, json.uploadUrl);
 
   return json.challenge;
 };

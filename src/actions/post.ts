@@ -58,7 +58,7 @@ export const createPost = async (
   );
 
   await Promise.all(
-    (json.post.photoUrls as string[]).map((uploadUrl, index) =>
+    json.uploadUrls.map((uploadUrl, index) =>
       uploadImage(photoUrls[index], uploadUrl)
     )
   );

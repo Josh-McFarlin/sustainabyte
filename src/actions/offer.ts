@@ -3,6 +3,7 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { OfferType } from "../types/Offer";
 import type { CoordinatesType } from "../types/Location";
+import { uploadImage } from "../utils/image";
 
 export const fetchOffers: QueryFunction<
   OfferType[],
@@ -49,13 +50,18 @@ export const createOffer = async (
 ): Promise<OfferType> => {
   const { data: json } = await authRequest.post(
     `${urls.api}/offer`,
-    JSON.stringify(offer),
+    JSON.stringify({
+      ...offer,
+      photoUrl: null,
+    }),
     {
       headers: {
         "Content-Type": "application/json",
       },
     }
   );
+
+  await uploadImage(offer.photoUrl, json.uploadUrl);
 
   return json.offer;
 };

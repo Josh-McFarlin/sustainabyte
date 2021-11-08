@@ -8,50 +8,51 @@ import {
   Alert,
   Platform,
   TextInput,
-  Dimensions,
   TouchableWithoutFeedback,
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
-import {
-  MaterialIcons,
-  FontAwesome5,
-  Ionicons,
-  FontAwesome,
-} from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import debounce from "lodash/debounce";
-import { createPost } from "../../../actions/post";
-import { StackNavParamList } from "../types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { createReview } from "../../../actions/review";
 import { hashtags } from "../../../utils/tags";
+import { StackNavParamList } from "../types";
 
 const useSelect = Platform.select({ web: true, default: false });
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "UploadPost">;
 
-const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
-  const { restaurant } = route.params || {};
-  const [picture, setPicture] = React.useState<string | null>(null);
+const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
+  const { restaurant } = route.params;
+  const [pictures, setPictures] = React.useState<string[]>([]);
   const [caption, setCaption] = React.useState<string>("");
   const [selTags, setTags] = React.useState<string[]>([]);
   const [tagSearch, setTagSearch] = React.useState<string>("");
   const [showingSearch, setShowingSearchBase] = React.useState<string>("");
+  const [rating, setRating] = React.useState<number>(3);
 
   const handleUpload = React.useCallback(async () => {
     try {
-      await createPost({
-        ownerType: "User",
+      await createReview({
+        restaurant: restaurant._id,
+        stars: rating,
         body: caption,
-        photoUrls: [picture],
         tags: selTags,
+        photoUrls: pictures,
       });
-      navigation.navigate("Tabs");
+      navigation.navigate("RestaurantProfile", {
+        isOwnProfile: false,
+        isFollowing: false,
+        id: restaurant._id,
+      });
     } catch (error) {
       console.log("Error", error?.message || error);
+      Alert.alert("Error", error?.message || error);
     }
-  }, [navigation, picture, caption, selTags]);
+  }, [navigation, restaurant._id, pictures, caption, selTags, rating]);
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -97,7 +98,7 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     });
 
     if (result?.cancelled === false) {
-      setPicture(result.uri);
+      setPictures((prevState) => [...prevState, result?.uri]);
     }
   };
 
@@ -110,7 +111,7 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     });
 
     if (result.cancelled === false) {
-      setPicture(result.uri);
+      setPictures((prevState) => [...prevState, result?.uri]);
     }
   };
 
@@ -163,54 +164,50 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   return (
     <ScrollView style={styles.scroll}>
       <KeyboardAvoidingView style={styles.container} behavior="position">
-        {restaurant != null && (
-          <View style={[styles.section, styles.hRow]}>
-            <FontAwesome5
-              style={styles.inputIcon}
-              name="map-pin"
-              size={18}
-              color="#3C8D90"
-            />
-            <TextInput
-              style={styles.input}
-              value={restaurant.name}
-              placeholder="Check into a restaurant"
-              placeholderTextColor="#848484"
-            />
-          </View>
-        )}
-        <TouchableOpacity onPress={selectType}>
-          <View style={styles.section}>
-            {picture ? (
-              <Image
-                style={styles.image}
-                source={{
-                  uri: picture,
-                }}
-              />
-            ) : (
-              <View style={styles.image}>
-                <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
-                <Text>Take a picture</Text>
-              </View>
-            )}
-          </View>
-        </TouchableOpacity>
         <View style={[styles.section, styles.hRow]}>
-          <Ionicons
+          <FontAwesome5
             style={styles.inputIcon}
-            name="md-chatbox"
+            name="map-pin"
             size={18}
             color="#3C8D90"
           />
           <TextInput
             style={styles.input}
+            value={restaurant.name}
+            placeholder="Check into a restaurant"
+            placeholderTextColor="#848484"
+          />
+        </View>
+        <Text style={[styles.sectionHeader, styles.smallMargin]}>
+          Rate & Review
+        </Text>
+        <View style={[styles.hRow, styles.smallMargin]}>
+          {Array.from(Array(5)).map((_, i) => (
+            <FontAwesome
+              style={styles.star}
+              key={i}
+              name="star"
+              size={24}
+              color={i < rating ? "#cbb131" : "#585858"}
+              onPress={() => setRating(i + 1)}
+            />
+          ))}
+        </View>
+        <View style={[styles.section, styles.hRow]}>
+          <FontAwesome
+            style={styles.inputIcon}
+            name="pencil"
+            size={18}
+            color="#3C8D90"
+          />
+          <TextInput
+            style={styles.input}
+            multiline
+            numberOfLines={3}
             onChangeText={setCaption}
             value={caption}
-            placeholder="Add a caption"
+            placeholder="Share your experience"
             placeholderTextColor="#848484"
-            multiline
-            numberOfLines={6}
           />
         </View>
         <View style={styles.bigMargin}>
@@ -271,12 +268,45 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             )}
           />
         </View>
+        <ScrollView horizontal>
+          {pictures.map((picture, index) => (
+            <TouchableOpacity
+              key={picture}
+              style={styles.imageSpacer}
+              onPress={() =>
+                setPictures((prevState) =>
+                  prevState.filter((_, i) => i !== index)
+                )
+              }
+            >
+              <View style={styles.section}>
+                <Image
+                  style={styles.image}
+                  source={{
+                    uri: picture,
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={selectType} style={styles.imageSpacer}>
+            <View style={styles.section}>
+              <View style={styles.image}>
+                <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
+                <Text>Take a picture</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
       </KeyboardAvoidingView>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
@@ -296,8 +326,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   image: {
-    width: Dimensions.get("window").width - 32,
-    height: Dimensions.get("window").width - 32,
+    width: 200,
+    height: 200,
     resizeMode: "contain",
     backgroundColor: "#fff",
     justifyContent: "center",
@@ -305,7 +335,7 @@ const styles = StyleSheet.create({
   },
   input: {
     minHeight: 32,
-    maxHeight: 120,
+    maxHeight: 60,
     flex: 1,
   },
   hRow: {
@@ -354,6 +384,9 @@ const styles = StyleSheet.create({
   star: {
     marginHorizontal: 3,
   },
+  imageSpacer: {
+    marginRight: 8,
+  },
 });
 
-export default UploadPostScreen;
+export default UploadReviewScreen;

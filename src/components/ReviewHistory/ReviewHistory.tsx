@@ -1,9 +1,17 @@
 import * as React from "react";
-import { StyleSheet, View, Text, ListRenderItem } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ListRenderItem,
+  TouchableOpacity,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { ListReview } from "../InfoCards";
 import type { ReviewType } from "../../types/Review";
 import { RestaurantType } from "../../types/Restaurant";
+import { AuthNavigationProp } from "../../navigation/authed/types";
 
 type PropTypes = {
   restaurant: RestaurantType;
@@ -14,18 +22,27 @@ export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
 );
 
 export const Header: React.FC<PropTypes> = ({ restaurant }) => {
+  const navigation = useNavigation<AuthNavigationProp>();
   const rating = restaurant
     ? restaurant.ratings.sum / restaurant.ratings.count
     : 0;
 
   return (
     <View style={styles.header}>
-      <View
-        style={[styles.leaveContainer, styles.hRow, styles.paddingHorizontal]}
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate("UploadReview", {
+            restaurant,
+          })
+        }
       >
-        <FontAwesome name="pencil" size={16} color="#3C8D90" />
-        <Text style={styles.leaveText}>Leave a review</Text>
-      </View>
+        <View
+          style={[styles.leaveContainer, styles.hRow, styles.paddingHorizontal]}
+        >
+          <FontAwesome name="pencil" size={16} color="#3C8D90" />
+          <Text style={styles.leaveText}>Leave a review</Text>
+        </View>
+      </TouchableOpacity>
       <View style={styles.line} />
       <Text style={[styles.headerText, styles.paddingHorizontal]}>
         Ratings & Reviews

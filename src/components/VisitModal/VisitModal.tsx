@@ -4,6 +4,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigationProp } from "../../navigation/authed/types";
 import { RestaurantType } from "../../types/Restaurant";
+import { createCheckIn } from "../../actions/checkIn";
 
 type PropTypes = {
   restaurant: RestaurantType;
@@ -13,6 +14,18 @@ type PropTypes = {
 
 const VisitModal: React.FC<PropTypes> = ({ restaurant, open, handleClose }) => {
   const navigation = useNavigation<AuthNavigationProp>();
+
+  const handleCheckIn = async () => {
+    try {
+      await createCheckIn({
+        restaurant: restaurant._id,
+        withUsers: [],
+      });
+      handleClose();
+    } catch (error) {
+      console.error(error?.message || error);
+    }
+  };
 
   return (
     <Modal
@@ -40,7 +53,14 @@ const VisitModal: React.FC<PropTypes> = ({ restaurant, open, handleClose }) => {
           </View>
           <View style={[styles.spacer, styles.marginBottom]} />
           <View style={[styles.hRow, styles.spaceAround]}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                handleClose();
+                navigation.navigate("UploadReview", {
+                  restaurant,
+                });
+              }}
+            >
               <View style={styles.center}>
                 <FontAwesome
                   style={styles.actionIcon}
@@ -51,7 +71,14 @@ const VisitModal: React.FC<PropTypes> = ({ restaurant, open, handleClose }) => {
                 <Text style={styles.actionText}>Add Review</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                handleClose();
+                navigation.navigate("UploadPost", {
+                  restaurant,
+                });
+              }}
+            >
               <View style={styles.center}>
                 <FontAwesome
                   style={styles.actionIcon}
@@ -62,7 +89,7 @@ const VisitModal: React.FC<PropTypes> = ({ restaurant, open, handleClose }) => {
                 <Text style={styles.actionText}>Add Photo</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleCheckIn}>
               <View style={styles.center}>
                 <FontAwesome
                   style={styles.actionIcon}

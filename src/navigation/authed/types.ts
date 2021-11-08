@@ -29,7 +29,12 @@ export type StackNavParamList = {
   };
   Preferences: Record<string, never>;
   AccountSettings: Record<string, never>;
-  UploadPost: Record<string, never>;
+  UploadPost: {
+    restaurant?: RestaurantType;
+  };
+  UploadReview: {
+    restaurant?: RestaurantType;
+  };
 };
 
 export type AuthNavigationProp = CompositeNavigationProp<

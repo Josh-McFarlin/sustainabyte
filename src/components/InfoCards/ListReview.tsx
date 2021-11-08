@@ -31,10 +31,10 @@ const ListCheckIn: React.FC<PropTypes> = ({ review }) => {
           uri: user.avatarUrl,
         }}
       />
-      <View>
+      <View style={styles.flex}>
         <View style={styles.hRow}>
           <Text style={styles.details}>{user.username}</Text>
-          <Text style={styles.details}>
+          <Text style={[styles.details, styles.textEnd, styles.flex]}>
             {dayjs(review.createdAt).format("MMM D, h:mmA")}
           </Text>
         </View>
@@ -72,6 +72,12 @@ const styles = StyleSheet.create({
   },
   body: {
     fontSize: 14,
+  },
+  textEnd: {
+    textAlign: "right",
+  },
+  flex: {
+    flex: 1,
   },
 });
 
