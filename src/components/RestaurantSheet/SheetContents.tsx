@@ -3,12 +3,31 @@ import { Image, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { hashtagsToIcons } from "../../utils/tags";
 import { RestaurantType } from "../../types/Restaurant";
+import { getOpenStatus } from "../../utils/date";
+import { useLocation, distanceBetween } from "../../utils/location";
 
 interface PropTypes {
   restaurant: RestaurantType;
 }
 
 const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
+  const location = useLocation();
+
+  const openStatus = React.useMemo(
+    () => getOpenStatus(restaurant.openHours),
+    [restaurant]
+  );
+  const distance = React.useMemo(
+    () =>
+      restaurant != null
+        ? distanceBetween(location, {
+            latitude: restaurant.coordinates.coordinates[0],
+            longitude: restaurant.coordinates.coordinates[1],
+          })
+        : 0,
+    [location, restaurant]
+  );
+
   const rating = restaurant.ratings.sum / restaurant.ratings.count;
 
   return (
@@ -65,14 +84,16 @@ const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
         <Text style={styles.secondary}>•</Text>
         <Text style={styles.secondary}>$$</Text>
         <Text style={styles.secondary}>•</Text>
-        <Text style={styles.secondary}>0.5mi</Text>
+        <Text style={styles.secondary}>{distance.toFixed(2)}mi</Text>
       </View>
       <View style={[styles.secondaryContainer, styles.marginBottom]}>
-        <Text style={styles.secondary}>Open</Text>
+        <Text style={styles.secondary}>
+          {openStatus.open ? "Open" : "Closed"}
+        </Text>
         <Text style={styles.secondary}>•</Text>
-        <Text style={styles.secondary}>Closes 2:30PM</Text>
-        <Text style={styles.secondary}>•</Text>
-        <Text style={styles.secondary}>Reopens 5:30PM</Text>
+        <Text style={styles.secondary}>
+          {openStatus.open ? openStatus.closes : (openStatus as any)?.opens}
+        </Text>
       </View>
       <View style={[styles.secondaryContainer, styles.marginBottom]}>
         <Text style={styles.secondary}>Dine-in</Text>

@@ -10,7 +10,7 @@ type PropTypes = {
   review: ReviewType;
 };
 
-const ListCheckIn: React.FC<PropTypes> = ({ review }) => {
+const ListReview: React.FC<PropTypes> = ({ review }) => {
   const { data: user } = useQuery<UserType, Error>(
     ["user", review.user],
     fetchUser,
@@ -19,23 +19,19 @@ const ListCheckIn: React.FC<PropTypes> = ({ review }) => {
     }
   );
 
-  if (review == null || user == null) {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
       <Image
         style={styles.userAvatar}
         source={{
-          uri: user.avatarUrl,
+          uri: user?.avatarUrl,
         }}
       />
       <View style={styles.flex}>
         <View style={styles.hRow}>
-          <Text style={styles.details}>{user.username}</Text>
+          <Text style={styles.details}>{user?.username}</Text>
           <Text style={[styles.details, styles.textEnd, styles.flex]}>
-            {dayjs(review.createdAt).format("MMM D, h:mmA")}
+            {dayjs(review?.createdAt).format("MMM D, h:mmA")}
           </Text>
         </View>
 
@@ -81,4 +77,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListCheckIn;
+export default ListReview;

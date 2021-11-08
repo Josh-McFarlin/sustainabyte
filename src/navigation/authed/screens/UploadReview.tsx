@@ -50,7 +50,6 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       });
     } catch (error) {
       console.log("Error", error?.message || error);
-      Alert.alert("Error", error?.message || error);
     }
   }, [navigation, restaurant._id, pictures, caption, selTags, rating]);
 

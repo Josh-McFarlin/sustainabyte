@@ -13,16 +13,16 @@ const TopBar: React.FC<PropTypes> = ({ user }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.topContainer}>
       <Image
-        style={styles.avatar}
+        style={styles.topAvatar}
         source={{
-          uri: user.avatarUrl,
+          uri: user?.avatarUrl,
         }}
       />
-      <Text style={styles.username}>{user.username}</Text>
+      <Text style={styles.topUsername}>{user?.username || ""}</Text>
       <TouchableOpacity onPress={handlePlus}>
-        <Text style={styles.followText}>
+        <Text style={styles.topFollowText}>
           {follows ? "Follow" : "Following"}
         </Text>
       </TouchableOpacity>
@@ -31,7 +31,7 @@ const TopBar: React.FC<PropTypes> = ({ user }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  topContainer: {
     backgroundColor: "#fff",
     display: "flex",
     flexDirection: "row",
@@ -41,18 +41,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#aaaaaa",
   },
-  avatar: {
+  topAvatar: {
     width: 36,
     height: 36,
     borderRadius: 50,
     marginRight: 8,
+    backgroundColor: "#ccc",
   },
-  username: {
+  topUsername: {
     fontSize: 12,
     fontWeight: "bold",
     flex: 1,
   },
-  followText: {
+  topFollowText: {
     fontSize: 14,
     fontWeight: "bold",
     color: "#3C8D90",

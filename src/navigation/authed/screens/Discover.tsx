@@ -17,10 +17,8 @@ import MapView, {
   Marker as MarkerBase,
 } from "react-native-maps";
 import BottomSheet from "@gorhom/bottom-sheet";
-import SingleReview from "../../../components/Review";
+import DiscoverItem from "../../../components/DiscoverItem";
 import type { TabNavParamList } from "../types";
-import { fetchReviews } from "../../../actions/review";
-import type { ReviewType } from "../../../types/Review";
 import SearchBar from "../../../components/SearchBar";
 import { RestaurantType } from "../../../types/Restaurant";
 import { useLocation } from "../../../utils/location";
@@ -54,13 +52,6 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
     latitudeDelta: 0.04,
     longitudeDelta: 0.05,
   });
-  const { data: reviews } = useQuery<ReviewType[], Error>(
-    ["reviews"],
-    fetchReviews,
-    {
-      initialData: [],
-    }
-  );
   const { data: restaurants } = useQuery<RestaurantType[], Error>(
     ["restaurants", searchRegion],
     fetchRestaurants,
@@ -76,8 +67,6 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
       initialData: [],
     }
   );
-
-  console.log(recent);
 
   const handleMarkerPress = React.useCallback(
     (restaurant) => {
@@ -126,7 +115,7 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
         Content: () => (
           <FlatList
             style={styles.list}
-            data={reviews}
+            data={recent}
             keyExtractor={(i) => i._id}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
@@ -134,7 +123,7 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
                   console.log(item._id);
                 }}
               >
-                <SingleReview review={item} />
+                <DiscoverItem item={item} />
               </TouchableWithoutFeedback>
             )}
             ItemSeparatorComponent={() => <View style={styles.spacer} />}
@@ -188,8 +177,8 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
       },
     }),
     [
+      recent,
       searchRegion,
-      reviews,
       handleMapPress,
       handleMarkerPress,
       wasMoved,

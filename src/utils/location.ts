@@ -100,3 +100,21 @@ export const useCurrentLocation = (
 
   return coordinates;
 };
+
+export const distanceBetween = (
+  one: CoordinatesType,
+  two: CoordinatesType
+): number => {
+  // https://stackoverflow.com/a/365853
+  const lat = (one.latitude * Math.PI) / 180;
+  const lon = (two.latitude * Math.PI) / 180;
+  const dLat = ((two.latitude - one.latitude) * Math.PI) / 180;
+  const dLon = ((two.longitude - one.longitude) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat) * Math.cos(lon) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return c * 3959;
+};

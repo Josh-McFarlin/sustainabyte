@@ -28,22 +28,18 @@ const ListCheckIn: React.FC<PropTypes> = ({ checkIn }) => {
     })) || []
   ) as any;
 
-  if (checkIn == null || restaurant == null) {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
       <Image
         style={styles.restAvatar}
         source={{
-          uri: restaurant.avatarUrl,
+          uri: restaurant?.avatarUrl,
         }}
       />
       <View>
-        <Text style={styles.restaurant}>{restaurant.name}</Text>
+        <Text style={styles.restaurant}>{restaurant?.name || ""}</Text>
         <Text style={styles.when}>
-          {dayjs(checkIn.createdAt).format("MMM D, h:mmA")}
+          {dayjs(checkIn?.createdAt).format("MMM D, h:mmA")}
         </Text>
         {userQueries.length > 0 && (
           <View style={styles.with}>
