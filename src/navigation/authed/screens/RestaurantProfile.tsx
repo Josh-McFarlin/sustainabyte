@@ -59,12 +59,12 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     ["offers", coordinates, { restaurant: restaurant?._id }],
     fetchOffers,
     {
-      enabled: restaurant != null,
+      enabled: id != null,
       initialData: [],
     }
   );
   const { data: reviews } = useQuery<ReviewType[], Error>(
-    ["reviews"],
+    ["reviews", { restaurant: restaurant?._id }],
     fetchReviews,
     {
       enabled: id != null,
@@ -72,7 +72,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     }
   );
   const { data: checkIns } = useQuery<CheckInType[], Error>(
-    ["checkIns"],
+    ["checkIns", { restaurant: restaurant?._id }],
     fetchCheckIns,
     {
       enabled: id != null,

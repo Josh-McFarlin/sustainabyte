@@ -37,17 +37,19 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const { data: reviews } = useQuery<ReviewType[], Error>(
-    ["reviews"],
+    ["reviews", { user: user?._id }],
     fetchReviews,
     {
       initialData: [],
+      enabled: id != null,
     }
   );
   const { data: checkIns } = useQuery<CheckInType[], Error>(
-    ["checkIns"],
+    ["checkIns", { user: user?._id }],
     fetchCheckIns,
     {
       initialData: [],
+      enabled: id != null,
     }
   );
 
