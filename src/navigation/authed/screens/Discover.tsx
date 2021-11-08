@@ -25,8 +25,10 @@ import SearchBar from "../../../components/SearchBar";
 import { RestaurantType } from "../../../types/Restaurant";
 import { useLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
+import { fetchRecent } from "../../../actions/recent";
 import RestaurantSheet from "../../../components/RestaurantSheet";
 import { mapStyle } from "../../../utils/map";
+import { RecentType } from "../../../types/Recent";
 
 const Marker = MarkerBase || (MapView as any).Marker;
 
@@ -67,6 +69,15 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
       onSuccess: () => setWasMoved(false),
     }
   );
+  const { data: recent } = useQuery<RecentType[], Error>(
+    ["recent", searchRegion],
+    fetchRecent,
+    {
+      initialData: [],
+    }
+  );
+
+  console.log(recent);
 
   const handleMarkerPress = React.useCallback(
     (restaurant) => {
@@ -119,7 +130,6 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
             keyExtractor={(i) => i._id}
             renderItem={({ item }) => (
               <TouchableWithoutFeedback
-                key={item._id}
                 onPress={() => {
                   console.log(item._id);
                 }}

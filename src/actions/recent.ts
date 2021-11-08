@@ -17,5 +17,5 @@ export const fetchRecent: QueryFunction<
     },
   });
 
-  return json.recents;
+  return json.recent;
 };

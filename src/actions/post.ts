@@ -29,11 +29,13 @@ export const fetchPost: QueryFunction<PostType, [string, string]> = async ({
 export const createPost = async (
   post: Pick<PostType, "ownerType" | "body" | "photoUrls" | "tags">
 ): Promise<PostType> => {
+  const photoUrls = post.photoUrls.filter((i) => i != null);
+
   const { data: json } = await authRequest.post(
     `${urls.api}/post`,
     JSON.stringify({
       ...post,
-      photoUrls: new Array(Array(post.photoUrls.length)),
+      photoUrls: [...new Array(photoUrls.length).fill(null)],
     }),
     {
       headers: {
@@ -44,7 +46,7 @@ export const createPost = async (
 
   await Promise.all(
     (json.post.photoUrls as string[]).map((uploadUrl, index) =>
-      uploadImage(post.photoUrls[index], uploadUrl)
+      uploadImage(photoUrls[index], uploadUrl)
     )
   );
 

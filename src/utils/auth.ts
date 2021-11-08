@@ -22,10 +22,20 @@ WebBrowser.maybeCompleteAuthSession({
   skipRedirectCheck: true,
 });
 
-const saveAuthObject = async (authObject: Auth0User) => {
-  const authString = JSON.stringify(authObject);
+const setupInterceptor = (authToken: string) =>
+  authRequest.interceptors.request.use(async (config) => {
+    // eslint-disable-next-line no-param-reassign
+    config.headers = {
+      Authorization: `Bearer ${authToken}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
 
-  await SecureStore.setItemAsync(authStorageKey, authString);
+    return config;
+  }, Promise.reject);
+
+const saveAuthToken = async (authToken: string) => {
+  await SecureStore.setItemAsync(authStorageKey, authToken);
 };
 
 const getAuthObject = async (): Promise<Auth0User | null> => {
@@ -36,13 +46,14 @@ const getAuthObject = async (): Promise<Auth0User | null> => {
   }
 
   try {
-    const resObj: Auth0User = JSON.parse(res);
+    const decodedObj: Auth0User = jwtDecode(res);
+    setupInterceptor(res);
 
-    if (resObj.exp == null || resObj.exp * 1000 < Date.now()) {
+    if (decodedObj.exp == null || decodedObj.exp * 1000 < Date.now()) {
       throw new Error("Auth Object has expired!");
     }
 
-    return resObj;
+    return decodedObj;
   } catch (error) {
     console.error("Auth Error:", error?.message || error);
     return null;
@@ -98,8 +109,11 @@ export const useAuthBase = (): AuthContextType => {
           const jwtToken = result.params.id_token;
           const decoded = jwtDecode(jwtToken);
 
+          console.log(jwtToken);
+
           setAuth0User(decoded as any);
-          saveAuthObject(decoded as any);
+          setupInterceptor(jwtToken);
+          saveAuthToken(jwtToken);
 
           break;
         }
@@ -117,23 +131,6 @@ export const useAuthBase = (): AuthContextType => {
       }
     }
   }, [result]);
-
-  React.useEffect(() => {
-    const interceptor = authRequest.interceptors.request.use(async (config) => {
-      // eslint-disable-next-line no-param-reassign
-      config.headers = {
-        Authorization: `Bearer ${auth0User.sub}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      };
-
-      return config;
-    }, Promise.reject);
-
-    return () => {
-      authRequest.interceptors.request.eject(interceptor);
-    };
-  }, [auth0User]);
 
   const login = React.useCallback(
     async (): Promise<AuthSession.AuthSessionResult> =>

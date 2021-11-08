@@ -12,6 +12,10 @@ export const uploadImage = async (
 
   return fetch(uploadUrl, {
     method: "PUT",
+    headers: {
+      "Content-Type": "image/jpeg",
+      "x-amz-acl": "public-read",
+    },
     body: imageBlob,
   });
 };
