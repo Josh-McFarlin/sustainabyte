@@ -1,4 +1,5 @@
 import axios from "axios";
+import qs from "qs";
 
 export const request = axios.create();
 export const authRequest = axios.create({
@@ -9,4 +10,8 @@ export const authRequest = axios.create({
 
     return json.data;
   }),
+  paramsSerializer: (p) =>
+    qs.stringify(p, {
+      arrayFormat: "comma",
+    }),
 });

@@ -27,6 +27,7 @@ import { fetchOffers } from "../../../actions/offer";
 import { fetchSocialGroups } from "../../../actions/socialGroup";
 import { useAuth } from "../../../utils/auth";
 import OffersModal from "../../../components/OffersModal";
+import { hashtagsToIcons } from "../../../utils/tags";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Home">;
 
@@ -38,37 +39,11 @@ enum SectionType {
   GALLERY_SOCIAL_GROUP,
 }
 
-const categories = [
-  {
-    name: "Italian",
-    icon: require("../../../../assets/icons/italian.png"),
-  },
-  {
-    name: "Mexican",
-    icon: require("../../../../assets/icons/mexican.png"),
-  },
-  {
-    name: "Indian",
-    icon: require("../../../../assets/icons/indian.png"),
-  },
-  {
-    name: "Lebanese",
-    icon: require("../../../../assets/icons/lebanese.png"),
-  },
-  {
-    name: "Asian",
-    icon: require("../../../../assets/icons/asian.png"),
-  },
-  {
-    name: "American",
-    icon: require("../../../../assets/icons/american.png"),
-  },
-];
-
 const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
   const { user } = useAuth();
   const coordinates = useLocation();
   const [selOffer, setSelOffer] = React.useState<number | null>(null);
+  const [filtering, setFiltering] = React.useState<string | null>(null);
 
   const { data: offers } = useQuery<OfferType[], Error>(
     ["offers", coordinates],
@@ -79,7 +54,15 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
     }
   );
   const { data: restaurants } = useQuery<RestaurantType[], Error>(
-    ["restaurants", coordinates],
+    [
+      "restaurants",
+      coordinates,
+      {
+        ...(filtering != null && {
+          tags: [filtering],
+        }),
+      },
+    ],
     fetchRestaurants,
     {
       enabled: coordinates != null,
@@ -105,42 +88,53 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
   const handleCloseOffer = React.useCallback(() => setSelOffer(null), []);
 
   const onPressCategory = React.useCallback((category: string) => {
-    console.log(category);
+    setFiltering((prevState) => (prevState === category ? null : category));
   }, []);
 
   const data = React.useMemo(
-    () => [
-      {
-        title: "You might like to follow",
-        key: "1",
-        data: socialGroups,
-        type: SectionType.GALLERY_SOCIAL_GROUP,
-        horizontal: true,
-      },
-      {
-        title: "We thought you may like",
-        key: "2",
-        data: restaurants,
-        type: SectionType.GALLERY_RESTAURANT,
-        horizontal: true,
-      },
-      {
-        title: "Top updates for you",
-        subtitle: "Promoted offers from restaurants near you",
-        key: "3",
-        data: offers,
-        type: SectionType.CIRCLE_OFFER,
-        horizontal: true,
-      },
-      {
-        title: "All Sustainabytes",
-        key: "4",
-        data: restaurants,
-        type: SectionType.GALLERY_RESTAURANT,
-        horizontal: false,
-      },
-    ],
-    [restaurants, offers, socialGroups]
+    () =>
+      filtering
+        ? [
+            {
+              title: "All Sustainabytes",
+              key: "5",
+              data: restaurants,
+              type: SectionType.GALLERY_RESTAURANT,
+              horizontal: false,
+            },
+          ]
+        : [
+            {
+              title: "You might like to follow",
+              key: "1",
+              data: socialGroups,
+              type: SectionType.GALLERY_SOCIAL_GROUP,
+              horizontal: true,
+            },
+            {
+              title: "We thought you may like",
+              key: "2",
+              data: restaurants,
+              type: SectionType.GALLERY_RESTAURANT,
+              horizontal: true,
+            },
+            {
+              title: "Top updates for you",
+              subtitle: "Promoted offers from restaurants near you",
+              key: "3",
+              data: offers,
+              type: SectionType.CIRCLE_OFFER,
+              horizontal: true,
+            },
+            {
+              title: "All Sustainabytes",
+              key: "4",
+              data: restaurants,
+              type: SectionType.GALLERY_RESTAURANT,
+              horizontal: false,
+            },
+          ],
+    [filtering, restaurants, offers, socialGroups]
   );
 
   return (
@@ -164,14 +158,21 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
               />
             </View>
             <ScrollView style={styles.categories} horizontal>
-              {categories.map((category) => (
+              {Object.entries(hashtagsToIcons).map(([category, icon]) => (
                 <TouchableOpacity
-                  key={category.name}
-                  onPress={() => onPressCategory(category.name)}
+                  key={category}
+                  onPress={() => onPressCategory(category)}
                 >
-                  <View style={styles.category}>
-                    <Image style={styles.categoryIcon} source={category.icon} />
-                    <Text style={styles.categoryText}>{category.name}</Text>
+                  <View
+                    style={[
+                      styles.category,
+                      filtering === category
+                        ? styles.selected
+                        : styles.notSelected,
+                    ]}
+                  >
+                    <Image style={styles.categoryIcon} source={icon} />
+                    <Text style={styles.categoryText}>{category}</Text>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -357,6 +358,16 @@ const styles = StyleSheet.create({
   },
   marginBottom: {
     marginBottom: 8,
+  },
+  selected: {
+    borderBottomWidth: 2,
+    borderColor: "#4b9193",
+    paddingBottom: 4,
+  },
+  notSelected: {
+    borderBottomWidth: 2,
+    borderColor: "transparent",
+    paddingBottom: 4,
   },
 });
 
