@@ -3,12 +3,26 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { CheckInType } from "../types/CheckIn";
 
-export const fetchCheckIns: QueryFunction<CheckInType[], [string]> =
-  async (): Promise<CheckInType[]> => {
-    const { data: json } = await authRequest.get(`${urls.api}/checkIn`);
+export const fetchCheckIns: QueryFunction<
+  CheckInType[],
+  [
+    string,
+    {
+      user?: string;
+      restaurant?: string;
+      tags?: string[];
+      page?: number;
+      perPage?: number;
+    }
+  ]
+> = async ({ queryKey }): Promise<CheckInType[]> => {
+  const [_key, params = {}] = queryKey;
+  const { data: json } = await authRequest.get(`${urls.api}/checkIn`, {
+    params,
+  });
 
-    return json.checkIns;
-  };
+  return json.checkIns;
+};
 
 export const fetchCheckIn: QueryFunction<CheckInType, [string, string]> =
   async ({ queryKey }): Promise<CheckInType> => {

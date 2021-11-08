@@ -15,3 +15,8 @@ export interface LocationType {
   address: AddressType;
   coordinates: CoordinatesType;
 }
+
+export interface PointType {
+  type: "Point";
+  coordinates: [number, number];
+}

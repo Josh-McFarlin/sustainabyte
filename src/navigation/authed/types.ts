@@ -6,7 +6,6 @@ import type { RestaurantType } from "../../types/Restaurant";
 
 export type TabNavParamList = {
   Home: Record<string, never>;
-  RestaurantMap: Record<string, never>;
   Discover: Record<string, never>;
   Leaderboard: Record<string, never>;
   Profile: {

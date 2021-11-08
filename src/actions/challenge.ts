@@ -3,12 +3,26 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { ChallengeType } from "../types/Challenge";
 
-export const fetchChallenges: QueryFunction<ChallengeType[], [string]> =
-  async (): Promise<ChallengeType[]> => {
-    const { data: json } = await authRequest.get(`${urls.api}/challenge`);
+export const fetchChallenges: QueryFunction<
+  ChallengeType[],
+  [
+    string,
+    {
+      name?: string;
+      user?: string;
+      owner?: string;
+      page?: number;
+      perPage?: number;
+    }
+  ]
+> = async ({ queryKey }): Promise<ChallengeType[]> => {
+  const [_key, params = {}] = queryKey;
+  const { data: json } = await authRequest.get(`${urls.api}/challenge`, {
+    params,
+  });
 
-    return json.challenges;
-  };
+  return json.challenges;
+};
 
 export const fetchChallenge: QueryFunction<ChallengeType, [string, string]> =
   async ({ queryKey }): Promise<ChallengeType> => {

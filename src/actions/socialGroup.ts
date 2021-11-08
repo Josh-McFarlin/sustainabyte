@@ -6,11 +6,24 @@ import type { CoordinatesType } from "../types/Location";
 
 export const fetchSocialGroups: QueryFunction<
   SocialGroupType[],
-  [string, CoordinatesType]
+  [
+    string,
+    {
+      coordinates?: CoordinatesType;
+      name?: string;
+      owner?: string;
+      member?: string[];
+      tags?: string[];
+      page?: number;
+      perPage?: number;
+    }
+  ]
 > = async ({ queryKey }): Promise<SocialGroupType[]> => {
-  const [_key] = queryKey;
+  const [_key, params = {}] = queryKey;
 
-  const { data: json } = await authRequest.get(`${urls.api}/socialGroup`);
+  const { data: json } = await authRequest.get(`${urls.api}/socialGroup`, {
+    params,
+  });
 
   return json.socialGroups;
 };

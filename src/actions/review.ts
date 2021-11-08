@@ -3,12 +3,26 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { ReviewType } from "../types/Review";
 
-export const fetchReviews: QueryFunction<ReviewType[], [string]> =
-  async (): Promise<ReviewType[]> => {
-    const { data: json } = await authRequest.get(`${urls.api}/review`);
+export const fetchReviews: QueryFunction<
+  ReviewType[],
+  [
+    string,
+    {
+      user?: string;
+      restaurant?: string;
+      tags?: string[];
+      page?: number;
+      perPage?: number;
+    }
+  ]
+> = async ({ queryKey }): Promise<ReviewType[]> => {
+  const [_key, params = {}] = queryKey;
+  const { data: json } = await authRequest.get(`${urls.api}/review`, {
+    params,
+  });
 
-    return json.reviews;
-  };
+  return json.reviews;
+};
 
 export const fetchReview: QueryFunction<ReviewType, [string, string]> = async ({
   queryKey,

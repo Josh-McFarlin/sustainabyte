@@ -6,12 +6,22 @@ import type { CoordinatesType } from "../types/Location";
 
 export const fetchRestaurants: QueryFunction<
   RestaurantType[],
-  [string, CoordinatesType]
+  [
+    string,
+    CoordinatesType,
+    {
+      name?: string;
+      tags?: string[];
+      page?: number;
+      perPage?: number;
+    }
+  ]
 > = async ({ queryKey }): Promise<RestaurantType[]> => {
-  const [_key, coordinates] = queryKey;
+  const [_key, coordinates, params = {}] = queryKey;
 
   const { data: json } = await authRequest.get(`${urls.api}/restaurant`, {
     params: {
+      ...params,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
     },

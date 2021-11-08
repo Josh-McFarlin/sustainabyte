@@ -4,12 +4,25 @@ import urls from "../utils/urls";
 import { uploadImage } from "../utils/image";
 import type { PostType } from "../types/Post";
 
-export const fetchPosts: QueryFunction<PostType[], [string]> = async ({
-  queryKey,
-}): Promise<PostType[]> => {
-  const [_key] = queryKey;
+export const fetchPosts: QueryFunction<
+  PostType[],
+  [
+    string,
+    {
+      user?: string;
+      restaurant?: string;
+      ownerType?: "User" | "Restaurant";
+      tags?: string[];
+      page?: number;
+      perPage?: number;
+    }
+  ]
+> = async ({ queryKey }): Promise<PostType[]> => {
+  const [_key, params = {}] = queryKey;
 
-  const { data: json } = await authRequest.get(`${urls.api}/post`);
+  const { data: json } = await authRequest.get(`${urls.api}/post`, {
+    params,
+  });
 
   return json.posts;
 };

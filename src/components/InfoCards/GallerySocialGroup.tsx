@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   image: {
     width: 50,
     height: 50,
-    resizeMode: "contain",
+    resizeMode: "cover",
     marginRight: 12,
     borderRadius: 12,
     backgroundColor: "#888",

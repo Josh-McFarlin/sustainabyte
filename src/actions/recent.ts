@@ -6,12 +6,23 @@ import type { CoordinatesType } from "../types/Location";
 
 export const fetchRecent: QueryFunction<
   RecentType[],
-  [string, CoordinatesType]
+  [
+    string,
+    CoordinatesType,
+    {
+      users?: string;
+      restaurants?: string;
+      tags?: string[];
+      page?: number;
+      perPage?: number;
+    }
+  ]
 > = async ({ queryKey }): Promise<RecentType[]> => {
-  const [_key, coordinates] = queryKey;
+  const [_key, coordinates, params = {}] = queryKey;
 
   const { data: json } = await authRequest.get(`${urls.api}/recent`, {
     params: {
+      ...params,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
     },

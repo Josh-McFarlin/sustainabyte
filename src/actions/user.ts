@@ -3,12 +3,23 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { UserType } from "../types/User";
 
-export const fetchUsers: QueryFunction<UserType[], [string]> =
-  async (): Promise<UserType[]> => {
-    const { data: json } = await authRequest.get(`${urls.api}/user`);
+export const fetchUsers: QueryFunction<
+  UserType[],
+  [
+    string,
+    {
+      email?: string;
+      username?: string;
+    }
+  ]
+> = async ({ queryKey }): Promise<UserType[]> => {
+  const [_key, params = {}] = queryKey;
+  const { data: json } = await authRequest.get(`${urls.api}/user`, {
+    params,
+  });
 
-    return json.users;
-  };
+  return json.users;
+};
 
 export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
   queryKey,

@@ -166,7 +166,10 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
               {restaurants?.map((restaurant) => (
                 <Marker
                   key={restaurant._id}
-                  coordinate={restaurant.coordinates}
+                  coordinate={{
+                    latitude: restaurant.coordinates.coordinates[0],
+                    longitude: restaurant.coordinates.coordinates[1],
+                  }}
                   onPress={() => handleMarkerPress(restaurant)}
                 />
               ))}

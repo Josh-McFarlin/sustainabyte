@@ -1,4 +1,4 @@
-import type { AddressType, CoordinatesType } from "./Location";
+import type { AddressType, PointType } from "./Location";
 
 export interface DayAvailabilityType {
   startHour: number;
@@ -35,7 +35,7 @@ export interface RestaurantType {
   tags: string[];
   openHours: OpenHoursType;
   address: AddressType;
-  coordinates: CoordinatesType;
+  coordinates: PointType;
   website?: string;
   phoneNumber?: string;
   ratings: {
