@@ -15,13 +15,13 @@ import { useQuery } from "react-query";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
 import type { TabNavParamList } from "../types";
-import { ReviewType } from "../../../types/Review";
-import { fetchReviews } from "../../../actions/review";
 import { CheckInType } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
 import { fetchUser } from "../../../actions/user";
+import { fetchPosts } from "../../../actions/post";
 import { UserType } from "../../../types/User";
+import { PostType } from "../../../types/Post";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
@@ -36,9 +36,9 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { data: user } = useQuery<UserType, Error>(["user", id], fetchUser);
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
-  const { data: reviews } = useQuery<ReviewType[], Error>(
-    ["reviews", { user: user?._id }],
-    fetchReviews,
+  const { data: posts } = useQuery<PostType[], Error>(
+    ["posts", { user: user?._id }],
+    fetchPosts,
     {
       initialData: [],
       enabled: id != null,
@@ -70,7 +70,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       [TabTypes.GALLERY]: {
         type: TabTypes.GALLERY,
         icon: ({ ...props }) => <Ionicons name="grid" {...props} />,
-        data: reviews,
+        data: posts,
         listProps: PostGallery.listProps,
         Header: () => null,
         renderItem: PostGallery.renderItem,
@@ -86,13 +86,13 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       [TabTypes.SAVED]: {
         type: TabTypes.SAVED,
         icon: ({ ...props }) => <Ionicons name="bookmark" {...props} />,
-        data: reviews,
+        data: posts,
         listProps: PostGallery.listProps,
         Header: () => null,
         renderItem: PostGallery.renderItem,
       },
     }),
-    [checkIns, reviews]
+    [checkIns, posts]
   );
 
   if (user == null) {
@@ -103,7 +103,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList<ReviewType | CheckInType>
+      <FlatList<PostType | CheckInType>
         style={styles.container}
         data={data}
         keyExtractor={(i) => i._id}

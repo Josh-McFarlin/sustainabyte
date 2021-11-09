@@ -34,6 +34,8 @@ import { getOpenStatus, formatOpenHours } from "../../../utils/date";
 import VisitModal from "../../../components/VisitModal";
 import ReviewHistory from "../../../components/ReviewHistory";
 import { useLocation } from "../../../utils/location";
+import { fetchPosts } from "../../../actions/post";
+import type { PostType } from "../../../types/Post";
 
 type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
 
@@ -58,6 +60,14 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { data: offers } = useQuery<OfferType[], Error>(
     ["offers", coordinates, { restaurant: restaurant?._id }],
     fetchOffers,
+    {
+      enabled: id != null,
+      initialData: [],
+    }
+  );
+  const { data: posts } = useQuery<PostType[], Error>(
+    ["posts", { restaurant: restaurant?._id }],
+    fetchPosts,
     {
       enabled: id != null,
       initialData: [],
@@ -119,7 +129,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       [TabTypes.GALLERY]: {
         type: TabTypes.GALLERY,
         icon: (props) => <Ionicons name="grid" {...props} />,
-        data: reviews,
+        data: posts,
         listProps: PostGallery.listProps,
         Header: () => null,
         renderItem: PostGallery.renderItem,
@@ -151,7 +161,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         renderItem: ReviewHistory.renderItem,
       },
     }),
-    [checkIns, reviews, restaurant]
+    [checkIns, posts, reviews, restaurant]
   );
 
   if (restaurant == null) {
@@ -162,7 +172,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FlatList<ReviewType | CheckInType>
+      <FlatList<PostType | ReviewType | CheckInType>
         style={styles.container}
         data={data}
         keyExtractor={(i) => i._id}

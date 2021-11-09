@@ -7,11 +7,11 @@ import {
   View,
   ListRenderItem,
 } from "react-native";
-import type { ReviewType } from "../../types/Review";
+import type { PostType } from "../../types/Post";
 
 const numColumns = 3;
 
-export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
+export const renderItem: ListRenderItem<PostType> = ({ item }) => (
   <View key={item._id} style={styles.post}>
     <TouchableOpacity
       style={styles.button}
