@@ -152,12 +152,11 @@ export const useAuthBase = (): AuthContextType => {
       },
       async (error) => {
         if (
-          error.config &&
-          error.response &&
-          (error.response.status === 401 || error.response.status === 403)
+          error?.response?.status === 401 ||
+          error?.response?.status === 403
         ) {
           try {
-            await login();
+            await logout();
           } catch (_) {
             return Promise.reject(error);
           }
@@ -170,7 +169,7 @@ export const useAuthBase = (): AuthContextType => {
     return () => {
       authRequest.interceptors.request.eject(interceptor);
     };
-  }, [auth0Token, login]);
+  }, [auth0Token, logout]);
 
   return {
     user,
