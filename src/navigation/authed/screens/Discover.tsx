@@ -46,6 +46,10 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
   const [selectedRest, setRestaurant] = React.useState<RestaurantType | null>(
     null
   );
+  const [filteringText, setFilteringText] = React.useState<string | null>(null);
+  const [filteringTags, setFilteringTags] = React.useState<string[] | null>(
+    null
+  );
   const [searchRegion, setSearchRegion] = React.useState<Region>({
     latitude: coordinates.latitude,
     longitude: coordinates.longitude,
@@ -53,7 +57,20 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
     longitudeDelta: 0.05,
   });
   const { data: restaurants } = useQuery<RestaurantType[], Error>(
-    ["restaurants", searchRegion],
+    [
+      "restaurants",
+      searchRegion,
+      {
+        ...(filteringText != null &&
+          filteringText.length > 0 && {
+            name: filteringText,
+          }),
+        ...(filteringTags != null &&
+          filteringTags.length > 0 && {
+            tags: filteringTags,
+          }),
+      },
+    ],
     fetchRestaurants,
     {
       initialData: [],
@@ -89,12 +106,16 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
   );
 
   const handleSearch = React.useCallback((search: string, tags: string[]) => {
-    console.log(search, tags);
     if (search.length > 0 || tags.length > 0) {
+      sheetRef.current.close();
+      setFilteringTags(tags);
+      setFilteringText(search);
       setCurTab(TabTypes.SEARCH);
     } else {
       sheetRef.current.close();
       setCurTab(TabTypes.RECENT);
+      setFilteringTags(null);
+      setFilteringText(null);
     }
   }, []);
 
