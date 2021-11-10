@@ -40,7 +40,10 @@ export const fetchPost: QueryFunction<PostType, [string, string]> = async ({
 };
 
 export const createPost = async (
-  post: Pick<PostType, "ownerType" | "body" | "photoUrls" | "tags">
+  post: Pick<
+    PostType,
+    "ownerType" | "restaurant" | "body" | "photoUrls" | "tags"
+  >
 ): Promise<PostType> => {
   const photoUrls = post.photoUrls.filter((i) => i != null);
 

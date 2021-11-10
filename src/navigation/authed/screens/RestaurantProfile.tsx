@@ -16,6 +16,11 @@ import {
 } from "@expo/vector-icons";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
+import { CompositeScreenProps } from "@react-navigation/native";
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
 import { ReviewType } from "../../../types/Review";
@@ -23,7 +28,7 @@ import { fetchReviews } from "../../../actions/review";
 import { CheckInType } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
-import { TabNavParamList } from "../types";
+import { StackNavParamList, TabNavParamList } from "../types";
 import { fetchRestaurant } from "../../../actions/restaurant";
 import { RestaurantType } from "../../../types/Restaurant";
 import OffersModal from "../../../components/OffersModal";
@@ -37,7 +42,10 @@ import { useLocation } from "../../../utils/location";
 import { fetchPosts } from "../../../actions/post";
 import type { PostType } from "../../../types/Post";
 
-type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
+type PropTypes = CompositeScreenProps<
+  BottomTabScreenProps<TabNavParamList, "Profile">,
+  NativeStackScreenProps<StackNavParamList>
+>;
 
 enum TabTypes {
   GALLERY,
@@ -132,7 +140,18 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         data: posts,
         listProps: PostGallery.listProps,
         Header: () => null,
-        renderItem: PostGallery.renderItem,
+        renderItem: (i) => (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Post", {
+                id: i.item._id,
+                post: i.item,
+              })
+            }
+          >
+            {PostGallery.renderItem(i)}
+          </TouchableOpacity>
+        ),
       },
       [TabTypes.MENU]: {
         type: TabTypes.MENU,
@@ -158,10 +177,21 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         data: reviews,
         listProps: ReviewHistory.listProps,
         Header: () => <ReviewHistory.Header restaurant={restaurant} />,
-        renderItem: ReviewHistory.renderItem,
+        renderItem: (i) => (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Review", {
+                id: i.item._id,
+                review: i.item,
+              })
+            }
+          >
+            {ReviewHistory.renderItem(i)}
+          </TouchableOpacity>
+        ),
       },
     }),
-    [checkIns, posts, reviews, restaurant]
+    [navigation, checkIns, posts, reviews, restaurant]
   );
 
   if (restaurant == null) {

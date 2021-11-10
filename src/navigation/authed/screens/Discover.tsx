@@ -17,6 +17,8 @@ import MapView, {
   Marker as MarkerBase,
 } from "react-native-maps";
 import BottomSheet from "@gorhom/bottom-sheet";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import DiscoverItem from "../../../components/DiscoverItem";
 import type { TabNavParamList } from "../types";
 import SearchBar from "../../../components/SearchBar";
@@ -27,6 +29,7 @@ import { fetchRecent } from "../../../actions/recent";
 import RestaurantSheet from "../../../components/RestaurantSheet";
 import { mapStyle } from "../../../utils/map";
 import { RecentType } from "../../../types/Recent";
+import { StackNavParamList } from "../types";
 
 const Marker = MarkerBase || (MapView as any).Marker;
 
@@ -35,7 +38,10 @@ enum TabTypes {
   SEARCH,
 }
 
-type PropTypes = BottomTabScreenProps<TabNavParamList, "Discover">;
+type PropTypes = CompositeScreenProps<
+  BottomTabScreenProps<TabNavParamList, "Discover">,
+  NativeStackScreenProps<StackNavParamList>
+>;
 
 const DiscoverScreen: React.FC<PropTypes> = () => {
   const coordinates = useLocation();

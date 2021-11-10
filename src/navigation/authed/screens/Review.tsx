@@ -1,33 +1,64 @@
 import * as React from "react";
 import {
   View,
-  ScrollView,
   Text,
-  Image,
   StyleSheet,
+  Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import PhotoGallery from "../PhotoGallery";
-import type { UserType } from "../../types/User";
-import { RestaurantType } from "../../types/Restaurant";
-import { PostType } from "../../types/Post";
-
-type PropTypes = {
-  user?: UserType;
-  restaurant?: RestaurantType;
-  data: PostType;
-};
+import { useQuery } from "react-query";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import dayjs from "dayjs";
+import { StackNavParamList } from "../types";
+import { fetchRestaurant } from "../../../actions/restaurant";
+import { RestaurantType } from "../../../types/Restaurant";
+import { fetchReview } from "../../../actions/review";
+import type { ReviewType } from "../../../types/Review";
+import { UserType } from "../../../types/User";
+import { fetchUser } from "../../../actions/user";
+import PhotoGallery from "../../../components/PhotoGallery";
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
 const iconColor = "#3C8D90";
 
-const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
-  const { tags, photoUrls, body, createdAt } = data;
-  const follows = false;
-  const saved = false;
+type PropTypes = NativeStackScreenProps<StackNavParamList, "Review">;
+
+const ReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
+  const { id, review: initialReview } = route.params;
+
+  const { data: review } = useQuery<ReviewType, Error>(
+    ["review", id],
+    fetchReview,
+    {
+      enabled: id != null && initialReview == null,
+      initialData: initialReview,
+    }
+  );
+  const { data: restaurant } = useQuery<RestaurantType, Error>(
+    ["restaurant", review?.restaurant],
+    fetchRestaurant,
+    {
+      enabled: review != null && review?.restaurant != null,
+    }
+  );
+  const { data: user } = useQuery<UserType, Error>(
+    ["user", review?.user],
+    fetchUser,
+    {
+      enabled: review != null && review?.user != null,
+    }
+  );
+
+  React.useEffect(() => {
+    if (restaurant != null) {
+      navigation.setOptions({
+        headerTitle: restaurant.name,
+      });
+    }
+  }, [restaurant, navigation]);
 
   const handlePlus = React.useCallback(() => {
     console.log("Pressed plus");
@@ -45,6 +76,14 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
     console.log("Saved image");
   }, []);
 
+  if (review == null || (restaurant == null && user == null)) {
+    return null;
+  }
+
+  const { tags, photoUrls, body, createdAt } = review;
+  const follows = false;
+  const saved = false;
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
@@ -56,12 +95,8 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
         />
         <Text>
           <Text style={styles.restName}>{user?.username || ""}</Text>{" "}
-          {restaurant != null && (
-            <>
-              <Text style={styles.otherText}>checked into</Text>{" "}
-              <Text style={styles.restName}>{restaurant?.name || ""}</Text>
-            </>
-          )}
+          <Text style={styles.otherText}>checked into</Text>{" "}
+          <Text style={styles.restName}>{restaurant?.name || ""}</Text>
         </Text>
         <TouchableOpacity style={styles.flex} onPress={handlePlus}>
           <Text style={styles.topFollowText}>
@@ -228,7 +263,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#3C8D90",
-    textAlign: "right",
   },
   flex: {
     flex: 1,
@@ -236,4 +270,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DiscoverPost;
+export default ReviewScreen;

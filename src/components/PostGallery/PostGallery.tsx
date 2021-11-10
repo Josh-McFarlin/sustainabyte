@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
   StyleSheet,
-  TouchableOpacity,
   Image,
   Dimensions,
   View,
@@ -13,19 +12,12 @@ const numColumns = 3;
 
 export const renderItem: ListRenderItem<PostType> = ({ item }) => (
   <View key={item._id} style={styles.post}>
-    <TouchableOpacity
-      style={styles.button}
-      onPress={() => {
-        console.log(item._id);
+    <Image
+      style={styles.image}
+      source={{
+        uri: item.photoUrls[0],
       }}
-    >
-      <Image
-        style={styles.image}
-        source={{
-          uri: item.photoUrls[0],
-        }}
-      />
-    </TouchableOpacity>
+    />
   </View>
 );
 
@@ -42,9 +34,6 @@ const styles = StyleSheet.create({
     width: tileSize,
     height: tileSize,
     padding,
-  },
-  button: {
-    flex: 1,
   },
   image: {
     flex: 1,

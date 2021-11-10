@@ -13,6 +13,8 @@ import PreferencesScreen from "./screens/Preferences";
 import AccountSettingsScreen from "./screens/AccountSettings";
 import UploadPostScreen from "./screens/UploadPost";
 import UploadReviewScreen from "./screens/UploadReview";
+import PostScreen from "./screens/Post";
+import ReviewScreen from "./screens/Review";
 
 const Stack = createNativeStackNavigator<StackNavParamList>();
 const Tab = createBottomTabNavigator<TabNavParamList>();
@@ -141,6 +143,20 @@ const AuthedNavigator: React.FC = () => {
           options={{
             headerTitle: "New Review",
             gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="Post"
+          component={PostScreen}
+          options={{
+            headerTitle: "Post",
+          }}
+        />
+        <Stack.Screen
+          name="Review"
+          component={ReviewScreen}
+          options={{
+            headerTitle: "Review",
           }}
         />
       </Stack.Group>

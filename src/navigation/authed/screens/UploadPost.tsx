@@ -41,17 +41,23 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
 
   const handleUpload = React.useCallback(async () => {
     try {
-      await createPost({
+      const newPost = await createPost({
         ownerType: "User",
+        ...(restaurant != null && {
+          restaurant: restaurant._id,
+        }),
         body: caption,
         photoUrls: [picture],
         tags: selTags,
       });
-      navigation.navigate("Tabs");
+      navigation.navigate("Post", {
+        id: newPost._id,
+        post: newPost,
+      });
     } catch (error) {
       console.log("Error", error?.message || error);
     }
-  }, [navigation, picture, caption, selTags]);
+  }, [navigation, restaurant, picture, caption, selTags]);
 
   React.useEffect(() => {
     navigation.setOptions({

@@ -12,6 +12,8 @@ import {
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import type { TabNavParamList } from "../types";
@@ -28,8 +30,12 @@ import { fetchSocialGroups } from "../../../actions/socialGroup";
 import { useAuth } from "../../../utils/auth";
 import OffersModal from "../../../components/OffersModal";
 import { hashtagsToIcons } from "../../../utils/tags";
+import { StackNavParamList } from "../types";
 
-type PropTypes = BottomTabScreenProps<TabNavParamList, "Home">;
+type PropTypes = CompositeScreenProps<
+  BottomTabScreenProps<TabNavParamList, "Home">,
+  NativeStackScreenProps<StackNavParamList>
+>;
 
 enum SectionType {
   LIST_RESTAURANT,

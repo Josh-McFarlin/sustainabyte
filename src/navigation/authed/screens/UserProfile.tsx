@@ -12,6 +12,8 @@ import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
 import type { TabNavParamList } from "../types";
@@ -22,8 +24,12 @@ import { fetchUser } from "../../../actions/user";
 import { fetchPosts } from "../../../actions/post";
 import { UserType } from "../../../types/User";
 import { PostType } from "../../../types/Post";
+import { StackNavParamList } from "../types";
 
-type PropTypes = BottomTabScreenProps<TabNavParamList, "Profile">;
+type PropTypes = CompositeScreenProps<
+  BottomTabScreenProps<TabNavParamList, "Profile">,
+  NativeStackScreenProps<StackNavParamList>
+>;
 
 enum TabTypes {
   GALLERY,
@@ -73,7 +79,18 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         data: posts,
         listProps: PostGallery.listProps,
         Header: () => null,
-        renderItem: PostGallery.renderItem,
+        renderItem: (i) => (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Post", {
+                id: i.item._id,
+                post: i.item,
+              })
+            }
+          >
+            {PostGallery.renderItem(i)}
+          </TouchableOpacity>
+        ),
       },
       [TabTypes.CHECKINS]: {
         type: TabTypes.CHECKINS,
@@ -89,10 +106,21 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         data: posts,
         listProps: PostGallery.listProps,
         Header: () => null,
-        renderItem: PostGallery.renderItem,
+        renderItem: (i) => (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Post", {
+                id: i.item._id,
+                post: i.item,
+              })
+            }
+          >
+            {PostGallery.renderItem(i)}
+          </TouchableOpacity>
+        ),
       },
     }),
-    [checkIns, posts]
+    [navigation, checkIns, posts]
   );
 
   if (user == null) {

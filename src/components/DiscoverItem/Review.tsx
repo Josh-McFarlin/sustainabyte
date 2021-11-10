@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import PhotoGallery from "./PhotoGallery";
+import PhotoGallery from "../PhotoGallery";
 import type { UserType } from "../../types/User";
 import { RestaurantType } from "../../types/Restaurant";
 import { ReviewType } from "../../types/Review";

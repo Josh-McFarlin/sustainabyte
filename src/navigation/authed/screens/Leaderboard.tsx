@@ -15,15 +15,21 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { TabNavParamList } from "../types";
 import { fetchUsers } from "../../../actions/user";
 import { fetchChallenges } from "../../../actions/challenge";
 import type { UserType } from "../../../types/User";
 import type { ChallengeType } from "../../../types/Challenge";
+import { StackNavParamList } from "../types";
 
 dayjs.extend(relativeTime);
 
-type PropTypes = BottomTabScreenProps<TabNavParamList, "Leaderboard">;
+type PropTypes = CompositeScreenProps<
+  BottomTabScreenProps<TabNavParamList, "Leaderboard">,
+  NativeStackScreenProps<StackNavParamList>
+>;
 
 enum TabTypes {
   LEADERBOARD,

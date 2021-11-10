@@ -1,33 +1,60 @@
 import * as React from "react";
 import {
   View,
-  ScrollView,
   Text,
-  Image,
   StyleSheet,
+  Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import PhotoGallery from "../PhotoGallery";
-import type { UserType } from "../../types/User";
-import { RestaurantType } from "../../types/Restaurant";
-import { PostType } from "../../types/Post";
-
-type PropTypes = {
-  user?: UserType;
-  restaurant?: RestaurantType;
-  data: PostType;
-};
+import { useQuery } from "react-query";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import dayjs from "dayjs";
+import { StackNavParamList } from "../types";
+import { fetchRestaurant } from "../../../actions/restaurant";
+import { RestaurantType } from "../../../types/Restaurant";
+import { fetchPost } from "../../../actions/post";
+import type { PostType } from "../../../types/Post";
+import { UserType } from "../../../types/User";
+import { fetchUser } from "../../../actions/user";
+import PhotoGallery from "../../../components/PhotoGallery";
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
 const iconColor = "#3C8D90";
 
-const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
-  const { tags, photoUrls, body, createdAt } = data;
-  const follows = false;
-  const saved = false;
+type PropTypes = NativeStackScreenProps<StackNavParamList, "Post">;
+
+const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
+  const { id, post: initialPost } = route.params;
+
+  const { data: post } = useQuery<PostType, Error>(["post", id], fetchPost, {
+    enabled: id != null && initialPost == null,
+    initialData: initialPost,
+  });
+  const { data: restaurant } = useQuery<RestaurantType, Error>(
+    ["restaurant", post?.restaurant],
+    fetchRestaurant,
+    {
+      enabled: post != null && post?.restaurant != null,
+    }
+  );
+  const { data: user } = useQuery<UserType, Error>(
+    ["user", post?.user],
+    fetchUser,
+    {
+      enabled: post != null && post?.user != null,
+    }
+  );
+
+  React.useEffect(() => {
+    if (restaurant != null) {
+      navigation.setOptions({
+        headerTitle: restaurant.name,
+      });
+    }
+  }, [restaurant, navigation]);
 
   const handlePlus = React.useCallback(() => {
     console.log("Pressed plus");
@@ -44,6 +71,14 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
   const saveImage = React.useCallback(() => {
     console.log("Saved image");
   }, []);
+
+  if (post == null || (restaurant == null && user == null)) {
+    return null;
+  }
+
+  const { tags, photoUrls, body, createdAt } = post;
+  const follows = false;
+  const saved = false;
 
   return (
     <View style={styles.container}>
@@ -72,14 +107,18 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
       <PhotoGallery photos={photoUrls} />
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
-          <Image
-            style={styles.avatar}
-            source={{
-              uri: restaurant?.avatarUrl,
-            }}
-          />
+          {restaurant != null && (
+            <Image
+              style={styles.avatar}
+              source={{
+                uri: restaurant?.avatarUrl,
+              }}
+            />
+          )}
           <View style={styles.nameTags}>
-            <Text style={styles.restName}>{restaurant?.name || ""}</Text>
+            {restaurant != null && (
+              <Text style={styles.restName}>{restaurant?.name || ""}</Text>
+            )}
             <ScrollView horizontal>
               {tags.map((tag) => (
                 <View key={tag} style={styles.tag}>
@@ -104,8 +143,6 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
             />
           </TouchableOpacity>
         </View>
-
-        <View style={styles.spacer} />
         <View style={styles.bodyRow}>
           <Text>{body}</Text>
         </View>
@@ -236,4 +273,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DiscoverPost;
+export default PostScreen;

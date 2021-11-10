@@ -3,6 +3,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import type { UserType } from "../../types/User";
 import type { RestaurantType } from "../../types/Restaurant";
+import { PostType } from "../../types/Post";
+import { ReviewType } from "../../types/Review";
 
 export type TabNavParamList = {
   Home: Record<string, never>;
@@ -35,9 +37,17 @@ export type StackNavParamList = {
   UploadReview: {
     restaurant?: RestaurantType;
   };
+  Post: {
+    id: PostType["_id"];
+    post?: PostType;
+  };
+  Review: {
+    id: ReviewType["_id"];
+    review?: ReviewType;
+  };
 };
 
 export type AuthNavigationProp = CompositeNavigationProp<
-  BottomTabNavigationProp<TabNavParamList>,
-  NativeStackNavigationProp<StackNavParamList>
+  NativeStackNavigationProp<StackNavParamList>,
+  BottomTabNavigationProp<TabNavParamList>
 >;
