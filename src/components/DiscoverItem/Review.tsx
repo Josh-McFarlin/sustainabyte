@@ -65,7 +65,7 @@ const DiscoverReview: React.FC<PropTypes> = ({ user, restaurant, data }) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <PhotoGallery photos={photoUrls} />
+      {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
           <Image

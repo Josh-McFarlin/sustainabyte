@@ -52,14 +52,6 @@ const ReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     }
   );
 
-  React.useEffect(() => {
-    if (restaurant != null) {
-      navigation.setOptions({
-        headerTitle: restaurant.name,
-      });
-    }
-  }, [restaurant, navigation]);
-
   const handlePlus = React.useCallback(() => {
     console.log("Pressed plus");
   }, []);
@@ -104,7 +96,7 @@ const ReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <PhotoGallery photos={photoUrls} />
+      {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
           <Image
@@ -263,6 +255,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#3C8D90",
+    textAlign: "right",
   },
   flex: {
     flex: 1,

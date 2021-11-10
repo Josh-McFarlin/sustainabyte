@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
@@ -42,15 +43,19 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { data: user } = useQuery<UserType, Error>(["user", id], fetchUser);
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
-  const { data: posts } = useQuery<PostType[], Error>(
-    ["posts", { user: user?._id }],
-    fetchPosts,
-    {
-      initialData: [],
-      enabled: id != null,
-    }
-  );
-  const { data: checkIns } = useQuery<CheckInType[], Error>(
+  const {
+    data: posts,
+    refetch: refetchPosts,
+    isLoading: isRefetchingPosts,
+  } = useQuery<PostType[], Error>(["posts", { user: user?._id }], fetchPosts, {
+    initialData: [],
+    enabled: id != null,
+  });
+  const {
+    data: checkIns,
+    refetch: refetchCheckIns,
+    isLoading: isRefetchingCheckIns,
+  } = useQuery<CheckInType[], Error>(
     ["checkIns", { user: user?._id }],
     fetchCheckIns,
     {
@@ -91,6 +96,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             {PostGallery.renderItem(i)}
           </TouchableOpacity>
         ),
+        refetch: refetchPosts,
       },
       [TabTypes.CHECKINS]: {
         type: TabTypes.CHECKINS,
@@ -99,6 +105,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         listProps: CheckInHistory.listProps,
         Header: () => null,
         renderItem: CheckInHistory.renderItem,
+        refetch: refetchCheckIns,
       },
       [TabTypes.SAVED]: {
         type: TabTypes.SAVED,
@@ -118,16 +125,17 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             {PostGallery.renderItem(i)}
           </TouchableOpacity>
         ),
+        refetch: refetchPosts,
       },
     }),
-    [navigation, checkIns, posts]
+    [navigation, checkIns, posts, refetchPosts, refetchCheckIns]
   );
 
   if (user == null) {
     return null;
   }
 
-  const { data, Header, renderItem, listProps } = tabs[curTab];
+  const { data, Header, renderItem, listProps, refetch } = tabs[curTab];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -136,6 +144,13 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         data={data}
         keyExtractor={(i) => i._id}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetchingPosts || isRefetchingCheckIns}
+            onRefresh={refetch}
+          />
+        }
+        refreshing={isRefetchingPosts || isRefetchingCheckIns}
         ListHeaderComponent={() => (
           <View>
             <View style={styles.vRow}>

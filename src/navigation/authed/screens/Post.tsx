@@ -104,7 +104,7 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <PhotoGallery photos={photoUrls} />
+      {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
           {restaurant != null && (

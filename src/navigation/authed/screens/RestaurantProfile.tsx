@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import {
@@ -17,10 +18,7 @@ import {
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
 import { CompositeScreenProps } from "@react-navigation/native";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
 import { ReviewType } from "../../../types/Review";
@@ -73,7 +71,11 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       initialData: [],
     }
   );
-  const { data: posts } = useQuery<PostType[], Error>(
+  const {
+    data: posts,
+    refetch: refetchPosts,
+    isLoading: isRefetchingPosts,
+  } = useQuery<PostType[], Error>(
     ["posts", { restaurant: restaurant?._id }],
     fetchPosts,
     {
@@ -81,7 +83,11 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       initialData: [],
     }
   );
-  const { data: reviews } = useQuery<ReviewType[], Error>(
+  const {
+    data: reviews,
+    refetch: refetchReviews,
+    isLoading: isRefetchingReviews,
+  } = useQuery<ReviewType[], Error>(
     ["reviews", { restaurant: restaurant?._id }],
     fetchReviews,
     {
@@ -89,7 +95,11 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       initialData: [],
     }
   );
-  const { data: checkIns } = useQuery<CheckInType[], Error>(
+  const {
+    data: checkIns,
+    refetch: refetchCheckIns,
+    isLoading: isRefetchingCheckIns,
+  } = useQuery<CheckInType[], Error>(
     ["checkIns", { restaurant: restaurant?._id }],
     fetchCheckIns,
     {
@@ -152,6 +162,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             {PostGallery.renderItem(i)}
           </TouchableOpacity>
         ),
+        refetch: refetchPosts,
       },
       [TabTypes.MENU]: {
         type: TabTypes.MENU,
@@ -170,6 +181,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         listProps: CheckInHistory.listProps,
         Header: () => null,
         renderItem: CheckInHistory.renderItem,
+        refetch: refetchCheckIns,
       },
       [TabTypes.REVIEWS]: {
         type: TabTypes.REVIEWS,
@@ -189,16 +201,26 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             {ReviewHistory.renderItem(i)}
           </TouchableOpacity>
         ),
+        refetch: refetchReviews,
       },
     }),
-    [navigation, checkIns, posts, reviews, restaurant]
+    [
+      navigation,
+      checkIns,
+      posts,
+      reviews,
+      restaurant,
+      refetchReviews,
+      refetchCheckIns,
+      refetchPosts,
+    ]
   );
 
   if (restaurant == null) {
     return null;
   }
 
-  const { data, Header, renderItem, listProps } = tabs[curTab];
+  const { data, Header, renderItem, listProps, refetch } = tabs[curTab];
 
   return (
     <View style={styles.container}>
@@ -207,6 +229,17 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         data={data}
         keyExtractor={(i) => i._id}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={
+              isRefetchingReviews || isRefetchingPosts || isRefetchingCheckIns
+            }
+            onRefresh={refetch}
+          />
+        }
+        refreshing={
+          isRefetchingReviews || isRefetchingPosts || isRefetchingCheckIns
+        }
         ListHeaderComponent={() => (
           <View>
             <View style={styles.vRow}>
