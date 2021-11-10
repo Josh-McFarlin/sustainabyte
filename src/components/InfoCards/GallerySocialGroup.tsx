@@ -91,6 +91,8 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
 
 const styles = StyleSheet.create({
   container: {
+    width: 300,
+    height: 180,
     backgroundColor: "#fff",
     shadowColor: "#000",
     borderRadius: 12,

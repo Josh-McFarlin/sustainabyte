@@ -8,6 +8,10 @@ import {
   View,
   Image,
   ScrollView,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+  ViewStyle,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -32,11 +36,6 @@ import OffersModal from "../../../components/OffersModal";
 import { hashtagsToIcons } from "../../../utils/tags";
 import { StackNavParamList } from "../types";
 
-type PropTypes = CompositeScreenProps<
-  BottomTabScreenProps<TabNavParamList, "Home">,
-  NativeStackScreenProps<StackNavParamList>
->;
-
 enum SectionType {
   LIST_RESTAURANT,
   GALLERY_RESTAURANT,
@@ -45,11 +44,32 @@ enum SectionType {
   GALLERY_SOCIAL_GROUP,
 }
 
+if (Platform.OS === "android") {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
+const showStyle: ViewStyle = {
+  display: "flex",
+};
+
+const hideStyle: ViewStyle = {
+  height: 0,
+};
+
+type PropTypes = CompositeScreenProps<
+  BottomTabScreenProps<TabNavParamList, "Home">,
+  NativeStackScreenProps<StackNavParamList>
+>;
+
 const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
   const { user } = useAuth();
   const coordinates = useLocation();
+  const flatlistRef = React.useRef<FlatList>();
   const [selOffer, setSelOffer] = React.useState<number | null>(null);
   const [filtering, setFiltering] = React.useState<string | null>(null);
+  const [showSection, setShowSection] = React.useState<number | null>(null);
 
   const { data: offers } = useQuery<OfferType[], Error>(
     ["offers", coordinates],
@@ -93,59 +113,68 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
   );
   const handleCloseOffer = React.useCallback(() => setSelOffer(null), []);
 
+  const onPressSection = React.useCallback(
+    (section: number) => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setFiltering(null);
+      setShowSection((prevState) => (prevState === section ? null : section));
+      flatlistRef.current.scrollToOffset({
+        offset: 0,
+      });
+    },
+    [flatlistRef]
+  );
+
   const onPressCategory = React.useCallback((category: string) => {
-    setFiltering((prevState) => (prevState === category ? null : category));
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setFiltering((prevState) => {
+      const nextVal = prevState === category ? null : category;
+
+      setShowSection(nextVal != null ? 3 : null);
+
+      return nextVal;
+    });
   }, []);
 
   const data = React.useMemo(
-    () =>
-      filtering
-        ? [
-            {
-              title: "All Sustainabytes",
-              key: "5",
-              data: restaurants,
-              type: SectionType.GALLERY_RESTAURANT,
-              horizontal: false,
-            },
-          ]
-        : [
-            {
-              title: "You might like to follow",
-              key: "1",
-              data: socialGroups,
-              type: SectionType.GALLERY_SOCIAL_GROUP,
-              horizontal: true,
-            },
-            {
-              title: "We thought you may like",
-              key: "2",
-              data: restaurants,
-              type: SectionType.GALLERY_RESTAURANT,
-              horizontal: true,
-            },
-            {
-              title: "Top updates for you",
-              subtitle: "Promoted offers from restaurants near you",
-              key: "3",
-              data: offers,
-              type: SectionType.CIRCLE_OFFER,
-              horizontal: true,
-            },
-            {
-              title: "All Sustainabytes",
-              key: "4",
-              data: restaurants,
-              type: SectionType.GALLERY_RESTAURANT,
-              horizontal: false,
-            },
-          ],
-    [filtering, restaurants, offers, socialGroups]
+    () => [
+      {
+        title: "You might like to follow",
+        key: "1",
+        data: socialGroups,
+        type: SectionType.GALLERY_SOCIAL_GROUP,
+        horizontal: true,
+      },
+      {
+        title: "We thought you may like",
+        key: "2",
+        data: restaurants,
+        type: SectionType.GALLERY_RESTAURANT,
+        horizontal: true,
+      },
+      {
+        title: "Top updates for you",
+        subtitle: "Promoted offers from restaurants near you",
+        key: "3",
+        data: offers,
+        type: SectionType.CIRCLE_OFFER,
+        horizontal: true,
+      },
+      {
+        title: "All Sustainabytes",
+        key: "4",
+        data: restaurants,
+        type: SectionType.GALLERY_RESTAURANT,
+        horizontal: false,
+      },
+    ],
+    [restaurants, offers, socialGroups]
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
+        ref={flatlistRef}
         style={styles.container}
         data={data}
         keyExtractor={(section) => section.key}
@@ -185,16 +214,25 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
             </ScrollView>
           </View>
         )}
-        renderItem={({ item: section }) => (
-          <View>
+        renderItem={({ item: section, index }) => (
+          <View
+            style={[
+              styles.section,
+              showSection == null || showSection === index
+                ? showStyle
+                : hideStyle,
+            ]}
+          >
             <View>
               <View style={[styles.hRow, styles.center, styles.spaceBetween]}>
                 <Text style={styles.title}>{section.title}</Text>
-                <FontAwesome5
-                  name="arrow-circle-right"
-                  size={24}
-                  color="#4b9193"
-                />
+                <TouchableOpacity onPress={() => onPressSection(index)}>
+                  <FontAwesome5
+                    name="arrow-circle-right"
+                    size={24}
+                    color="#4b9193"
+                  />
+                </TouchableOpacity>
               </View>
               {section.subtitle && (
                 <Text style={styles.subtitle}>{section.subtitle}</Text>
@@ -210,7 +248,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
                   style={section.horizontal ? styles.spacerH : styles.spacerV}
                 />
               )}
-              renderItem={({ item, index }) => {
+              renderItem={({ item, index: itemIndex }) => {
                 switch (section.type) {
                   case SectionType.GALLERY_RESTAURANT: {
                     return (
@@ -241,7 +279,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
                   }
                   case SectionType.CIRCLE_OFFER: {
                     return (
-                      <TouchableOpacity onPress={() => setSelOffer(index)}>
+                      <TouchableOpacity onPress={() => setSelOffer(itemIndex)}>
                         <CircleOffer offer={item as OfferType} />
                       </TouchableOpacity>
                     );
@@ -374,6 +412,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: "transparent",
     paddingBottom: 4,
+  },
+  section: {
+    overflow: "hidden",
   },
 });
 
