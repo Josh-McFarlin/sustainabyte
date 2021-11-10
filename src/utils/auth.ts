@@ -139,6 +139,7 @@ export const useAuthBase = (): AuthContextType => {
   }, [remove]);
 
   React.useEffect(() => {
+    console.log("create interceptor:", auth0Token != null);
     const interceptor = authRequest.interceptors.request.use(
       async (config) => {
         // eslint-disable-next-line no-param-reassign
@@ -151,6 +152,10 @@ export const useAuthBase = (): AuthContextType => {
         return config;
       },
       async (error) => {
+        console.log("caught error");
+        console.log(1, error?.response);
+        console.log(2, error?.response?.status);
+        console.log(3, error);
         if (
           error?.response?.status === 401 ||
           error?.response?.status === 403

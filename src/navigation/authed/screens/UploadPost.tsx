@@ -13,6 +13,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
@@ -38,9 +39,11 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const [selTags, setTags] = React.useState<string[]>([]);
   const [tagSearch, setTagSearch] = React.useState<string>("");
   const [showingSearch, setShowingSearchBase] = React.useState<string>("");
+  const [uploading, setUploading] = React.useState<boolean>(false);
 
   const handleUpload = React.useCallback(async () => {
     try {
+      setUploading(true);
       const newPost = await createPost({
         ownerType: "User",
         ...(restaurant != null && {
@@ -56,18 +59,26 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       });
     } catch (error) {
       console.log("Error", error?.message || error);
+    } finally {
+      setUploading(false);
     }
   }, [navigation, restaurant, picture, caption, selTags]);
 
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={handleUpload}>
-          <Text>Next</Text>
+        <TouchableOpacity onPress={handleUpload} disabled={uploading}>
+          Next{" "}
+          <ActivityIndicator
+            animating={uploading}
+            hidesWhenStopped
+            size="small"
+            color="#0000ff"
+          />
         </TouchableOpacity>
       ),
     });
-  }, [navigation, handleUpload]);
+  }, [navigation, handleUpload, uploading]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debChange = React.useCallback(debounce(setTagSearch, 500), [

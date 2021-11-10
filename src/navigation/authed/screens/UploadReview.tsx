@@ -12,6 +12,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
@@ -33,9 +34,11 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const [tagSearch, setTagSearch] = React.useState<string>("");
   const [showingSearch, setShowingSearchBase] = React.useState<string>("");
   const [rating, setRating] = React.useState<number>(3);
+  const [uploading, setUploading] = React.useState<boolean>(false);
 
   const handleUpload = React.useCallback(async () => {
     try {
+      setUploading(true);
       await createReview({
         restaurant: restaurant._id,
         stars: rating,
@@ -50,18 +53,29 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       });
     } catch (error) {
       console.log("Error", error?.message || error);
+      Alert.alert("Error", error?.message);
+    } finally {
+      setUploading(false);
     }
   }, [navigation, restaurant._id, pictures, caption, selTags, rating]);
 
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={handleUpload}>
-          <Text>Next</Text>
+        <TouchableOpacity onPress={handleUpload} disabled={uploading}>
+          <Text>
+            Next{" "}
+            <ActivityIndicator
+              animating={uploading}
+              hidesWhenStopped
+              size="small"
+              color="#0000ff"
+            />
+          </Text>
         </TouchableOpacity>
       ),
     });
-  }, [navigation, handleUpload]);
+  }, [navigation, handleUpload, uploading]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debChange = React.useCallback(debounce(setTagSearch, 500), [
