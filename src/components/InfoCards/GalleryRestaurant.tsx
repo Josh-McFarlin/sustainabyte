@@ -15,19 +15,21 @@ const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {
 
   return (
     <View style={[styles.container, style]}>
-      <Image
-        style={styles.image}
-        source={{
-          uri: restaurant.headerUrl,
-        }}
-      />
+      <View style={styles.imageBorder}>
+        <Image
+          style={styles.image}
+          source={{
+            uri: restaurant.headerUrl,
+          }}
+        />
+      </View>
       <View style={styles.primaryContainer}>
         <Text style={styles.name}>{restaurant.name}</Text>
         <FontAwesome5 name="heart" size={16} color="#585858" />
       </View>
       <View style={styles.secondaryContainer}>
         <Text style={styles.secondary}>{rating.toFixed(1)}</Text>
-        <View style={styles.secondaryContainer}>
+        <View style={[styles.secondaryContainer, styles.noMargin]}>
           {Array.from(Array(5)).map((_, i) => (
             <FontAwesome
               key={i}
@@ -66,10 +68,22 @@ const styles = StyleSheet.create({
     width: 300,
     height: 200,
   },
+  imageBorder: {
+    flex: 1,
+    margin: 4,
+    marginBottom: 6,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+    borderRadius: 16,
+  },
   image: {
     flex: 1,
     resizeMode: "cover",
-    marginBottom: 6,
     borderRadius: 16,
     backgroundColor: "#888",
   },
@@ -78,12 +92,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingRight: 8,
+    marginHorizontal: 8,
   },
   secondaryContainer: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-start",
+    marginHorizontal: 8,
   },
   name: {
     fontSize: 16,
@@ -97,6 +113,10 @@ const styles = StyleSheet.create({
     width: 18,
     height: 14,
     resizeMode: "contain",
+  },
+  noMargin: {
+    margin: 0,
+    marginHorizontal: 0,
   },
 });
 

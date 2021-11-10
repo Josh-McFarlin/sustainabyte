@@ -102,7 +102,7 @@ const CircleOffer: React.FC<PropTypes> = ({ offer }) => {
               height: radius * 2,
               borderTopLeftRadius: 0,
               borderBottomLeftRadius: 0,
-              backgroundColor: percent >= 50 ? color : bgcolor, // changed this line
+              backgroundColor: percent >= 50 ? color : bgcolor,
               transform: [
                 { translateX: -radius / 2 },
                 { rotate: leftTransformerDegree },

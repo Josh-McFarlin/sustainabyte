@@ -72,14 +72,18 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
       {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
-          <Image
-            style={styles.avatar}
-            source={{
-              uri: restaurant?.avatarUrl,
-            }}
-          />
+          {restaurant != null && (
+            <Image
+              style={styles.avatar}
+              source={{
+                uri: restaurant?.avatarUrl,
+              }}
+            />
+          )}
           <View style={styles.nameTags}>
-            <Text style={styles.restName}>{restaurant?.name || ""}</Text>
+            {restaurant != null && (
+              <Text style={styles.restName}>{restaurant?.name || ""}</Text>
+            )}
             <ScrollView horizontal>
               {tags.map((tag) => (
                 <View key={tag} style={styles.tag}>

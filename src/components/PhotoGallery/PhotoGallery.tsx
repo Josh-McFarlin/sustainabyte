@@ -7,7 +7,13 @@ type PropTypes = {
 
 const PhotoGallery: React.FC<PropTypes> = ({ photos }) => (
   <View style={styles.container}>
-    <ScrollView style={styles.scroll} horizontal pagingEnabled>
+    <ScrollView
+      style={styles.scroll}
+      horizontal
+      pagingEnabled
+      bounces={false}
+      overScrollMode="never"
+    >
       {photos.map((photo) => (
         <Image
           key={photo}
