@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StyleSheet, Image, View, Text } from "react-native";
-import dayjs from "dayjs";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useQuery } from "react-query";
 import { fetchUser } from "../../actions/user";
 import { UserType } from "../../types/User";
@@ -27,16 +27,13 @@ const ListReview: React.FC<PropTypes> = ({ review }) => {
           uri: user?.avatarUrl,
         }}
       />
-      <View style={styles.flex}>
-        <View style={styles.hRow}>
-          <Text style={styles.details}>{user?.username}</Text>
-          <Text style={[styles.details, styles.textEnd, styles.flex]}>
-            {dayjs(review?.createdAt).format("MMM D, h:mmA")}
-          </Text>
-        </View>
-
-        <Text style={styles.body}>{review.body}</Text>
-      </View>
+      <Text style={styles.body}>{review.body}</Text>
+      <FontAwesome5
+        style={styles.icon}
+        name="chevron-right"
+        size={14}
+        color="black"
+      />
     </View>
   );
 };
@@ -47,8 +44,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
-    paddingHorizontal: 12,
   },
   userAvatar: {
     width: 48,
@@ -56,24 +51,13 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     backgroundColor: "#ccc",
     marginRight: 12,
-    zIndex: 20,
-  },
-  hRow: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  details: {
-    fontSize: 16,
   },
   body: {
+    flex: 1,
     fontSize: 14,
   },
-  textEnd: {
-    textAlign: "right",
-  },
-  flex: {
-    flex: 1,
+  icon: {
+    marginLeft: 16,
   },
 });
 

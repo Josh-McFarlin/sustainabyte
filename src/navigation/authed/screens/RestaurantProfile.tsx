@@ -21,8 +21,8 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
-import { ReviewType } from "../../../types/Review";
-import { fetchReviews } from "../../../actions/review";
+import { ReviewSummaryType, ReviewType } from "../../../types/Review";
+import { fetchReviewSummary } from "../../../actions/review";
 import { CheckInType } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
@@ -75,32 +75,31 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     data: posts,
     refetch: refetchPosts,
     isLoading: isRefetchingPosts,
-  } = useQuery<PostType[], Error>(
-    ["posts", { restaurant: restaurant?._id }],
-    fetchPosts,
-    {
-      enabled: id != null,
-      initialData: [],
-    }
-  );
+  } = useQuery<PostType[], Error>(["posts", { restaurant: id }], fetchPosts, {
+    enabled: id != null,
+    initialData: [],
+  });
   const {
-    data: reviews,
+    data: reviewSummary,
     refetch: refetchReviews,
     isLoading: isRefetchingReviews,
-  } = useQuery<ReviewType[], Error>(
-    ["reviews", { restaurant: restaurant?._id }],
-    fetchReviews,
-    {
-      enabled: id != null,
-      initialData: [],
-    }
-  );
+  } = useQuery<ReviewSummaryType, Error>(["reviews", id], fetchReviewSummary, {
+    enabled: id != null,
+    initialData: {
+      _id: null,
+      avgRating: 0,
+      totalReviews: 0,
+      stars: [0, 0, 0, 0, 0],
+      reviews: [],
+      tags: [],
+    },
+  });
   const {
     data: checkIns,
     refetch: refetchCheckIns,
     isLoading: isRefetchingCheckIns,
   } = useQuery<CheckInType[], Error>(
-    ["checkIns", { restaurant: restaurant?._id }],
+    ["checkIns", { restaurant: id }],
     fetchCheckIns,
     {
       enabled: id != null,
@@ -130,9 +129,6 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   );
   const handleCloseOffer = React.useCallback(() => setSelOffer(null), []);
 
-  const rating = restaurant
-    ? restaurant.ratings.sum / restaurant.ratings.count
-    : 0;
   const openStatus = React.useMemo(
     () => (restaurant ? getOpenStatus(restaurant.openHours) : null),
     [restaurant]
@@ -186,9 +182,17 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       [TabTypes.REVIEWS]: {
         type: TabTypes.REVIEWS,
         icon: (props) => <MaterialIcons name="rate-review" {...props} />,
-        data: reviews,
+        data: reviewSummary.reviews,
         listProps: ReviewHistory.listProps,
-        Header: () => <ReviewHistory.Header restaurant={restaurant} />,
+        Header: () => (
+          <ReviewHistory.Header
+            restaurant={restaurant}
+            avgRating={reviewSummary.avgRating}
+            totalReviews={reviewSummary.totalReviews}
+            stars={reviewSummary.stars}
+            tags={reviewSummary.tags}
+          />
+        ),
         renderItem: (i) => (
           <TouchableOpacity
             onPress={() =>
@@ -208,7 +212,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       navigation,
       checkIns,
       posts,
-      reviews,
+      reviewSummary,
       restaurant,
       refetchReviews,
       refetchCheckIns,
@@ -348,7 +352,9 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                 </View>
                 <View style={[styles.vRow, styles.center]}>
                   <FontAwesome name="star" size={32} color="#3C8D90" />
-                  <Text style={styles.statsText}>{rating.toFixed(1)}</Text>
+                  <Text style={styles.statsText}>
+                    {reviewSummary.avgRating.toFixed(1)}
+                  </Text>
                   <Text style={styles.statsDetails}>Rating</Text>
                 </View>
               </View>

@@ -47,7 +47,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     data: posts,
     refetch: refetchPosts,
     isLoading: isRefetchingPosts,
-  } = useQuery<PostType[], Error>(["posts", { user: user?._id }], fetchPosts, {
+  } = useQuery<PostType[], Error>(["posts", { user: id }], fetchPosts, {
     initialData: [],
     enabled: id != null,
   });
@@ -56,7 +56,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     refetch: refetchCheckIns,
     isLoading: isRefetchingCheckIns,
   } = useQuery<CheckInType[], Error>(
-    ["checkIns", { user: user?._id }],
+    ["checkIns", { user: id }],
     fetchCheckIns,
     {
       initialData: [],

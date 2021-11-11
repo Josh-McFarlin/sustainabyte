@@ -11,3 +11,12 @@ export interface ReviewType {
   photoUrls: string[];
   createdAt: Date;
 }
+
+export interface ReviewSummaryType {
+  _id: RestaurantType["_id"];
+  avgRating: number;
+  totalReviews: number;
+  stars: [number, number, number, number, number];
+  reviews: ReviewType[];
+  tags: string[];
+}
