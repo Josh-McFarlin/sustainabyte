@@ -35,7 +35,7 @@ const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {
               key={i}
               name="star"
               size={13}
-              color={i < rating ? "#cbb131" : "#585858"}
+              color={rating >= i + 1 ? "#cbb131" : "#585858"}
             />
           ))}
         </View>

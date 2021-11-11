@@ -338,12 +338,12 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
               >
                 <View style={[styles.vRow, styles.center]}>
                   <FontAwesome name="map-pin" size={32} color="#3C8D90" />
-                  <Text style={styles.statsText}>348</Text>
+                  <Text style={styles.statsText}>{checkIns?.length || 0}</Text>
                   <Text style={styles.statsDetails}>Check ins</Text>
                 </View>
                 <View style={[styles.vRow, styles.center]}>
                   <FontAwesome name="square" size={32} color="#3C8D90" />
-                  <Text style={styles.statsText}>1520</Text>
+                  <Text style={styles.statsText}>{posts?.length || 0}</Text>
                   <Text style={styles.statsDetails}>Posts</Text>
                 </View>
                 <View style={[styles.vRow, styles.center]}>

@@ -58,7 +58,7 @@ const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
               key={i}
               name="star"
               size={14}
-              color={i < rating ? "#3C8D90" : "#8B8B8B"}
+              color={rating >= i + 1 ? "#3C8D90" : "#8B8B8B"}
               style={styles.star}
             />
           ))}
