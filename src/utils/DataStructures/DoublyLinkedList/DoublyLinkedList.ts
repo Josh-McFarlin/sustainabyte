@@ -1,8 +1,8 @@
 import Node from "../Node";
 
 export default class DoublyLinkedList<V> {
-  head: Node<V>;
-  tail: Node<V>;
+  head: Node<V> | null;
+  tail: Node<V> | null;
   size: number;
 
   constructor();

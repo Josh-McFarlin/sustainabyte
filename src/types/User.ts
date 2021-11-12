@@ -15,3 +15,8 @@ export interface UserType {
   following: UserType["_id"][];
   createdAt: Date;
 }
+
+export type BasicUserType = Pick<
+  UserType,
+  "_id" | "username" | "name" | "avatarUrl"
+>;

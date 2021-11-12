@@ -45,3 +45,14 @@ export interface RestaurantType {
   menuPercents: Record<string, number>;
   createdAt: Date;
 }
+
+export type BasicRestaurantType = Pick<
+  RestaurantType,
+  | "_id"
+  | "name"
+  | "avatarUrl"
+  | "headerUrl"
+  | "tags"
+  | "ratings"
+  | "menuPercents"
+>;

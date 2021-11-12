@@ -12,13 +12,11 @@ import {
 } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useQuery } from "react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { OfferType } from "../../types/Offer";
 import { AuthNavigationProp } from "../../navigation/authed/types";
-import { RestaurantType } from "../../types/Restaurant";
-import { fetchRestaurant } from "../../actions/restaurant";
+import restaurantsStore from "../../utils/restaurantData";
 
 dayjs.extend(relativeTime);
 
@@ -36,13 +34,8 @@ const OffersModal: React.FC<PropTypes> = ({
   handleClose,
 }) => {
   const navigation = useNavigation<AuthNavigationProp>();
-  const { data: restaurant } = useQuery<RestaurantType, Error>(
-    ["restaurant", offer?.restaurant],
-    fetchRestaurant,
-    {
-      enabled: offer?.restaurant != null,
-    }
-  );
+  const restaurant =
+    offer?.restaurant != null ? restaurantsStore.get(offer.restaurant) : null;
 
   const handlePrompt = React.useCallback(() => {
     navigation.navigate("RestaurantProfile", {

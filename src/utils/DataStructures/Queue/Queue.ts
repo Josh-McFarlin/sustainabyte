@@ -15,6 +15,10 @@ export default class Queue<V> {
     this.dll.addLast(value);
   }
 
+  peek(): V | null {
+    return this.dll.head?.value;
+  }
+
   remove(): V | null {
     return this.dll.removeFirst();
   }

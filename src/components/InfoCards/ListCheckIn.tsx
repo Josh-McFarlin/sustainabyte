@@ -1,32 +1,23 @@
 import * as React from "react";
 import { StyleSheet, Image, View, Text } from "react-native";
 import dayjs from "dayjs";
-import { QueryObserverResult, useQueries, useQuery } from "react-query";
 import type { CheckInType } from "../../types/CheckIn";
-import { fetchUser } from "../../actions/user";
-import { RestaurantType } from "../../types/Restaurant";
-import { fetchRestaurant } from "../../actions/restaurant";
-import { UserType } from "../../types/User";
+import restaurantsStore from "../../utils/restaurantData";
+import usersStore from "../../utils/userData";
 
 type PropTypes = {
   checkIn: CheckInType;
 };
 
 const ListCheckIn: React.FC<PropTypes> = ({ checkIn }) => {
-  const { data: restaurant } = useQuery<RestaurantType, Error>(
-    ["restaurant", checkIn?.restaurant],
-    fetchRestaurant,
-    {
-      enabled: checkIn?.restaurant != null,
-    }
-  );
-  const userQueries: QueryObserverResult<UserType, Error>[] = useQueries(
-    checkIn?.withUsers?.map((user) => ({
-      queryKey: ["user", user],
-      queryFn: fetchUser,
-      enabled: user != null,
-    })) || []
-  ) as any;
+  const restaurant =
+    checkIn?.restaurant != null
+      ? restaurantsStore.get(checkIn.restaurant)
+      : null;
+  const users =
+    checkIn?.withUsers != null
+      ? checkIn.withUsers.map((userId) => usersStore.get(userId))
+      : [];
 
   return (
     <View style={styles.container}>
@@ -41,20 +32,18 @@ const ListCheckIn: React.FC<PropTypes> = ({ checkIn }) => {
         <Text style={styles.when}>
           {dayjs(checkIn?.createdAt).format("MMM D, h:mmA")}
         </Text>
-        {userQueries.length > 0 && (
+        {users.length > 0 && (
           <View style={styles.with}>
             <Text>with</Text>
-            {userQueries
-              .filter(({ data }) => data != null)
-              .map(({ data: user }) => (
-                <View key={user._id} style={styles.withUser}>
-                  <Image
-                    style={styles.withAvatar}
-                    source={{ uri: user.avatarUrl }}
-                  />
-                  <Text style={styles.withName}>{user.name}</Text>
-                </View>
-              ))}
+            {users.map((user) => (
+              <View key={user?._id} style={styles.withUser}>
+                <Image
+                  style={styles.withAvatar}
+                  source={{ uri: user?.avatarUrl }}
+                />
+                <Text style={styles.withName}>{user?.name}</Text>
+              </View>
+            ))}
           </View>
         )}
       </View>

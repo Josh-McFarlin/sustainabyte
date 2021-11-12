@@ -30,6 +30,7 @@
     "web": "expo start --https --web",
     "publish-app": "expo publish",
     "deploy-ios": "npx expo-optimize && expo build:ios",
+    "test": "jest",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -104,6 +105,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^7.0.2",
     "jest": "^27.3.1",
+    "jest-expo": "^43.0.1",
     "lint-staged": "^11.1.2",
     "prettier": "^2.4.0",
     "ts-jest": "^27.0.7",

@@ -12,13 +12,11 @@ import { useQuery } from "react-query";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import dayjs from "dayjs";
 import { StackNavParamList } from "../types";
-import { fetchRestaurant } from "../../../actions/restaurant";
-import { RestaurantType } from "../../../types/Restaurant";
 import { fetchPost } from "../../../actions/post";
 import type { PostType } from "../../../types/Post";
-import { UserType } from "../../../types/User";
-import { fetchUser } from "../../../actions/user";
 import PhotoGallery from "../../../components/PhotoGallery";
+import usersStore from "../../../utils/userData";
+import restaurantsStore from "../../../utils/restaurantData";
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
@@ -33,20 +31,12 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     enabled: id != null && initialPost == null,
     initialData: initialPost,
   });
-  const { data: restaurant } = useQuery<RestaurantType, Error>(
-    ["restaurant", post?.restaurant],
-    fetchRestaurant,
-    {
-      enabled: post != null && post?.restaurant != null,
-    }
-  );
-  const { data: user } = useQuery<UserType, Error>(
-    ["user", post?.user],
-    fetchUser,
-    {
-      enabled: post != null && post?.user != null,
-    }
-  );
+  const restaurant =
+    post != null && post?.restaurant != null
+      ? restaurantsStore.get(post.restaurant)
+      : null;
+  const user =
+    post != null && post?.user != null ? usersStore.get(post.user) : null;
 
   React.useEffect(() => {
     if (restaurant != null) {

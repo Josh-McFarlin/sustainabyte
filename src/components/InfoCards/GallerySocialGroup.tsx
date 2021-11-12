@@ -6,13 +6,11 @@ import {
   Text,
   TouchableWithoutFeedback,
 } from "react-native";
-import { useQueries } from "react-query";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { fetchUser } from "../../actions/user";
 import { SocialGroupType } from "../../types/SocialGroup";
-import { UserType } from "../../types/User";
 import { AuthNavigationProp } from "../../navigation/authed/types";
+import usersStore from "../../utils/userData";
 
 type PropTypes = {
   group: SocialGroupType;
@@ -20,13 +18,10 @@ type PropTypes = {
 
 const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
   const navigation = useNavigation<AuthNavigationProp>();
-  const userQueries = useQueries(
-    group.members.slice(0, 3).map((user) => ({
-      queryKey: ["user", user],
-      queryFn: fetchUser,
-      enabled: user != null,
-    }))
-  );
+  const users =
+    group?.members?.length > 0
+      ? group.members.map((userId) => usersStore.get(userId))
+      : [];
 
   return (
     <View style={styles.container}>
@@ -44,36 +39,36 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
           style={[styles.hContainer, styles.spaceBetween, styles.bottomMargin]}
         >
           <View style={styles.hContainer}>
-            {userQueries.map(({ data }) => (
-              <TouchableWithoutFeedback
-                key={data?._id}
-                onPress={() =>
-                  navigation.navigate("UserProfile", {
-                    id: data?._id,
-                    isOwnProfile: false,
-                    isFollowing: false,
-                  })
-                }
-              >
-                <Image
-                  style={styles.userAvatar}
-                  source={{
-                    uri: data?.avatarUrl,
-                  }}
-                />
-              </TouchableWithoutFeedback>
-            ))}
+            {users
+              .filter((i) => i != null)
+              .map((user) => (
+                <TouchableWithoutFeedback
+                  key={user?._id}
+                  onPress={() =>
+                    navigation.navigate("UserProfile", {
+                      id: user?._id,
+                      isOwnProfile: false,
+                      isFollowing: false,
+                    })
+                  }
+                >
+                  <Image
+                    style={styles.userAvatar}
+                    source={{
+                      uri: user?.avatarUrl,
+                    }}
+                  />
+                </TouchableWithoutFeedback>
+              ))}
           </View>
           <Text style={styles.secondary}>{group.members.length} people</Text>
           <FontAwesome5 name="chevron-right" size={20} color="#4b9193" />
         </View>
         <View style={[styles.hContainer, styles.spaceBetween]}>
-          {userQueries.length > 0 ? (
+          {users.length > 0 ? (
             <Text style={styles.secondary}>
-              Followed by {(userQueries[0]?.data as UserType)?.username}
-              {userQueries.length > 1
-                ? ` + ${group.members.length - 1} more`
-                : ""}
+              Followed by {users[0]?.username}
+              {users.length > 1 ? ` + ${group.members.length - 1} more` : ""}
             </Text>
           ) : (
             <View />

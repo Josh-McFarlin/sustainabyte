@@ -10,13 +10,13 @@ import {
 import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import PhotoGallery from "../PhotoGallery";
-import type { UserType } from "../../types/User";
-import { RestaurantType } from "../../types/Restaurant";
+import type { BasicUserType } from "../../types/User";
+import { BasicRestaurantType } from "../../types/Restaurant";
 import { ReviewType } from "../../types/Review";
 
 type PropTypes = {
-  user?: UserType;
-  restaurant?: RestaurantType;
+  user?: BasicUserType;
+  restaurant?: BasicRestaurantType;
   data: ReviewType;
 };
 

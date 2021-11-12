@@ -11,7 +11,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { ListReview } from "../InfoCards";
 import type { ReviewType } from "../../types/Review";
-import { RestaurantType } from "../../types/Restaurant";
+import { BasicRestaurantType } from "../../types/Restaurant";
 import { AuthNavigationProp } from "../../navigation/authed/types";
 
 export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
@@ -21,7 +21,7 @@ export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
 );
 
 type PropTypes = {
-  restaurant: RestaurantType;
+  restaurant: BasicRestaurantType;
   avgRating: number;
   totalReviews: number;
   stars: [number, number, number, number, number];

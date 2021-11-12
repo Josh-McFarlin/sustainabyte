@@ -1,23 +1,15 @@
 import * as React from "react";
 import { StyleSheet, Image, View, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useQuery } from "react-query";
-import { fetchUser } from "../../actions/user";
-import { UserType } from "../../types/User";
 import { ReviewType } from "../../types/Review";
+import usersStore from "../../utils/userData";
 
 type PropTypes = {
   review: ReviewType;
 };
 
 const ListReview: React.FC<PropTypes> = ({ review }) => {
-  const { data: user } = useQuery<UserType, Error>(
-    ["user", review.user],
-    fetchUser,
-    {
-      enabled: review?.user != null,
-    }
-  );
+  const user = review?.user != null ? usersStore.get(review.user) : null;
 
   return (
     <View style={styles.container}>

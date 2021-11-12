@@ -15,17 +15,17 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { view } from "@risingstack/react-easy-state";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
 import type { TabNavParamList } from "../types";
 import { CheckInType } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
-import { fetchUser } from "../../../actions/user";
 import { fetchPosts } from "../../../actions/post";
-import { UserType } from "../../../types/User";
 import { PostType } from "../../../types/Post";
 import { StackNavParamList } from "../types";
+import usersStore from "../../../utils/userData";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -40,7 +40,7 @@ enum TabTypes {
 
 const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { id, isOwnProfile, isFollowing } = route.params;
-  const { data: user } = useQuery<UserType, Error>(["user", id], fetchUser);
+  const user = usersStore.getFull(id);
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const {
@@ -166,7 +166,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                 {isOwnProfile && (
                   <View style={styles.hRow}>
                     <TouchableOpacity
-                      onPress={() => navigation.navigate("UploadPost" as any)}
+                      onPress={() => navigation.navigate("UploadPost")}
                     >
                       <FontAwesome
                         style={styles.icon}
@@ -223,7 +223,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                     color={isFollowing ? "#3C8D90" : "#9EC1C3"}
                   />
                   <Text style={styles.statsText}>
-                    {user?.followers?.length || 0}
+                    {("followers" in user && user?.followers?.length) || 0}
                   </Text>
                   <Text style={styles.statsDetails}>Followers</Text>
                 </View>
@@ -351,4 +351,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen;
+export default view(ProfileScreen);

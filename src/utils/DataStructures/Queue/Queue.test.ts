@@ -37,4 +37,13 @@ describe("Queue", () => {
     expect(queue.remove()).toBeNull();
     expect(queue.size).toEqual(0);
   });
+
+  test("queue can peek without removing item", () => {
+    const queue = new Queue();
+    queue.add(5);
+
+    expect(queue.size).toEqual(1);
+    expect(queue.peek()).toEqual(5);
+    expect(queue.size).toEqual(1);
+  });
 });

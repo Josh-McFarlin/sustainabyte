@@ -12,13 +12,11 @@ import { useQuery } from "react-query";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import dayjs from "dayjs";
 import { StackNavParamList } from "../types";
-import { fetchRestaurant } from "../../../actions/restaurant";
-import { RestaurantType } from "../../../types/Restaurant";
 import { fetchReview } from "../../../actions/review";
 import type { ReviewType } from "../../../types/Review";
-import { UserType } from "../../../types/User";
-import { fetchUser } from "../../../actions/user";
 import PhotoGallery from "../../../components/PhotoGallery";
+import restaurantsStore from "../../../utils/restaurantData";
+import usersStore from "../../../utils/userData";
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
@@ -26,7 +24,7 @@ const iconColor = "#3C8D90";
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "Review">;
 
-const ReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
+const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
   const { id, review: initialReview } = route.params;
 
   const { data: review } = useQuery<ReviewType, Error>(
@@ -37,20 +35,12 @@ const ReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       initialData: initialReview,
     }
   );
-  const { data: restaurant } = useQuery<RestaurantType, Error>(
-    ["restaurant", review?.restaurant],
-    fetchRestaurant,
-    {
-      enabled: review != null && review?.restaurant != null,
-    }
-  );
-  const { data: user } = useQuery<UserType, Error>(
-    ["user", review?.user],
-    fetchUser,
-    {
-      enabled: review != null && review?.user != null,
-    }
-  );
+  const restaurant =
+    review != null && review?.restaurant != null
+      ? restaurantsStore.get(review.restaurant)
+      : null;
+  const user =
+    review != null && review?.user != null ? usersStore.get(review.user) : null;
 
   const handlePlus = React.useCallback(() => {
     console.log("Pressed plus");

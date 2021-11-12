@@ -27,8 +27,6 @@ import { CheckInType } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
 import { StackNavParamList, TabNavParamList } from "../types";
-import { fetchRestaurant } from "../../../actions/restaurant";
-import { RestaurantType } from "../../../types/Restaurant";
 import OffersModal from "../../../components/OffersModal";
 import { OfferType } from "../../../types/Offer";
 import { fetchOffers } from "../../../actions/offer";
@@ -39,6 +37,8 @@ import ReviewHistory from "../../../components/ReviewHistory";
 import { useLocation } from "../../../utils/location";
 import { fetchPosts } from "../../../actions/post";
 import type { PostType } from "../../../types/Post";
+import restaurantsStore from "../../../utils/restaurantData";
+import { RestaurantType } from "../../../types/Restaurant";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -54,15 +54,12 @@ enum TabTypes {
 const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { id, isOwnProfile, isFollowing } = route.params;
   const coordinates = useLocation();
+  const restaurant = restaurantsStore.getFull(id);
   const [selOffer, setSelOffer] = React.useState<number | null>(null);
   const [visitOpen, setVisitOpen] = React.useState<boolean>(false);
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
 
-  const { data: restaurant } = useQuery<RestaurantType, Error>(
-    ["restaurant", id],
-    fetchRestaurant
-  );
   const { data: offers } = useQuery<OfferType[], Error>(
     ["offers", coordinates, { restaurant: restaurant?._id }],
     fetchOffers,
@@ -130,11 +127,17 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const handleCloseOffer = React.useCallback(() => setSelOffer(null), []);
 
   const openStatus = React.useMemo(
-    () => (restaurant ? getOpenStatus(restaurant.openHours) : null),
+    () =>
+      restaurant && "openHours" in restaurant
+        ? getOpenStatus(restaurant.openHours)
+        : null,
     [restaurant]
   );
   const hoursFormatted = React.useMemo(
-    () => (restaurant ? formatOpenHours(restaurant.openHours) : null),
+    () =>
+      restaurant && "openHours" in restaurant
+        ? formatOpenHours(restaurant.openHours)
+        : null,
     [restaurant]
   );
 
@@ -186,7 +189,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         listProps: ReviewHistory.listProps,
         Header: () => (
           <ReviewHistory.Header
-            restaurant={restaurant}
+            restaurant={restaurant as RestaurantType}
             avgRating={reviewSummary.avgRating}
             totalReviews={reviewSummary.totalReviews}
             stars={reviewSummary.stars}
@@ -411,7 +414,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       />
       {!isOwnProfile && (
         <VisitModal
-          restaurant={restaurant}
+          restaurant={restaurant as RestaurantType}
           open={visitOpen}
           handleClose={() => setVisitOpen(false)}
         />
