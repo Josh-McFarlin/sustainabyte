@@ -11,6 +11,7 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useQuery } from "react-query";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import dayjs from "dayjs";
+import { view } from "@risingstack/react-easy-state";
 import { StackNavParamList } from "../types";
 import { fetchPost } from "../../../actions/post";
 import type { PostType } from "../../../types/Post";
@@ -263,4 +264,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostScreen;
+export default view(PostScreen);

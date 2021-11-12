@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StyleSheet, Image, View, Text } from "react-native";
 import dayjs from "dayjs";
+import { view } from "@risingstack/react-easy-state";
 import type { CheckInType } from "../../types/CheckIn";
 import restaurantsStore from "../../utils/restaurantData";
 import usersStore from "../../utils/userData";
@@ -96,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListCheckIn;
+export default view(ListCheckIn);

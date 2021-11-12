@@ -24,6 +24,7 @@ import {
   FontAwesome,
 } from "@expo/vector-icons";
 import debounce from "lodash/debounce";
+import { view } from "@risingstack/react-easy-state";
 import { createPost } from "../../../actions/post";
 import { StackNavParamList } from "../types";
 import { hashtags } from "../../../utils/tags";
@@ -373,4 +374,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UploadPostScreen;
+export default view(UploadPostScreen);

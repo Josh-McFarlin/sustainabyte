@@ -18,6 +18,7 @@ import { useQuery } from "react-query";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { view } from "@risingstack/react-easy-state";
 import { useLocation } from "../../../utils/location";
 import { fetchRestaurants } from "../../../actions/restaurant";
 import type { TabNavParamList } from "../types";
@@ -418,4 +419,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default view(HomeScreen);

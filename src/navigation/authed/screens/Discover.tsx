@@ -19,6 +19,7 @@ import MapView, {
 import BottomSheet from "@gorhom/bottom-sheet";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { view } from "@risingstack/react-easy-state";
 import DiscoverItem from "../../../components/DiscoverItem";
 import type { TabNavParamList } from "../types";
 import SearchBar from "../../../components/SearchBar";
@@ -270,4 +271,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(DiscoverScreen);
+export default view(DiscoverScreen);

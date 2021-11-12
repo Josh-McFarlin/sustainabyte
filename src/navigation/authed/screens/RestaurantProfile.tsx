@@ -19,6 +19,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { view } from "@risingstack/react-easy-state";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
 import { ReviewSummaryType, ReviewType } from "../../../types/Review";
@@ -529,4 +530,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RestaurantScreen;
+export default view(RestaurantScreen);

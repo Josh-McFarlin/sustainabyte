@@ -11,6 +11,7 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useQuery } from "react-query";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import dayjs from "dayjs";
+import { view } from "@risingstack/react-easy-state";
 import { StackNavParamList } from "../types";
 import { fetchReview } from "../../../actions/review";
 import type { ReviewType } from "../../../types/Review";
@@ -253,4 +254,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReviewScreen;
+export default view(ReviewScreen);

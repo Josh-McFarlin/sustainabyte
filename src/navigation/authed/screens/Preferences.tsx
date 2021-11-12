@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
+import { view } from "@risingstack/react-easy-state";
 import Slider from "../../../components/Slider";
 import type { StackNavParamList } from "../types";
 import { randomFoodUrl, randomSizeSubset } from "../../../utils/random";
@@ -307,4 +308,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PreferencesScreen;
+export default view(PreferencesScreen);

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { view } from "@risingstack/react-easy-state";
 import { SocialGroupType } from "../../types/SocialGroup";
 import { AuthNavigationProp } from "../../navigation/authed/types";
 import usersStore from "../../utils/userData";
@@ -161,4 +162,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GallerySocialGroup;
+export default view(GallerySocialGroup);

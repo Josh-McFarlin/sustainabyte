@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StyleSheet, Image, View, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { view } from "@risingstack/react-easy-state";
 import { ReviewType } from "../../types/Review";
 import usersStore from "../../utils/userData";
 
@@ -53,4 +54,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListReview;
+export default view(ListReview);

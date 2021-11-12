@@ -18,6 +18,7 @@ import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import debounce from "lodash/debounce";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { view } from "@risingstack/react-easy-state";
 import { createReview } from "../../../actions/review";
 import { hashtags } from "../../../utils/tags";
 import { StackNavParamList } from "../types";
@@ -402,4 +403,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UploadReviewScreen;
+export default view(UploadReviewScreen);

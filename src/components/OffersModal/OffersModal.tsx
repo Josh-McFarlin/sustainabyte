@@ -14,6 +14,7 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { view } from "@risingstack/react-easy-state";
 import type { OfferType } from "../../types/Offer";
 import { AuthNavigationProp } from "../../navigation/authed/types";
 import restaurantsStore from "../../utils/restaurantData";
@@ -177,4 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OffersModal;
+export default view(OffersModal);

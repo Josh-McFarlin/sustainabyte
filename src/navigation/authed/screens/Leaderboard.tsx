@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { view } from "@risingstack/react-easy-state";
 import type { TabNavParamList } from "../types";
 import { fetchUsers } from "../../../actions/user";
 import { fetchChallenges } from "../../../actions/challenge";
@@ -517,4 +518,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LeaderboardScreen;
+export default view(LeaderboardScreen);

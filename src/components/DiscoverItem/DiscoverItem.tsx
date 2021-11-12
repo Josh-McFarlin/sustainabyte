@@ -1,4 +1,5 @@
 import * as React from "react";
+import { view } from "@risingstack/react-easy-state";
 import { RecentType } from "../../types/Recent";
 import DiscoverCheckIn from "./CheckIn";
 import DiscoverPost from "./Post";
@@ -50,4 +51,4 @@ const DiscoverItem: React.FC<PropTypes> = ({ item }) => {
   return null;
 };
 
-export default DiscoverItem;
+export default view(DiscoverItem);
