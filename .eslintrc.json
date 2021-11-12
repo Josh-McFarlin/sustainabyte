@@ -41,6 +41,11 @@
     "@typescript-eslint/no-var-requires": "off",
     "react/require-default-props": "off",
     "no-console": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "lines-between-class-members": [
+      "error",
+      "always",
+      { "exceptAfterSingleLine": true }
+    ]
   }
 }
