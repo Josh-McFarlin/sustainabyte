@@ -3,6 +3,8 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { RestaurantType } from "../types/Restaurant";
 import type { CoordinatesType } from "../types/Location";
+import restaurantsStore, { storeRestaurant } from "../utils/restaurantData";
+import { UserType } from "../types/User";
 
 export const fetchRestaurants: QueryFunction<
   RestaurantType[],
@@ -27,18 +29,46 @@ export const fetchRestaurants: QueryFunction<
     },
   });
 
-  return json.restaurants;
+  const { restaurants } = json;
+
+  await Promise.all(restaurants.map(storeRestaurant));
+
+  return restaurants;
 };
 
 export const fetchRestaurant: QueryFunction<RestaurantType, [string, string]> =
   async ({ queryKey }): Promise<RestaurantType> => {
     const [_key, restaurantId] = queryKey;
 
-    const { data: json } = await authRequest.get(
-      `${urls.api}/restaurant/${encodeURIComponent(restaurantId)}`
-    );
+    try {
+      restaurantsStore.retrieving.add(restaurantId);
 
-    return json.restaurant;
+      const { data: json } = await authRequest.get(
+        `${urls.api}/restaurant/${encodeURIComponent(restaurantId)}`
+      );
+
+      const { data: followersJson } = await authRequest.get(
+        `${urls.api}/follow`,
+        {
+          params: {
+            toType: "Restaurant",
+            to: json.restaurant._id,
+            simpleType: "from",
+          },
+        }
+      );
+
+      const restaurant: RestaurantType = {
+        ...json.restaurant,
+        followers: new Set<UserType["_id"]>(followersJson.follows),
+      };
+
+      await storeRestaurant(restaurant);
+
+      return restaurant;
+    } finally {
+      restaurantsStore.retrieving.delete(restaurantId);
+    }
   };
 
 export const updateRestaurant = async (
@@ -66,5 +96,9 @@ export const updateRestaurant = async (
     }
   );
 
-  return json.restaurant;
+  const newRestaurant = json.restaurant;
+
+  await storeRestaurant(newRestaurant);
+
+  return newRestaurant;
 };

@@ -1,7 +1,6 @@
 import { store, autoEffect } from "@risingstack/react-easy-state";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BasicRestaurantType, RestaurantType } from "../types/Restaurant";
-import { QueueSet } from "./DataStructures";
 import { fetchRestaurant } from "../actions/restaurant";
 
 const restaurantsKey = "RESTAURANTS";
@@ -13,14 +12,17 @@ const restaurantsStore = store({
     RestaurantType["_id"],
     BasicRestaurantType | RestaurantType
   >(),
+  retrieving: new Set<RestaurantType["_id"]>(),
   retrieved: new Set<RestaurantType["_id"]>(),
-  retrieveQueue: new QueueSet<RestaurantType["_id"]>(),
   get(restaurantId: RestaurantType["_id"]): BasicRestaurantType | null {
     if (
-      !restaurantsStore.retrieved.has(restaurantId) &&
-      !restaurantsStore.retrieveQueue.has(restaurantId)
+      !restaurantsStore.retrieving.has(restaurantId) &&
+      !restaurantsStore.retrieved.has(restaurantId)
     ) {
-      restaurantsStore.retrieveQueue.add(restaurantId);
+      fetchRestaurant({
+        queryKey: ["", restaurantId],
+        meta: {},
+      });
     }
 
     if (restaurantsStore.restaurants.has(restaurantId)) {
@@ -43,10 +45,13 @@ const restaurantsStore = store({
     restaurantId: RestaurantType["_id"]
   ): RestaurantType | BasicRestaurantType | null {
     if (
-      !restaurantsStore.retrieved.has(restaurantId) &&
-      !restaurantsStore.retrieveQueue.has(restaurantId)
+      !restaurantsStore.retrieving.has(restaurantId) &&
+      !restaurantsStore.retrieved.has(restaurantId)
     ) {
-      restaurantsStore.retrieveQueue.add(restaurantId);
+      fetchRestaurant({
+        queryKey: ["", restaurantId],
+        meta: {},
+      });
     }
 
     if (restaurantsStore.restaurants.has(restaurantId)) {
@@ -83,38 +88,27 @@ autoEffect(async () => {
   }
 });
 
-autoEffect(async () => {
-  const queue = restaurantsStore.retrieveQueue;
-
-  if (queue.size > 0) {
-    const restaurantId = queue.peek();
-
-    const restaurant = await fetchRestaurant({
-      queryKey: ["", restaurantId],
-      meta: {},
-    });
-
-    restaurantsStore.retrieved.add(restaurant._id);
-    restaurantsStore.restaurants.set(restaurant._id, restaurant);
-    await AsyncStorage.setItem(
-      restaurantKey(restaurant._id),
-      JSON.stringify({
-        _id: restaurant._id,
-        name: restaurant.name,
-        avatarUrl: restaurant.avatarUrl,
-        headerUrl: restaurant.headerUrl,
-        tags: restaurant.tags,
-        ratings: restaurant.ratings,
-        menuPercents: restaurant.menuPercents,
-      })
-    );
-    await AsyncStorage.setItem(
-      restaurantsKey,
-      JSON.stringify([...restaurantsStore.restaurants.keys()])
-    );
-
-    queue.remove();
-  }
-});
+export const storeRestaurant = async (
+  restaurant: RestaurantType
+): Promise<void> => {
+  restaurantsStore.retrieved.add(restaurant._id);
+  restaurantsStore.restaurants.set(restaurant._id, restaurant);
+  await AsyncStorage.setItem(
+    restaurantKey(restaurant._id),
+    JSON.stringify({
+      _id: restaurant._id,
+      name: restaurant.name,
+      avatarUrl: restaurant.avatarUrl,
+      headerUrl: restaurant.headerUrl,
+      tags: restaurant.tags,
+      ratings: restaurant.ratings,
+      menuPercents: restaurant.menuPercents,
+    })
+  );
+  await AsyncStorage.setItem(
+    restaurantsKey,
+    JSON.stringify([...restaurantsStore.restaurants.keys()])
+  );
+};
 
 export default restaurantsStore;

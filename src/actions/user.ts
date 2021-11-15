@@ -2,6 +2,7 @@ import type { QueryFunction } from "react-query";
 import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { UserType } from "../types/User";
+import usersStore, { storeUser } from "../utils/userData";
 
 export const fetchUsers: QueryFunction<
   UserType[],
@@ -18,7 +19,11 @@ export const fetchUsers: QueryFunction<
     params,
   });
 
-  return json.users;
+  const { users } = json;
+
+  await Promise.all(users.map(storeUser));
+
+  return users;
 };
 
 export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
@@ -26,31 +31,47 @@ export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
 }): Promise<UserType> => {
   const [_key, userId] = queryKey;
 
-  const { data: json } = await authRequest.get(
-    `${urls.api}/user/${encodeURIComponent(userId)}`
-  );
+  try {
+    usersStore.retrieving.add(userId);
 
-  const { data: followersJson } = await authRequest.get(`${urls.api}/follow`, {
-    params: {
-      toType: "User",
-      to: json.user._id,
-      simpleType: "from",
-    },
-  });
+    const { data: json } = await authRequest.get(
+      `${urls.api}/user/${encodeURIComponent(userId)}`
+    );
 
-  const { data: followingJson } = await authRequest.get(`${urls.api}/follow`, {
-    params: {
-      fromType: "User",
-      from: json.user._id,
-      simpleType: "to",
-    },
-  });
+    const { data: followersJson } = await authRequest.get(
+      `${urls.api}/follow`,
+      {
+        params: {
+          toType: "User",
+          to: json.user._id,
+          simpleType: "from",
+        },
+      }
+    );
 
-  return {
-    ...json.user,
-    followers: new Set<UserType["_id"]>(followersJson.follows),
-    following: new Set<UserType["_id"]>(followingJson.follows),
-  };
+    const { data: followingJson } = await authRequest.get(
+      `${urls.api}/follow`,
+      {
+        params: {
+          fromType: "User",
+          from: json.user._id,
+          simpleType: "to",
+        },
+      }
+    );
+
+    const user: UserType = {
+      ...json.user,
+      followers: new Set<UserType["_id"]>(followersJson.follows),
+      following: new Set<UserType["_id"]>(followingJson.follows),
+    };
+
+    await storeUser(user);
+
+    return user;
+  } finally {
+    usersStore.retrieving.delete(userId);
+  }
 };
 
 export const updateUser = async (
@@ -69,5 +90,9 @@ export const updateUser = async (
     }
   );
 
-  return json.user;
+  const newUser: UserType = json.user;
+
+  await storeUser(newUser);
+
+  return newUser;
 };
