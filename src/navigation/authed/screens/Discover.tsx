@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Pressable,
+  Platform,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -95,7 +96,14 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
   const handleMarkerPress = React.useCallback(
     (restaurant) => {
       setRestaurant(restaurant);
-      sheetRef.current.snapToIndex(0);
+      sheetRef.current.snapToIndex(
+        0,
+        Platform.OS === "web"
+          ? {
+              duration: 0,
+            }
+          : {}
+      );
     },
     [sheetRef, setRestaurant]
   );

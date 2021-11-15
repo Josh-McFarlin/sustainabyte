@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
+  Platform,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import {
@@ -126,7 +127,13 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }, [restaurant, navigation]);
 
   const openSheet = React.useCallback(() => {
-    settingsSheetRef.current.expand();
+    settingsSheetRef.current.expand(
+      Platform.OS === "web"
+        ? {
+            duration: 0,
+          }
+        : {}
+    );
   }, [settingsSheetRef]);
 
   const goForwardOffer = React.useCallback(

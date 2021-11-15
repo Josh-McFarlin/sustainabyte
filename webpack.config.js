@@ -6,10 +6,7 @@ module.exports = async function (env, argv) {
     {
       ...env,
       babel: {
-        dangerouslyAddModulePathsToTranspile: [
-          "@gorhom/bottom-sheet",
-          "rn-range-slider",
-        ],
+        dangerouslyAddModulePathsToTranspile: ["@gorhom", "rn-range-slider"],
       },
     },
     argv
@@ -18,8 +15,8 @@ module.exports = async function (env, argv) {
   // Customize the config before returning it.
   config.resolve.alias["react-native"] = "react-native-web";
   config.resolve.alias["react-native-maps"] = "react-native-web-maps";
-  config.resolve.alias["react-native-web/dist/exports/Modal"] =
-    "modal-enhanced-react-native-web";
+  // config.resolve.alias["react-native-web/dist/exports/Modal"] =
+  //   "modal-enhanced-react-native-web";
 
   return config;
 };
