@@ -27,6 +27,7 @@ import { PostType } from "../../../types/Post";
 import { StackNavParamList } from "../types";
 import usersStore from "../../../utils/userData";
 import { useAuth } from "../../../utils/auth";
+import { UserType } from "../../../types/User";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -43,8 +44,9 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { id } = route.params;
   const { user: authedUser } = useAuth();
   const isOwnProfile = id === authedUser._id;
-  const isFollowing = isOwnProfile || authedUser.following.has(id);
   const user = usersStore.getFull(id);
+  const isFollowing =
+    isOwnProfile || (user as UserType)?.followers?.has(authedUser._id) || false;
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const {

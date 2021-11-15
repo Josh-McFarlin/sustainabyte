@@ -1,6 +1,5 @@
 import { store, autoEffect } from "@risingstack/react-easy-state";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { runOnJS } from "react-native-reanimated";
 import { BasicUserType, UserType } from "../types/User";
 import { QueueSet } from "./DataStructures";
 import { fetchUser } from "../actions/user";

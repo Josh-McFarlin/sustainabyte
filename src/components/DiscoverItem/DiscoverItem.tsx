@@ -9,6 +9,8 @@ import { ReviewType } from "../../types/Review";
 import { CheckInType } from "../../types/CheckIn";
 import restaurantsStore from "../../utils/restaurantData";
 import usersStore from "../../utils/userData";
+import { UserType } from "../../types/User";
+import { RestaurantType } from "../../types/Restaurant";
 
 type PropTypes = {
   item: RecentType;
@@ -17,9 +19,11 @@ type PropTypes = {
 const DiscoverItem: React.FC<PropTypes> = ({ item }) => {
   const { type, data } = item;
   const { user: userId, restaurant: restaurantId } = data || {};
-  const user = userId != null ? usersStore.get(userId) : null;
+  const user = userId != null ? (usersStore.getFull(userId) as UserType) : null;
   const restaurant =
-    restaurantId != null ? restaurantsStore.get(restaurantId) : null;
+    restaurantId != null
+      ? (restaurantsStore.getFull(restaurantId) as RestaurantType)
+      : null;
 
   if (type === "Post") {
     return (

@@ -11,39 +11,45 @@ import {
 import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { view } from "@risingstack/react-easy-state";
 import PhotoGallery from "../PhotoGallery";
-import type { BasicUserType } from "../../types/User";
-import { BasicRestaurantType } from "../../types/Restaurant";
+import type { UserType } from "../../types/User";
+import { RestaurantType } from "../../types/Restaurant";
 import { ReviewType } from "../../types/Review";
 import StarRating from "../StarRating";
 import Hashtag from "../Hashtag/Hashtag";
 import { AuthNavigationProp } from "../../navigation/authed/types";
 import { useAuth } from "../../utils/auth";
+import { createFollow } from "../../actions/follow";
 
 type PropTypes = {
-  user?: BasicUserType;
-  restaurant?: BasicRestaurantType;
   data: ReviewType;
+  user: UserType;
+  restaurant: RestaurantType;
 };
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
 const iconColor = "#3C8D90";
 
-const DiscoverReview: React.FC<PropTypes> = ({ user, restaurant, data }) => {
+const DiscoverReview: React.FC<PropTypes> = ({ data, user, restaurant }) => {
   const { tags, photoUrls, body, createdAt } = data;
   const { user: authedUser, saved: savedPosts } = useAuth();
   const navigation = useNavigation<AuthNavigationProp>();
 
   const follows =
     authedUser._id === user._id ||
-    authedUser?.following?.has(user._id) ||
+    user?.followers?.has(authedUser._id) ||
     false;
   const saved = savedPosts?.has(data._id) || false;
 
-  const handleFollow = React.useCallback(() => {
-    console.log("Pressed plus");
-  }, []);
+  const handleFollow = React.useCallback(async () => {
+    await createFollow({
+      fromType: "User",
+      toType: user == null ? "Restaurant" : "User",
+      to: user == null ? restaurant._id : user._id,
+    });
+  }, [user, restaurant]);
 
   const crownImage = React.useCallback(() => {
     console.log("Crowned image");
@@ -275,11 +281,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    marginTop: -16,
+    marginTop: -15,
   },
   hashtagContainer: {
     overflow: "visible",
   },
 });
 
-export default React.memo(DiscoverReview);
+export default view(DiscoverReview);

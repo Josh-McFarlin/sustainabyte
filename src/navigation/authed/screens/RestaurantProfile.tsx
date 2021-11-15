@@ -57,9 +57,12 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { id } = route.params;
   const { user: authedUser } = useAuth();
   const isOwnProfile = id === authedUser._id;
-  const isFollowing = isOwnProfile || authedUser.following.has(id);
   const coordinates = useLocation();
   const restaurant = restaurantsStore.getFull(id);
+  const isFollowing =
+    isOwnProfile ||
+    (restaurant as RestaurantType)?.followers?.has(authedUser._id) ||
+    false;
   const [selOffer, setSelOffer] = React.useState<number | null>(null);
   const [visitOpen, setVisitOpen] = React.useState<boolean>(false);
   const settingsSheetRef = React.useRef<BottomSheet>();
