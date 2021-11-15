@@ -19,6 +19,7 @@ import PhotoGallery from "../../../components/PhotoGallery";
 import usersStore from "../../../utils/userData";
 import restaurantsStore from "../../../utils/restaurantData";
 import Hashtag from "../../../components/Hashtag/Hashtag";
+import { useAuth } from "../../../utils/auth";
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
@@ -28,6 +29,7 @@ type PropTypes = NativeStackScreenProps<StackNavParamList, "Post">;
 
 const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { id, post: initialPost } = route.params;
+  const { user: authedUser, saved: savedPosts } = useAuth();
 
   const { data: post } = useQuery<PostType, Error>(["post", id], fetchPost, {
     enabled: id != null && initialPost == null,
@@ -69,8 +71,11 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }
 
   const { tags, photoUrls, body, createdAt } = post;
-  const follows = false;
-  const saved = false;
+  const follows =
+    authedUser._id === user._id ||
+    authedUser?.following?.has(user._id) ||
+    false;
+  const saved = savedPosts?.has(post._id) || false;
 
   return (
     <View style={styles.container}>

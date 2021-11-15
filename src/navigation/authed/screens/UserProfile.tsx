@@ -26,6 +26,7 @@ import { fetchPosts } from "../../../actions/post";
 import { PostType } from "../../../types/Post";
 import { StackNavParamList } from "../types";
 import usersStore from "../../../utils/userData";
+import { useAuth } from "../../../utils/auth";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -39,7 +40,10 @@ enum TabTypes {
 }
 
 const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
-  const { id, isOwnProfile, isFollowing } = route.params;
+  const { id } = route.params;
+  const { user: authedUser } = useAuth();
+  const isOwnProfile = id === authedUser._id;
+  const isFollowing = isOwnProfile || authedUser.following.has(id);
   const user = usersStore.getFull(id);
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
@@ -223,7 +227,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                     color={isFollowing ? "#3C8D90" : "#9EC1C3"}
                   />
                   <Text style={styles.statsText}>
-                    {("followers" in user && user?.followers?.length) || 0}
+                    {("followers" in user && user?.followers?.size) || 0}
                   </Text>
                   <Text style={styles.statsDetails}>Followers</Text>
                 </View>

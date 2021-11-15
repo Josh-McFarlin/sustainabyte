@@ -19,6 +19,7 @@ import PhotoGallery from "../../../components/PhotoGallery";
 import restaurantsStore from "../../../utils/restaurantData";
 import usersStore from "../../../utils/userData";
 import Hashtag from "../../../components/Hashtag/Hashtag";
+import { useAuth } from "../../../utils/auth";
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
@@ -28,6 +29,7 @@ type PropTypes = NativeStackScreenProps<StackNavParamList, "Review">;
 
 const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
   const { id, review: initialReview } = route.params;
+  const { user: authedUser, saved: savedPosts } = useAuth();
 
   const { data: review } = useQuery<ReviewType, Error>(
     ["review", id],
@@ -65,8 +67,11 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
   }
 
   const { tags, photoUrls, body, createdAt } = review;
-  const follows = false;
-  const saved = false;
+  const follows =
+    authedUser._id === user._id ||
+    authedUser?.following?.has(user._id) ||
+    false;
+  const saved = savedPosts?.has(review._id) || false;
 
   return (
     <View style={styles.container}>

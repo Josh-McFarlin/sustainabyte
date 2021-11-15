@@ -6,15 +6,19 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import PhotoGallery from "../PhotoGallery";
 import type { BasicUserType } from "../../types/User";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { PostType } from "../../types/Post";
 import StarRating from "../StarRating";
 import Hashtag from "../Hashtag/Hashtag";
+import { AuthNavigationProp } from "../../navigation/authed/types";
+import { useAuth } from "../../utils/auth";
 
 type PropTypes = {
   user?: BasicUserType;
@@ -28,8 +32,14 @@ const iconColor = "#3C8D90";
 
 const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
   const { tags, photoUrls, body, createdAt } = data;
-  const follows = false;
-  const saved = false;
+  const { user: authedUser, saved: savedPosts } = useAuth();
+  const navigation = useNavigation<AuthNavigationProp>();
+
+  const follows =
+    authedUser._id === user._id ||
+    authedUser?.following?.has(user._id) ||
+    false;
+  const saved = savedPosts?.has(data._id) || false;
 
   const handleFollow = React.useCallback(() => {
     console.log("Pressed plus");
@@ -53,12 +63,20 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <Image
-          style={styles.topAvatar}
-          source={{
-            uri: user?.avatarUrl,
-          }}
-        />
+        <Pressable
+          onPress={() =>
+            navigation.navigate("UserProfile", {
+              id: user._id,
+            })
+          }
+        >
+          <Image
+            style={styles.topAvatar}
+            source={{
+              uri: user?.avatarUrl,
+            }}
+          />
+        </Pressable>
         <Text>
           <Text style={styles.restName}>{user?.username || ""}</Text>{" "}
           {restaurant != null && (
@@ -79,12 +97,20 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
           {restaurant != null && (
-            <Image
-              style={styles.avatar}
-              source={{
-                uri: restaurant?.avatarUrl,
-              }}
-            />
+            <Pressable
+              onPress={() =>
+                navigation.navigate("RestaurantProfile", {
+                  id: restaurant._id,
+                })
+              }
+            >
+              <Image
+                style={styles.avatar}
+                source={{
+                  uri: restaurant?.avatarUrl,
+                }}
+              />
+            </Pressable>
           )}
           <View style={styles.nameTags}>
             {restaurant != null && (
@@ -265,4 +291,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DiscoverPost;
+export default React.memo(DiscoverPost);

@@ -1,4 +1,5 @@
 import type { AddressType, PointType } from "./Location";
+import { UserType } from "./User";
 
 export interface DayAvailabilityType {
   startHour: number;
@@ -43,6 +44,7 @@ export interface RestaurantType {
     sum: number;
   };
   menuPercents: Record<string, number>;
+  followers: Set<UserType["_id"]>;
   createdAt: Date;
 }
 

@@ -41,8 +41,6 @@ const OffersModal: React.FC<PropTypes> = ({
   const handlePrompt = React.useCallback(() => {
     navigation.navigate("RestaurantProfile", {
       id: offer.restaurant,
-      isOwnProfile: false,
-      isFollowing: false,
     });
     handleClose();
   }, [navigation, offer, handleClose]);

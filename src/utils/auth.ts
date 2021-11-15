@@ -178,6 +178,7 @@ export const useAuthBase = (): AuthContextType => {
 
   return {
     user,
+    saved: new Set<string>(),
     isInitializing: !request || isInitializing,
     isLoggedIn: auth0User != null && user != null,
     login,
@@ -187,6 +188,7 @@ export const useAuthBase = (): AuthContextType => {
 
 const initAuth: AuthContextType = {
   user: null,
+  saved: new Set<string>(),
   isInitializing: true,
   isLoggedIn: false,
   login: null,

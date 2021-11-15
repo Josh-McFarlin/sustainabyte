@@ -40,6 +40,7 @@ import { fetchPosts } from "../../../actions/post";
 import type { PostType } from "../../../types/Post";
 import restaurantsStore from "../../../utils/restaurantData";
 import { RestaurantType } from "../../../types/Restaurant";
+import { useAuth } from "../../../utils/auth";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -53,7 +54,10 @@ enum TabTypes {
 }
 
 const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
-  const { id, isOwnProfile, isFollowing } = route.params;
+  const { id } = route.params;
+  const { user: authedUser } = useAuth();
+  const isOwnProfile = id === authedUser._id;
+  const isFollowing = isOwnProfile || authedUser.following.has(id);
   const coordinates = useLocation();
   const restaurant = restaurantsStore.getFull(id);
   const [selOffer, setSelOffer] = React.useState<number | null>(null);

@@ -17,5 +17,13 @@ export const fetchAuth: QueryFunction<UserType, [string, string]> = async ({
     }
   );
 
-  return json.auth;
+  if (!json.auth) {
+    throw new Error("Invalid user!");
+  }
+
+  return {
+    ...json.auth,
+    followers: new Set<UserType["_id"]>(json.auth.followers),
+    following: new Set<UserType["_id"]>(json.auth.following),
+  };
 };

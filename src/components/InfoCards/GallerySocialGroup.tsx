@@ -42,8 +42,6 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
                   onPress={() =>
                     navigation.navigate("UserProfile", {
                       id: user?._id,
-                      isOwnProfile: false,
-                      isFollowing: false,
                     })
                   }
                 >

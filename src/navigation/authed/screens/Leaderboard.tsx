@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   ImageBackground,
+  Pressable,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -56,7 +57,7 @@ const badges = [
   },
 ];
 
-const LeaderboardScreen: React.FC<PropTypes> = () => {
+const LeaderboardScreen: React.FC<PropTypes> = ({ navigation }) => {
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.LEADERBOARD);
   const { data: users } = useQuery<UserType[], Error>(["users"], fetchUsers, {
     initialData: [],
@@ -146,18 +147,26 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
         ),
         Footer: () => null,
         renderItem: ({ item, index }) => (
-          <View style={styles.listItem}>
-            <Text style={styles.itemText}>{index + 1}</Text>
-            <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
-            <Text style={styles.itemText}>@{item.username}</Text>
-            <FontAwesome5
-              style={styles.crown}
-              name="crown"
-              size={18}
-              color="#FFC601"
-            />
-            <Text style={styles.itemText}>{item.score}</Text>
-          </View>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("UserProfile", {
+                id: item._id,
+              })
+            }
+          >
+            <View style={styles.listItem}>
+              <Text style={styles.itemText}>{index + 1}</Text>
+              <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
+              <Text style={styles.itemText}>@{item.username}</Text>
+              <FontAwesome5
+                style={styles.crown}
+                name="crown"
+                size={18}
+                color="#FFC601"
+              />
+              <Text style={styles.itemText}>{item.score}</Text>
+            </View>
+          </Pressable>
         ),
       },
       [TabTypes.CHALLENGES]: {
@@ -167,11 +176,12 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
         listProps: {},
         PrimaryActions: () => (
           <View>
-            <Text style={[styles.headerText, styles.marginBottom]}>
+            <Text style={[styles.subtitleText, styles.marginBottom]}>
               Join a badge challenge
             </Text>
             <FlatList
-              contentContainerStyle={styles.center}
+              // contentContainerStyle={styles.center}
+              style={styles.paddingHorizontal}
               horizontal
               data={badges}
               renderItem={({ item }) => (
@@ -242,7 +252,7 @@ const LeaderboardScreen: React.FC<PropTypes> = () => {
         ),
       },
     }),
-    [users, challenges]
+    [navigation, users, challenges]
   );
 
   const { data, PrimaryActions, Header, Footer, renderItem, listProps } =
@@ -318,14 +328,13 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   },
   listContainer: {
-    paddingVertical: 16,
+    paddingTop: 16,
   },
   listItem: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 24,
-    paddingHorizontal: 12,
+    padding: 24,
   },
   listSeparator: {
     height: 1,
@@ -457,7 +466,14 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
+    color: "#000",
+    marginHorizontal: 24,
+  },
+  subtitleText: {
+    fontSize: 20,
+    fontWeight: "bold",
     color: "#fff",
+    marginHorizontal: 24,
   },
   footerContainer: {
     paddingTop: 16,
@@ -515,6 +531,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     overflow: "hidden",
+  },
+  paddingHorizontal: {
+    paddingHorizontal: 8,
   },
 });
 

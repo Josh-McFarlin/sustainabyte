@@ -15,8 +15,6 @@ export type TabNavParamList = {
   Leaderboard: Record<string, never>;
   Profile: {
     id: UserType["_id"] | RestaurantType["_id"];
-    isOwnProfile: boolean;
-    isFollowing: boolean;
   };
 };
 
@@ -24,13 +22,9 @@ export type StackNavParamList = {
   Tabs: TabNavParamList;
   UserProfile: {
     id: UserType["_id"];
-    isOwnProfile: boolean;
-    isFollowing: boolean;
   };
   RestaurantProfile: {
     id: RestaurantType["_id"];
-    isOwnProfile: boolean;
-    isFollowing: boolean;
   };
   Preferences: Record<string, never>;
   AccountSettings: Record<string, never>;

@@ -19,6 +19,7 @@ export interface Auth0User {
 
 export interface AuthContextType {
   user: UserType | null;
+  saved: Set<string>;
   isInitializing: boolean;
   isLoggedIn: boolean;
   login: () => Promise<AuthSessionResult>;

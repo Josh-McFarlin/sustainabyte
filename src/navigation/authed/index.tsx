@@ -62,8 +62,6 @@ const TabbedNavigator: React.FC = () => {
         component={UserProfileScreen}
         initialParams={{
           id: user._id,
-          isOwnProfile: true,
-          isFollowing: true,
         }}
         options={{
           title: "Profile",

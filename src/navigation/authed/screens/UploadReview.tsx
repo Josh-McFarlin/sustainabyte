@@ -50,8 +50,6 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         photoUrls: pictures,
       });
       navigation.navigate("RestaurantProfile", {
-        isOwnProfile: false,
-        isFollowing: false,
         id: restaurant._id,
       });
     } catch (error) {

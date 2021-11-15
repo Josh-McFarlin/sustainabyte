@@ -1,10 +1,20 @@
 import * as React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import type { BasicUserType } from "../../types/User";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { CheckInType } from "../../types/CheckIn";
+import { AuthNavigationProp } from "../../navigation/authed/types";
+import { useAuth } from "../../utils/auth";
 
 type PropTypes = {
   user?: BasicUserType;
@@ -18,7 +28,10 @@ const iconColor = "#3C8D90";
 
 const DiscoverCheckIn: React.FC<PropTypes> = ({ user, restaurant, data }) => {
   const { withUsers, createdAt } = data;
-  const saved = false;
+  const { saved: savedPosts } = useAuth();
+  const navigation = useNavigation<AuthNavigationProp>();
+
+  const saved = savedPosts?.has(data._id) || false;
 
   const crownImage = React.useCallback(() => {
     console.log("Crowned image");
@@ -36,12 +49,20 @@ const DiscoverCheckIn: React.FC<PropTypes> = ({ user, restaurant, data }) => {
     <View style={styles.container}>
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
-          <Image
-            style={styles.avatar}
-            source={{
-              uri: restaurant?.avatarUrl,
-            }}
-          />
+          <Pressable
+            onPress={() =>
+              navigation.navigate("RestaurantProfile", {
+                id: restaurant._id,
+              })
+            }
+          >
+            <Image
+              style={styles.avatar}
+              source={{
+                uri: restaurant?.avatarUrl,
+              }}
+            />
+          </Pressable>
           <View style={styles.nameTags}>
             <View>
               <Text>
@@ -50,7 +71,19 @@ const DiscoverCheckIn: React.FC<PropTypes> = ({ user, restaurant, data }) => {
                 <Text style={styles.restName}>{restaurant?.name || ""}</Text>
               </Text>
               {withUsers.length > 0 && (
-                <Text style={styles.minorText}>with</Text>
+                <View style={styles.hRow}>
+                  <Text style={styles.minorText}>
+                    with{" "}
+                    {withUsers.map((withUserId, index) => (
+                      <React.Fragment key={withUserId}>
+                        <Text style={styles.nameText}>{withUserId}</Text>
+                        {index !== withUserId.length - 1 && (
+                          <Text style={styles.minorText}>,</Text>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </Text>
+                </View>
               )}
             </View>
           </View>
@@ -186,4 +219,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DiscoverCheckIn;
+export default React.memo(DiscoverCheckIn);
