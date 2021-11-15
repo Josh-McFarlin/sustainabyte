@@ -14,6 +14,7 @@ import type { BasicUserType } from "../../types/User";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { PostType } from "../../types/Post";
 import StarRating from "../StarRating";
+import Hashtag from "../Hashtag/Hashtag";
 
 type PropTypes = {
   user?: BasicUserType;
@@ -30,7 +31,7 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
   const follows = false;
   const saved = false;
 
-  const handlePlus = React.useCallback(() => {
+  const handleFollow = React.useCallback(() => {
     console.log("Pressed plus");
   }, []);
 
@@ -67,9 +68,9 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
             </>
           )}
         </Text>
-        <TouchableOpacity style={styles.flex} onPress={handlePlus}>
+        <TouchableOpacity style={styles.flex} onPress={handleFollow}>
           <Text style={styles.topFollowText}>
-            {follows ? "Follow" : "Following"}
+            {follows ? "Following" : "Follow"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -93,11 +94,9 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
                 <StarRating rating={rating} size={14} />
               </View>
             )}
-            <ScrollView horizontal>
+            <ScrollView horizontal style={styles.hashtagContainer}>
               {tags.map((tag) => (
-                <View key={tag} style={styles.tag}>
-                  <Text>#{tag}</Text>
-                </View>
+                <Hashtag key={tag} style={styles.tag} hashtag={tag} selected />
               ))}
             </ScrollView>
           </View>
@@ -141,6 +140,7 @@ const styles = StyleSheet.create({
   restInfo: {
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
   },
   avatar: {
     width: 50,
@@ -173,12 +173,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: "#77bd67",
-    color: "#000",
-    marginHorizontal: 4,
+    marginRight: 8,
   },
   buttonRow: {
     display: "flex",
@@ -264,6 +259,9 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     marginTop: -16,
+  },
+  hashtagContainer: {
+    overflow: "visible",
   },
 });
 

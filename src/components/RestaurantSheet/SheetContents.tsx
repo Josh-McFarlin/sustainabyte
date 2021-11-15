@@ -6,6 +6,7 @@ import { RestaurantType } from "../../types/Restaurant";
 import { getOpenStatus } from "../../utils/date";
 import { useLocation, distanceBetween } from "../../utils/location";
 import StarRating from "../StarRating";
+import Hashtag from "../Hashtag/Hashtag";
 
 interface PropTypes {
   restaurant: RestaurantType;
@@ -42,11 +43,9 @@ const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
         />
         <View style={styles.nameTags}>
           <Text style={styles.restName}>{restaurant.name}</Text>
-          <View style={styles.hRow}>
+          <View style={[styles.hRow, styles.hashtagContainer]}>
             {restaurant.tags.map((tag) => (
-              <View key={tag} style={styles.tag}>
-                <Text style={styles.tagText}>#{tag}</Text>
-              </View>
+              <Hashtag key={tag} style={styles.tag} hashtag={tag} selected />
             ))}
           </View>
         </View>
@@ -79,11 +78,11 @@ const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
       </View>
       <View style={[styles.secondaryContainer, styles.marginBottom]}>
         <Text style={styles.secondary}>
-          {openStatus.open ? "Open" : "Closed"}
+          {openStatus?.open ? "Open" : "Closed"}
         </Text>
         <Text style={styles.secondary}>•</Text>
         <Text style={styles.secondary}>
-          {openStatus.open ? openStatus.closes : (openStatus as any)?.opens}
+          {openStatus?.open ? openStatus?.closes : (openStatus as any)?.opens}
         </Text>
       </View>
       <View style={[styles.secondaryContainer, styles.marginBottom]}>
@@ -201,6 +200,9 @@ const styles = StyleSheet.create({
   },
   hRow: {
     flexDirection: "row",
+  },
+  hashtagContainer: {
+    overflow: "visible",
   },
 });
 

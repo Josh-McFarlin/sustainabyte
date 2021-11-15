@@ -120,12 +120,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: "#77bd67",
-    color: "#000",
-    marginHorizontal: 4,
+    marginRight: 8,
   },
   buttonRow: {
     display: "flex",

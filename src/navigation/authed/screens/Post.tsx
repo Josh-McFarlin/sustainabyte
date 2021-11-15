@@ -18,6 +18,7 @@ import type { PostType } from "../../../types/Post";
 import PhotoGallery from "../../../components/PhotoGallery";
 import usersStore from "../../../utils/userData";
 import restaurantsStore from "../../../utils/restaurantData";
+import Hashtag from "../../../components/Hashtag/Hashtag";
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
@@ -110,11 +111,9 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             {restaurant != null && (
               <Text style={styles.restName}>{restaurant?.name || ""}</Text>
             )}
-            <ScrollView horizontal>
+            <ScrollView horizontal style={styles.hashtagContainer}>
               {tags.map((tag) => (
-                <View key={tag} style={styles.tag}>
-                  <Text>#{tag}</Text>
-                </View>
+                <Hashtag key={tag} style={styles.tag} hashtag={tag} selected />
               ))}
             </ScrollView>
           </View>
@@ -187,12 +186,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: "#77bd67",
-    color: "#000",
-    marginHorizontal: 4,
+    marginRight: 8,
   },
   buttonRow: {
     display: "flex",
@@ -261,6 +255,9 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
     minWidth: 100,
+  },
+  hashtagContainer: {
+    overflow: "visible",
   },
 });
 

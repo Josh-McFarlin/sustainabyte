@@ -370,7 +370,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                 <Text style={styles.bio}>{restaurant.tags.join(", ")}</Text>
                 <View style={styles.bullet} />
                 <Text style={[styles.bio, styles.openText]}>
-                  {openStatus.open ? "Open Now" : "Currently Closed"}
+                  {openStatus?.open ? "Open Now" : "Currently Closed"}
                 </Text>
               </View>
               <View style={[styles.hRow]}>

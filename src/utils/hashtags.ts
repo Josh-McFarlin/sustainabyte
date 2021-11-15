@@ -16,7 +16,7 @@ export const hashtagsToIcons = {
 export const hashtagsToColors = {
   healthy: "#A2D7D9",
   vegan: "#99CCAE",
-  vegetarian: "#A2D7D9",
+  vegetarian: "#FCE694",
   organic: "#FFE17C",
   italian: "#FFA69E",
   mexican: "#9C92A3",

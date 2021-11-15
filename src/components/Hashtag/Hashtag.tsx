@@ -17,7 +17,7 @@ const Hashtag: React.FC<PropTypes> = ({
 }) => (
   <View
     style={[
-      styles.selectableItem,
+      styles.container,
       selected
         ? {
             ...styles.itemSelected,
@@ -33,13 +33,13 @@ const Hashtag: React.FC<PropTypes> = ({
 );
 
 const styles = StyleSheet.create({
-  selectableItem: {
+  container: {
     borderColor: "#A7A4A4",
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    marginVertical: 8,
+    zIndex: 999,
   },
   itemSelected: {
     backgroundColor: "#3C8D90",

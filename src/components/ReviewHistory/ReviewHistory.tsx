@@ -14,6 +14,7 @@ import type { ReviewType } from "../../types/Review";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { AuthNavigationProp } from "../../navigation/authed/types";
 import StarRating from "../StarRating";
+import Hashtag from "../Hashtag/Hashtag";
 
 export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
   <View style={styles.item}>
@@ -108,11 +109,9 @@ export const Header: React.FC<PropTypes> = ({
         People often mention
       </Text>
       <View style={[styles.marginBottom, styles.paddingHorizontal]}>
-        <ScrollView horizontal>
+        <ScrollView horizontal style={styles.hashtagContainer}>
           {tags.map((tag) => (
-            <View key={tag} style={styles.tag}>
-              <Text style={styles.tagText}>#{tag}</Text>
-            </View>
+            <Hashtag key={tag} style={styles.tag} hashtag={tag} selected />
           ))}
         </ScrollView>
       </View>
@@ -194,20 +193,14 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   tag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    color: "#000",
-    marginRight: 4,
-    borderColor: "#A7A4A4",
-    borderWidth: 1,
-  },
-  tagText: {
-    fontWeight: "500",
+    marginRight: 8,
   },
   item: {
     marginBottom: 12,
     paddingHorizontal: 24,
+  },
+  hashtagContainer: {
+    overflow: "visible",
   },
 });
 
