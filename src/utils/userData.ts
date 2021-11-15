@@ -32,7 +32,12 @@ const usersStore = store({
       };
     }
 
-    return null;
+    return {
+      _id: "",
+      username: "",
+      name: "",
+      avatarUrl: "",
+    };
   },
   getFull(userId: UserType["_id"]): UserType | BasicUserType | null {
     if (
@@ -49,7 +54,20 @@ const usersStore = store({
       return usersStore.users.get(userId);
     }
 
-    return null;
+    return {
+      _id: "",
+      auth0Id: "",
+      name: "",
+      email: "",
+      username: "",
+      avatarUrl: "",
+      score: 0,
+      locations: [],
+      groups: [],
+      followers: new Set<UserType["_id"]>(),
+      following: new Set<UserType["_id"]>(),
+      createdAt: new Date(),
+    };
   },
 });
 

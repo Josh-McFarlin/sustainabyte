@@ -2,6 +2,7 @@ import { store, autoEffect } from "@risingstack/react-easy-state";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BasicRestaurantType, RestaurantType } from "../types/Restaurant";
 import { fetchRestaurant } from "../actions/restaurant";
+import { UserType } from "../types/User";
 
 const restaurantsKey = "RESTAURANTS";
 const restaurantKey = (restaurantId: RestaurantType["_id"]) =>
@@ -39,7 +40,18 @@ const restaurantsStore = store({
       };
     }
 
-    return null;
+    return {
+      _id: "",
+      name: "",
+      avatarUrl: "",
+      headerUrl: "",
+      tags: [],
+      ratings: {
+        sum: 0,
+        count: 0,
+      },
+      menuPercents: {},
+    };
   },
   getFull(
     restaurantId: RestaurantType["_id"]
@@ -58,7 +70,34 @@ const restaurantsStore = store({
       return restaurantsStore.restaurants.get(restaurantId);
     }
 
-    return null;
+    return {
+      _id: "",
+      auth0Id: "",
+      name: "",
+      email: "",
+      avatarUrl: "",
+      headerUrl: "",
+      bio: "",
+      tags: [],
+      openHours: [[], [], [], [], [], [], []],
+      address: {
+        street: "",
+        city: "",
+        state: "",
+        country: "",
+      },
+      coordinates: {
+        type: "Point",
+        coordinates: [0, 0],
+      },
+      ratings: {
+        sum: 0,
+        count: 0,
+      },
+      menuPercents: {},
+      followers: new Set<UserType["_id"]>(),
+      createdAt: new Date(),
+    };
   },
 });
 
