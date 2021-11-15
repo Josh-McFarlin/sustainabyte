@@ -4,11 +4,11 @@ import {
   Text,
   StyleSheet,
   Image,
-  TouchableWithoutFeedback,
   Modal,
   ImageBackground,
   SafeAreaView,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -72,12 +72,9 @@ const OffersModal: React.FC<PropTypes> = ({
                   Expires {dayjs().to(offer?.expiresAt)}
                 </Text>
               </View>
-              <TouchableWithoutFeedback
-                style={styles.button}
-                onPress={handleClose}
-              >
+              <Pressable style={styles.button} onPress={handleClose}>
                 <FontAwesome name="close" size={20} color="#fff" />
-              </TouchableWithoutFeedback>
+              </Pressable>
             </View>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.button} onPress={goBack}>
@@ -93,12 +90,12 @@ const OffersModal: React.FC<PropTypes> = ({
                 <Text style={styles.offerBody}>{offer?.body}</Text>
               </View>
             </View>
-            <TouchableWithoutFeedback onPress={handlePrompt}>
+            <Pressable onPress={handlePrompt}>
               <View style={styles.prompt}>
                 <FontAwesome5 name="chevron-up" size={24} color="#fff" />
                 <Text style={styles.promptText}>{offer?.prompt}</Text>
               </View>
-            </TouchableWithoutFeedback>
+            </Pressable>
           </ImageBackground>
         </SafeAreaView>
       </View>

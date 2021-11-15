@@ -3,11 +3,11 @@ import {
   SafeAreaView,
   StyleSheet,
   FlatList,
-  TouchableWithoutFeedback,
   View,
   Text,
   TouchableOpacity,
   Dimensions,
+  Pressable,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -146,13 +146,13 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
             data={recent}
             keyExtractor={(i) => i._id}
             renderItem={({ item }) => (
-              <TouchableWithoutFeedback
+              <Pressable
                 onPress={() => {
                   console.log(item._id);
                 }}
               >
                 <DiscoverItem item={item} />
-              </TouchableWithoutFeedback>
+              </Pressable>
             )}
             ItemSeparatorComponent={() => <View style={styles.spacer} />}
           />

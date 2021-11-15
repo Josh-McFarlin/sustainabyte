@@ -1,11 +1,5 @@
 import * as React from "react";
-import {
-  View,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, Image, StyleSheet, Text, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { view } from "@risingstack/react-easy-state";
@@ -43,7 +37,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
             {users
               .filter((i) => i != null)
               .map((user) => (
-                <TouchableWithoutFeedback
+                <Pressable
                   key={user?._id}
                   onPress={() =>
                     navigation.navigate("UserProfile", {
@@ -59,7 +53,7 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
                       uri: user?.avatarUrl,
                     }}
                   />
-                </TouchableWithoutFeedback>
+                </Pressable>
               ))}
           </View>
           <Text style={styles.secondary}>{group.members.length} people</Text>
@@ -74,11 +68,11 @@ const GallerySocialGroup: React.FC<PropTypes> = ({ group }) => {
           ) : (
             <View />
           )}
-          <TouchableWithoutFeedback>
+          <Pressable>
             <View style={styles.button}>
               <Text style={styles.buttonText}>Follow</Text>
             </View>
-          </TouchableWithoutFeedback>
+          </Pressable>
         </View>
       </View>
     </View>

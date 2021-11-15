@@ -9,11 +9,11 @@ import {
   Platform,
   TextInput,
   Dimensions,
-  TouchableWithoutFeedback,
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
@@ -27,7 +27,8 @@ import debounce from "lodash/debounce";
 import { view } from "@risingstack/react-easy-state";
 import { createPost } from "../../../actions/post";
 import { StackNavParamList } from "../types";
-import { hashtags } from "../../../utils/tags";
+import { hashtags } from "../../../utils/hashtags";
+import Hashtag from "../../../components/Hashtag/Hashtag";
 
 const useSelect = Platform.select({ web: true, default: false });
 
@@ -264,28 +265,13 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             data={orderedTags}
             keyExtractor={(i) => i}
             renderItem={({ item }) => (
-              <TouchableWithoutFeedback onPress={() => toggleTag(item)}>
-                <View
-                  style={[
-                    styles.touchable,
-                    styles.selectableItem,
-                    selTags.includes(item)
-                      ? styles.itemSelected
-                      : styles.itemUnselected,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.text,
-                      selTags.includes(item)
-                        ? styles.whiteText
-                        : styles.blackText,
-                    ]}
-                  >
-                    #{item}
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
+              <Pressable onPress={() => toggleTag(item)}>
+                <Hashtag
+                  style={styles.touchable}
+                  hashtag={item}
+                  selected={selTags.includes(item)}
+                />
+              </Pressable>
             )}
           />
         </View>
@@ -333,28 +319,6 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     marginRight: 8,
-  },
-  selectableItem: {
-    borderWidth: 1,
-    borderColor: "#3C8D90",
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  itemSelected: {
-    backgroundColor: "#3C8D90",
-  },
-  itemUnselected: {
-    backgroundColor: "#fff",
-  },
-  text: {
-    fontSize: 14,
-  },
-  whiteText: {
-    color: "#fff",
-  },
-  blackText: {
-    color: "#000",
   },
   touchable: {
     marginRight: 8,

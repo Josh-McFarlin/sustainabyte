@@ -1,24 +1,9 @@
 import * as React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, StyleSheet, TextInput, FlatList, Pressable } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import debounce from "lodash/debounce";
-import { hashtags } from "../../utils/tags";
-
-const returnTrue = (obj: Record<string, boolean>): string[] =>
-  Object.entries(obj).reduce((acc, [tag, sel]) => {
-    if (sel) {
-      acc.push(tag);
-    }
-
-    return acc;
-  }, []);
+import { hashtags } from "../../utils/hashtags";
+import Hashtag from "../Hashtag/Hashtag";
 
 type PropTypes = {
   onChange: (search: string, tags: string[]) => void;
@@ -26,21 +11,35 @@ type PropTypes = {
 
 const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
   const [search, setSearch] = React.useState<string>("");
-  const [selTags, setTagsBase] = React.useState<Record<string, boolean>>(
-    hashtags.reduce((acc, tag) => ({ ...acc, [tag]: false }), {})
-  );
+  const [selTags, setTags] = React.useState<string[]>([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debChange = React.useCallback(debounce(onChange, 250), [onChange]);
 
   React.useEffect(() => {
-    debChange(search, returnTrue(selTags));
+    debChange(search, selTags);
   }, [debChange, search, selTags]);
 
-  const setTags = (tag: string, selected: boolean) =>
-    setTagsBase((prevState) => ({
-      ...prevState,
-      [tag]: selected,
-    }));
+  const toggleTag = React.useCallback(
+    (item: string) =>
+      setTags((prevState) => {
+        const newTags = new Set(prevState);
+
+        if (newTags.has(item)) {
+          newTags.delete(item);
+        } else {
+          newTags.add(item);
+        }
+
+        return [...newTags];
+      }),
+    []
+  );
+
+  const orderedTags = React.useMemo(() => {
+    const selSet = new Set(selTags);
+
+    return [...selTags, ...hashtags.filter((i) => !selSet.has(i))];
+  }, [selTags]);
 
   return (
     <View style={styles.container}>
@@ -65,24 +64,16 @@ const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
       </View>
       <FlatList
         horizontal
-        data={Object.entries(selTags)}
-        keyExtractor={(i) => i[0]}
-        renderItem={({ item: [tag, has] }) => (
-          <TouchableWithoutFeedback onPress={() => setTags(tag, !has)}>
-            <View
-              style={[
-                styles.touchable,
-                styles.selectableItem,
-                has ? styles.itemSelected : styles.itemUnselected,
-              ]}
-            >
-              <Text
-                style={[styles.text, has ? styles.whiteText : styles.blackText]}
-              >
-                #{tag}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
+        data={orderedTags}
+        keyExtractor={(i) => i}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => toggleTag(item)}>
+            <Hashtag
+              style={styles.touchable}
+              hashtag={item}
+              selected={selTags.includes(item)}
+            />
+          </Pressable>
         )}
       />
     </View>
@@ -114,28 +105,6 @@ const styles = StyleSheet.create({
   },
   clearIcon: {
     //
-  },
-  selectableItem: {
-    borderWidth: 1,
-    borderColor: "#3C8D90",
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  itemSelected: {
-    backgroundColor: "#3C8D90",
-  },
-  itemUnselected: {
-    backgroundColor: "#fff",
-  },
-  text: {
-    fontSize: 14,
-  },
-  whiteText: {
-    color: "#fff",
-  },
-  blackText: {
-    color: "#000",
   },
   touchable: {
     marginRight: 8,

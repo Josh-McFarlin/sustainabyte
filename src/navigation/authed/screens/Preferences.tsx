@@ -2,11 +2,11 @@ import * as React from "react";
 import {
   SafeAreaView,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
   Text,
   Image,
   Dimensions,
+  Pressable,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
@@ -129,10 +129,7 @@ const PreferencesScreen: React.FC<PropTypes> = () => {
           <Text style={styles.sectionHeader}>Food & Drink</Text>
           <View style={styles.wrapContent}>
             {foodDrink.map((item, i) => (
-              <TouchableWithoutFeedback
-                key={item}
-                onPress={() => toggleFood(item)}
-              >
+              <Pressable key={item} onPress={() => toggleFood(item)}>
                 <View style={[styles.imageItem, styles.touchable]}>
                   <View style={styles.imageContainer}>
                     <Image
@@ -149,7 +146,7 @@ const PreferencesScreen: React.FC<PropTypes> = () => {
                   </View>
                   <Text style={styles.text}>{item}</Text>
                 </View>
-              </TouchableWithoutFeedback>
+              </Pressable>
             ))}
           </View>
         </View>
@@ -157,10 +154,7 @@ const PreferencesScreen: React.FC<PropTypes> = () => {
           <Text style={styles.sectionHeader}>Dietary</Text>
           <View style={styles.wrapContent}>
             {dietary.map((item) => (
-              <TouchableWithoutFeedback
-                key={item}
-                onPress={() => toggleDietary(item)}
-              >
+              <Pressable key={item} onPress={() => toggleDietary(item)}>
                 <View
                   style={[
                     styles.touchable,
@@ -181,7 +175,7 @@ const PreferencesScreen: React.FC<PropTypes> = () => {
                     {item}
                   </Text>
                 </View>
-              </TouchableWithoutFeedback>
+              </Pressable>
             ))}
           </View>
         </View>
@@ -189,7 +183,7 @@ const PreferencesScreen: React.FC<PropTypes> = () => {
           <Text style={styles.sectionHeader}>Restaurant Attributes</Text>
           <View style={styles.wrapContent}>
             {restAttributes.map((item) => (
-              <TouchableWithoutFeedback
+              <Pressable
                 key={item}
                 style={styles.touchable}
                 onPress={() => toggleAttr(item)}
@@ -214,7 +208,7 @@ const PreferencesScreen: React.FC<PropTypes> = () => {
                     {item}
                   </Text>
                 </View>
-              </TouchableWithoutFeedback>
+              </Pressable>
             ))}
           </View>
         </View>

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Image, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { hashtagsToIcons } from "../../utils/tags";
+import { hashtagsToIcons } from "../../utils/hashtags";
 import { RestaurantType } from "../../types/Restaurant";
 import { getOpenStatus } from "../../utils/date";
 import { useLocation, distanceBetween } from "../../utils/location";

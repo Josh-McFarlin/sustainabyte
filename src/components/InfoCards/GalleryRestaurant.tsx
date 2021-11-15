@@ -3,7 +3,7 @@ import * as React from "react";
 import { View, Image, StyleSheet, Text, ViewStyle } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import type { RestaurantType } from "../../types/Restaurant";
-import { hashtagsToIcons } from "../../utils/tags";
+import { hashtagsToIcons } from "../../utils/hashtags";
 import StarRating from "../StarRating";
 
 type PropTypes = {

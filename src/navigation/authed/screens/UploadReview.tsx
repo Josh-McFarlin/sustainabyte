@@ -8,11 +8,11 @@ import {
   Alert,
   Platform,
   TextInput,
-  TouchableWithoutFeedback,
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
@@ -20,9 +20,10 @@ import debounce from "lodash/debounce";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { view } from "@risingstack/react-easy-state";
 import { createReview } from "../../../actions/review";
-import { hashtags } from "../../../utils/tags";
+import { hashtags } from "../../../utils/hashtags";
 import { StackNavParamList } from "../types";
 import StarRating from "../../../components/StarRating";
+import Hashtag from "../../../components/Hashtag/Hashtag";
 
 const useSelect = Platform.select({ web: true, default: false });
 
@@ -254,28 +255,13 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             data={orderedTags}
             keyExtractor={(i) => i}
             renderItem={({ item }) => (
-              <TouchableWithoutFeedback onPress={() => toggleTag(item)}>
-                <View
-                  style={[
-                    styles.touchable,
-                    styles.selectableItem,
-                    selTags.includes(item)
-                      ? styles.itemSelected
-                      : styles.itemUnselected,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.text,
-                      selTags.includes(item)
-                        ? styles.whiteText
-                        : styles.blackText,
-                    ]}
-                  >
-                    #{item}
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
+              <Pressable onPress={() => toggleTag(item)}>
+                <Hashtag
+                  style={styles.touchable}
+                  hashtag={item}
+                  selected={selTags.includes(item)}
+                />
+              </Pressable>
             )}
           />
         </View>
@@ -322,12 +308,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     padding: 8,
-    // backgroundColor: "red",
   },
   scroll: {
     flex: 1,
     backgroundColor: "#ffffff",
-    // backgroundColor: "green",
   },
   section: {
     padding: 8,
@@ -356,28 +340,6 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     marginRight: 8,
-  },
-  selectableItem: {
-    borderWidth: 1,
-    borderColor: "#3C8D90",
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  itemSelected: {
-    backgroundColor: "#3C8D90",
-  },
-  itemUnselected: {
-    backgroundColor: "#fff",
-  },
-  text: {
-    fontSize: 14,
-  },
-  whiteText: {
-    color: "#fff",
-  },
-  blackText: {
-    color: "#000",
   },
   touchable: {
     marginRight: 8,

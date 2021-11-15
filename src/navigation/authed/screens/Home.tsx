@@ -34,7 +34,7 @@ import { fetchOffers } from "../../../actions/offer";
 import { fetchSocialGroups } from "../../../actions/socialGroup";
 import { useAuth } from "../../../utils/auth";
 import OffersModal from "../../../components/OffersModal";
-import { hashtagsToIcons } from "../../../utils/tags";
+import { hashtagsToIcons } from "../../../utils/hashtags";
 import { StackNavParamList } from "../types";
 
 enum SectionType {
