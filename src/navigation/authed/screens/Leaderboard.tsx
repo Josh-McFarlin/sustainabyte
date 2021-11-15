@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -59,16 +60,20 @@ const badges = [
 
 const LeaderboardScreen: React.FC<PropTypes> = ({ navigation }) => {
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.LEADERBOARD);
-  const { data: users } = useQuery<UserType[], Error>(["users"], fetchUsers, {
+  const {
+    data: users,
+    refetch: refetchUsers,
+    isLoading: loadingUsers,
+  } = useQuery<UserType[], Error>(["users"], fetchUsers, {
     initialData: [],
   });
-  const { data: challenges } = useQuery<ChallengeType[], Error>(
-    ["challenges"],
-    fetchChallenges,
-    {
-      initialData: [],
-    }
-  );
+  const {
+    data: challenges,
+    refetch: refetchChallenges,
+    isLoading: loadingChallenges,
+  } = useQuery<ChallengeType[], Error>(["challenges"], fetchChallenges, {
+    initialData: [],
+  });
 
   const tabs = React.useMemo(
     () => ({
@@ -77,6 +82,7 @@ const LeaderboardScreen: React.FC<PropTypes> = ({ navigation }) => {
         title: "Leaderboard",
         data: users,
         listProps: {},
+        refetch: refetchUsers,
         PrimaryActions: () => (
           <>
             <View style={[styles.hRow, styles.center, styles.marginBottom]}>
@@ -174,13 +180,13 @@ const LeaderboardScreen: React.FC<PropTypes> = ({ navigation }) => {
         title: "Challenges",
         data: challenges,
         listProps: {},
+        refetch: refetchChallenges,
         PrimaryActions: () => (
           <View>
             <Text style={[styles.subtitleText, styles.marginBottom]}>
               Join a badge challenge
             </Text>
             <FlatList
-              // contentContainerStyle={styles.center}
               style={styles.paddingHorizontal}
               horizontal
               data={badges}
@@ -209,7 +215,10 @@ const LeaderboardScreen: React.FC<PropTypes> = ({ navigation }) => {
           </View>
         ),
         Footer: () => (
-          <TouchableOpacity style={styles.center}>
+          <TouchableOpacity
+            style={styles.center}
+            onPress={() => navigation.navigate("CreateChallenge")}
+          >
             <View style={styles.footerButtRad}>
               <LinearGradient
                 style={styles.footerButton}
@@ -252,11 +261,18 @@ const LeaderboardScreen: React.FC<PropTypes> = ({ navigation }) => {
         ),
       },
     }),
-    [navigation, users, challenges]
+    [navigation, users, challenges, refetchUsers, refetchChallenges]
   );
 
-  const { data, PrimaryActions, Header, Footer, renderItem, listProps } =
-    tabs[curTab];
+  const {
+    data,
+    PrimaryActions,
+    Header,
+    Footer,
+    renderItem,
+    listProps,
+    refetch,
+  } = tabs[curTab];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -296,6 +312,12 @@ const LeaderboardScreen: React.FC<PropTypes> = ({ navigation }) => {
           data={data}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
+          refreshControl={
+            <RefreshControl
+              refreshing={loadingChallenges || loadingUsers}
+              onRefresh={refetch}
+            />
+          }
           ListHeaderComponent={<Header />}
           ListFooterComponent={() => (
             <View style={styles.footerContainer}>

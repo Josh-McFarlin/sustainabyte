@@ -15,6 +15,7 @@ import UploadPostScreen from "./screens/UploadPost";
 import UploadReviewScreen from "./screens/UploadReview";
 import PostScreen from "./screens/Post";
 import ReviewScreen from "./screens/Review";
+import CreateChallenge from "./screens/CreateChallenge";
 
 const Stack = createNativeStackNavigator<StackNavParamList>();
 const Tab = createBottomTabNavigator<TabNavParamList>();
@@ -140,6 +141,14 @@ const AuthedNavigator: React.FC = () => {
           component={UploadReviewScreen}
           options={{
             headerTitle: "New Review",
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="CreateChallenge"
+          component={CreateChallenge}
+          options={{
+            headerTitle: "Create Challenge",
             gestureEnabled: false,
           }}
         />

@@ -34,6 +34,7 @@ export type StackNavParamList = {
   UploadReview: {
     restaurant?: RestaurantType | BasicRestaurantType;
   };
+  CreateChallenge: Record<string, never>;
   Post: {
     id: PostType["_id"];
     post?: PostType;

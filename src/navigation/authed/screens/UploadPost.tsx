@@ -70,13 +70,15 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={handleUpload} disabled={uploading}>
-          Next{" "}
-          <ActivityIndicator
-            animating={uploading}
-            hidesWhenStopped
-            size="small"
-            color="#0000ff"
-          />
+          <Text>
+            Next{" "}
+            <ActivityIndicator
+              animating={uploading}
+              hidesWhenStopped
+              size="small"
+              color="#0000ff"
+            />
+          </Text>
         </TouchableOpacity>
       ),
     });

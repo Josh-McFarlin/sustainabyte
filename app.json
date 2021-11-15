@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "slug": "sustainabyte",
     "scheme": "sustainabyte",
+    "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
