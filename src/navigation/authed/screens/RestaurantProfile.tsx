@@ -41,6 +41,7 @@ import type { PostType } from "../../../types/Post";
 import restaurantsStore from "../../../utils/restaurantData";
 import { RestaurantType } from "../../../types/Restaurant";
 import { useAuth } from "../../../utils/auth";
+import { useRefetchOnFocus } from "../../../utils/screen";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -111,6 +112,10 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       initialData: [],
     }
   );
+
+  useRefetchOnFocus(refetchPosts);
+  useRefetchOnFocus(refetchReviews);
+  useRefetchOnFocus(refetchCheckIns);
 
   React.useEffect(() => {
     if (restaurant != null) {

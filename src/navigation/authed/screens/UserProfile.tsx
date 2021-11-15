@@ -28,6 +28,7 @@ import { StackNavParamList } from "../types";
 import usersStore from "../../../utils/userData";
 import { useAuth } from "../../../utils/auth";
 import { UserType } from "../../../types/User";
+import { useRefetchOnFocus } from "../../../utils/screen";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -69,6 +70,8 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       enabled: id != null,
     }
   );
+  useRefetchOnFocus(refetchPosts);
+  useRefetchOnFocus(refetchCheckIns);
 
   React.useEffect(() => {
     if (user != null) {
