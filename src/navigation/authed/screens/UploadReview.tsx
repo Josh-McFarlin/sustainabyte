@@ -22,6 +22,7 @@ import { view } from "@risingstack/react-easy-state";
 import { createReview } from "../../../actions/review";
 import { hashtags } from "../../../utils/tags";
 import { StackNavParamList } from "../types";
+import StarRating from "../../../components/StarRating";
 
 const useSelect = Platform.select({ web: true, default: false });
 
@@ -195,18 +196,14 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         <Text style={[styles.sectionHeader, styles.smallMargin]}>
           Rate & Review
         </Text>
-        <View style={[styles.hRow, styles.smallMargin]}>
-          {Array.from(Array(5)).map((_, i) => (
-            <FontAwesome
-              style={styles.star}
-              key={i}
-              name="star"
-              size={24}
-              color={i < rating ? "#cbb131" : "#585858"}
-              onPress={() => setRating(i + 1)}
-            />
-          ))}
-        </View>
+        <StarRating
+          style={styles.smallMargin}
+          rating={rating}
+          size={24}
+          primaryColor="#cbb131"
+          secondaryColor="#585858"
+          onPress={setRating}
+        />
         <View style={[styles.section, styles.hRow]}>
           <FontAwesome
             style={styles.inputIcon}

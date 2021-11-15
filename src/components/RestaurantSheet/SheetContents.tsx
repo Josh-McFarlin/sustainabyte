@@ -5,6 +5,7 @@ import { hashtagsToIcons } from "../../utils/tags";
 import { RestaurantType } from "../../types/Restaurant";
 import { getOpenStatus } from "../../utils/date";
 import { useLocation, distanceBetween } from "../../utils/location";
+import StarRating from "../StarRating";
 
 interface PropTypes {
   restaurant: RestaurantType;
@@ -52,17 +53,7 @@ const SheetContents: React.FC<PropTypes> = ({ restaurant }) => {
       </View>
       <View style={[styles.secondaryContainer, styles.marginBottom]}>
         <Text style={styles.secondary}>{rating.toFixed(1)}</Text>
-        <View style={styles.secondaryContainer}>
-          {Array.from(Array(5)).map((_, i) => (
-            <FontAwesome
-              key={i}
-              name="star"
-              size={14}
-              color={rating >= i + 1 ? "#3C8D90" : "#8B8B8B"}
-              style={styles.star}
-            />
-          ))}
-        </View>
+        <StarRating rating={rating} size={14} />
         <Text style={styles.secondary}>({restaurant.ratings.count})</Text>
         {restaurant.tags.map((tag) => (
           <React.Fragment key={tag}>

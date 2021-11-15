@@ -13,6 +13,7 @@ import { ListReview } from "../InfoCards";
 import type { ReviewType } from "../../types/Review";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { AuthNavigationProp } from "../../navigation/authed/types";
+import StarRating from "../StarRating";
 
 export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
   <View style={styles.item}>
@@ -74,17 +75,7 @@ export const Header: React.FC<PropTypes> = ({
         <Text style={[styles.secondaryText, styles.marginRight]}>
           {avgRating.toFixed(1)}
         </Text>
-        <View style={[styles.hRow]}>
-          {Array.from(Array(5)).map((_, i) => (
-            <FontAwesome
-              key={i}
-              name="star"
-              size={17}
-              color={avgRating >= i + 1 ? "#3C8D90" : "#8B8B8B"}
-              style={styles.star}
-            />
-          ))}
-        </View>
+        <StarRating rating={avgRating} size={17} />
         <Text style={[styles.minorText, styles.textEnd]}>({totalReviews})</Text>
       </View>
       <View

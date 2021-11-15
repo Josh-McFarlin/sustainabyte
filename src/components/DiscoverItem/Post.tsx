@@ -13,6 +13,7 @@ import PhotoGallery from "../PhotoGallery";
 import type { BasicUserType } from "../../types/User";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { PostType } from "../../types/Post";
+import StarRating from "../StarRating";
 
 type PropTypes = {
   user?: BasicUserType;
@@ -45,6 +46,9 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
     console.log("Saved image");
   }, []);
 
+  const rating =
+    restaurant != null ? restaurant.ratings.sum / restaurant.ratings.count : 0;
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
@@ -70,6 +74,7 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
         </TouchableOpacity>
       </View>
       {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
+      <View style={styles.curvedBar} />
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
           {restaurant != null && (
@@ -82,7 +87,11 @@ const DiscoverPost: React.FC<PropTypes> = ({ user, restaurant, data }) => {
           )}
           <View style={styles.nameTags}>
             {restaurant != null && (
-              <Text style={styles.restName}>{restaurant?.name || ""}</Text>
+              <View style={[styles.hRow, styles.center]}>
+                <Text style={styles.restName}>{restaurant?.name || ""}</Text>
+                <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
+                <StarRating rating={rating} size={14} />
+              </View>
             )}
             <ScrollView horizontal>
               {tags.map((tag) => (
@@ -126,6 +135,7 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     padding: 8,
+    paddingTop: 0,
     backgroundColor: "#ffffff",
   },
   restInfo: {
@@ -237,6 +247,23 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
     minWidth: 100,
+  },
+  center: {
+    alignItems: "center",
+  },
+  ratingText: {
+    flex: 1,
+    fontSize: 14,
+    color: "#3C8D90",
+    textAlign: "right",
+    marginRight: 4,
+  },
+  curvedBar: {
+    height: 16,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    marginTop: -16,
   },
 });
 

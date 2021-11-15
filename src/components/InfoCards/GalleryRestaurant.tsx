@@ -4,6 +4,7 @@ import { View, Image, StyleSheet, Text, ViewStyle } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import type { RestaurantType } from "../../types/Restaurant";
 import { hashtagsToIcons } from "../../utils/tags";
+import StarRating from "../StarRating";
 
 type PropTypes = {
   style?: ViewStyle;
@@ -29,16 +30,12 @@ const GalleryRestaurant: React.FC<PropTypes> = ({ restaurant, style }) => {
       </View>
       <View style={styles.secondaryContainer}>
         <Text style={styles.secondary}>{rating.toFixed(1)}</Text>
-        <View style={[styles.secondaryContainer, styles.noMargin]}>
-          {Array.from(Array(5)).map((_, i) => (
-            <FontAwesome
-              key={i}
-              name="star"
-              size={13}
-              color={rating >= i + 1 ? "#cbb131" : "#585858"}
-            />
-          ))}
-        </View>
+        <StarRating
+          rating={rating}
+          size={13}
+          primaryColor="#cbb131"
+          secondaryColor="#585858"
+        />
         <Text style={styles.secondary}>({restaurant.ratings.count})</Text>
         {restaurant.tags.map((tag) => (
           <React.Fragment key={tag}>

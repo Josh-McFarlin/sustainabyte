@@ -13,6 +13,7 @@ import PhotoGallery from "../PhotoGallery";
 import type { BasicUserType } from "../../types/User";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { ReviewType } from "../../types/Review";
+import StarRating from "../StarRating";
 
 type PropTypes = {
   user?: BasicUserType;
@@ -45,6 +46,8 @@ const DiscoverReview: React.FC<PropTypes> = ({ user, restaurant, data }) => {
     console.log("Saved image");
   }, []);
 
+  const rating = restaurant.ratings.sum / restaurant.ratings.count;
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
@@ -66,6 +69,7 @@ const DiscoverReview: React.FC<PropTypes> = ({ user, restaurant, data }) => {
         </TouchableOpacity>
       </View>
       {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
+      <View style={styles.curvedBar} />
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
           <Image
@@ -75,7 +79,11 @@ const DiscoverReview: React.FC<PropTypes> = ({ user, restaurant, data }) => {
             }}
           />
           <View style={styles.nameTags}>
-            <Text style={styles.restName}>{restaurant?.name || ""}</Text>
+            <View style={[styles.hRow, styles.center]}>
+              <Text style={styles.restName}>{restaurant?.name || ""}</Text>
+              <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
+              <StarRating rating={rating} size={14} />
+            </View>
             <ScrollView horizontal>
               {tags.map((tag) => (
                 <View key={tag} style={styles.tag}>
@@ -118,6 +126,7 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     padding: 8,
+    paddingTop: 0,
     backgroundColor: "#ffffff",
   },
   restInfo: {
@@ -229,6 +238,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#3C8D90",
     textAlign: "right",
+  },
+  center: {
+    alignItems: "center",
+  },
+  ratingText: {
+    flex: 1,
+    fontSize: 14,
+    color: "#3C8D90",
+    textAlign: "right",
+    marginRight: 4,
+  },
+  curvedBar: {
+    height: 16,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    marginTop: -16,
   },
 });
 
