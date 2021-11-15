@@ -63,3 +63,5 @@ buck-out/
 web-build/
 
 README.pdf
+
+.vercel

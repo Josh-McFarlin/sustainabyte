@@ -30,6 +30,7 @@
     "web": "expo start --https --web",
     "publish-app": "expo publish",
     "deploy-ios": "npx expo-optimize && expo build:ios",
+    "deploy-web": "expo build:web && cd web-build && vercel",
     "test": "jest",
     "prepare": "husky install"
   },
