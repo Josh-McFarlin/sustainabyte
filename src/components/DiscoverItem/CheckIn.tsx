@@ -14,24 +14,26 @@ import type { BasicUserType } from "../../types/User";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { CheckInType } from "../../types/CheckIn";
 import { AuthNavigationProp } from "../../navigation/authed/types";
-import { useAuth } from "../../utils/auth";
 
 type PropTypes = {
   user?: BasicUserType;
   restaurant?: BasicRestaurantType;
   data: CheckInType;
+  saved: boolean;
 };
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
 const iconColor = "#3C8D90";
 
-const DiscoverCheckIn: React.FC<PropTypes> = ({ user, restaurant, data }) => {
+const DiscoverCheckIn: React.FC<PropTypes> = ({
+  user,
+  restaurant,
+  data,
+  saved,
+}) => {
   const { withUsers, createdAt } = data;
-  const { saved: savedPosts } = useAuth();
   const navigation = useNavigation<AuthNavigationProp>();
-
-  const saved = savedPosts?.has(data._id) || false;
 
   const crownImage = React.useCallback(() => {
     console.log("Crowned image");

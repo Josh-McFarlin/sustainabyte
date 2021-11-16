@@ -13,7 +13,8 @@ const usersStore = store({
   get(userId: UserType["_id"]): BasicUserType | null {
     if (
       !usersStore.retrieving.has(userId) &&
-      !usersStore.retrieved.has(userId)
+      !usersStore.retrieved.has(userId) &&
+      !usersStore.users.has(userId)
     ) {
       fetchUser({
         queryKey: ["", userId],
@@ -76,6 +77,7 @@ autoEffect(async () => {
 
   if (stored != null) {
     const userIds: BasicUserType["_id"][] = JSON.parse(stored);
+    const newUsers = new Map();
 
     await Promise.all(
       userIds.map(async (userId) => {
@@ -85,13 +87,15 @@ autoEffect(async () => {
           if (userStr != null) {
             const user: BasicUserType = JSON.parse(userStr);
 
-            usersStore.users.set(user._id, user);
+            newUsers.set(user._id, user);
           }
         } catch (error) {
           console.error(`Failed loading user: ${userId}`);
         }
       })
     );
+
+    usersStore.users = newUsers;
   }
 });
 

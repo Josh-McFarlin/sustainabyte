@@ -13,35 +13,35 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { view } from "@risingstack/react-easy-state";
 import PhotoGallery from "../PhotoGallery";
-import type { UserType } from "../../types/User";
-import { RestaurantType } from "../../types/Restaurant";
+import type { BasicUserType } from "../../types/User";
+import { BasicRestaurantType } from "../../types/Restaurant";
 import { PostType } from "../../types/Post";
 import StarRating from "../StarRating";
 import Hashtag from "../Hashtag/Hashtag";
 import { AuthNavigationProp } from "../../navigation/authed/types";
-import { useAuth } from "../../utils/auth";
 import { createFollow } from "../../actions/follow";
 
 type PropTypes = {
   data: PostType;
-  user: UserType;
-  restaurant: RestaurantType;
+  user: BasicUserType;
+  restaurant: BasicRestaurantType;
+  follows: boolean;
+  saved: boolean;
 };
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
 const iconColor = "#3C8D90";
 
-const DiscoverPost: React.FC<PropTypes> = ({ data, user, restaurant }) => {
+const DiscoverPost: React.FC<PropTypes> = ({
+  data,
+  user,
+  restaurant,
+  follows,
+  saved,
+}) => {
   const { tags, photoUrls, body, createdAt } = data;
-  const { user: authedUser, saved: savedPosts } = useAuth();
   const navigation = useNavigation<AuthNavigationProp>();
-
-  const follows =
-    authedUser._id === user._id ||
-    user?.followers?.has(authedUser._id) ||
-    false;
-  const saved = savedPosts?.has(data._id) || false;
 
   const handleFollow = React.useCallback(async () => {
     await createFollow({

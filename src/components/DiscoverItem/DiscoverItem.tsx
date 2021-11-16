@@ -9,8 +9,7 @@ import { ReviewType } from "../../types/Review";
 import { CheckInType } from "../../types/CheckIn";
 import restaurantsStore from "../../utils/restaurantData";
 import usersStore from "../../utils/userData";
-import { UserType } from "../../types/User";
-import { RestaurantType } from "../../types/Restaurant";
+import { useAuth } from "../../utils/auth";
 
 type PropTypes = {
   item: RecentType;
@@ -19,11 +18,16 @@ type PropTypes = {
 const DiscoverItem: React.FC<PropTypes> = ({ item }) => {
   const { type, data } = item;
   const { user: userId, restaurant: restaurantId } = data || {};
-  const user = userId != null ? (usersStore.getFull(userId) as UserType) : null;
+  const { user: authedUser, saved: savedPosts } = useAuth();
+  const user = userId != null ? usersStore.get(userId) : null;
   const restaurant =
-    restaurantId != null
-      ? (restaurantsStore.getFull(restaurantId) as RestaurantType)
-      : null;
+    restaurantId != null ? restaurantsStore.get(restaurantId) : null;
+
+  const follows =
+    authedUser._id === user._id ||
+    authedUser?.following?.has(userId || restaurantId) ||
+    false;
+  const saved = savedPosts?.has(data._id) || false;
 
   if (type === "Post") {
     return (
@@ -31,6 +35,8 @@ const DiscoverItem: React.FC<PropTypes> = ({ item }) => {
         data={data as PostType}
         user={user}
         restaurant={restaurant}
+        follows={follows}
+        saved={saved}
       />
     );
   }
@@ -40,6 +46,8 @@ const DiscoverItem: React.FC<PropTypes> = ({ item }) => {
         data={data as ReviewType}
         user={user}
         restaurant={restaurant}
+        follows={follows}
+        saved={saved}
       />
     );
   }
@@ -49,6 +57,7 @@ const DiscoverItem: React.FC<PropTypes> = ({ item }) => {
         data={data as CheckInType}
         user={user}
         restaurant={restaurant}
+        saved={saved}
       />
     );
   }

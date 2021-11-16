@@ -46,8 +46,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { user: authedUser } = useAuth();
   const isOwnProfile = id === authedUser._id;
   const user = usersStore.getFull(id);
-  const isFollowing =
-    isOwnProfile || (user as UserType)?.followers?.has(authedUser._id) || false;
+  const isFollowing = isOwnProfile || authedUser.following?.has(id) || false;
   const settingsSheetRef = React.useRef<BottomSheet>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const {

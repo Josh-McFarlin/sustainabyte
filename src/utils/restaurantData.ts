@@ -18,7 +18,8 @@ const restaurantsStore = store({
   get(restaurantId: RestaurantType["_id"]): BasicRestaurantType | null {
     if (
       !restaurantsStore.retrieving.has(restaurantId) &&
-      !restaurantsStore.retrieved.has(restaurantId)
+      !restaurantsStore.retrieved.has(restaurantId) &&
+      !restaurantsStore.restaurants.has(restaurantId)
     ) {
       fetchRestaurant({
         queryKey: ["", restaurantId],
@@ -106,6 +107,7 @@ autoEffect(async () => {
 
   if (stored != null) {
     const restaurantIds: BasicRestaurantType["_id"][] = JSON.parse(stored);
+    const newRests = new Map();
 
     await Promise.all(
       restaurantIds.map(async (restaurantId) => {
@@ -117,13 +119,15 @@ autoEffect(async () => {
           if (restaurantStr != null) {
             const restaurant: BasicRestaurantType = JSON.parse(restaurantStr);
 
-            restaurantsStore.restaurants.set(restaurant._id, restaurant);
+            newRests.set(restaurant._id, restaurant);
           }
         } catch (error) {
           console.error(`Failed loading restaurant: ${restaurantId}`);
         }
       })
     );
+
+    restaurantsStore.restaurants = newRests;
   }
 });
 
