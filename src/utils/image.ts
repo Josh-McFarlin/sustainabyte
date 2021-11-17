@@ -14,10 +14,12 @@ export interface ImageUploadInfo {
 }
 
 export const getContentType = (fileUri: string): string =>
-  mime.getType(fileUri);
+  fileUri.startsWith("data:")
+    ? fileUri.substring(fileUri.indexOf(":") + 1, fileUri.indexOf(";"))
+    : mime.getType(fileUri);
 
 export const requestUpload = async (
-  contentType: string[]
+  contentTypes: string[]
 ): Promise<
   {
     fileUrl: string;
@@ -26,7 +28,7 @@ export const requestUpload = async (
 > => {
   const { data: json } = await authRequest.get(`${urls.api}/image`, {
     params: {
-      contentType,
+      contentTypes,
     },
   });
 
