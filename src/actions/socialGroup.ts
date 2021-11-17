@@ -3,7 +3,7 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { SocialGroupType } from "../types/SocialGroup";
 import type { CoordinatesType } from "../types/Location";
-import { uploadImage } from "../utils/image";
+import { requestUpload, getContentType, uploadImage } from "../utils/image";
 
 export const fetchSocialGroups: QueryFunction<
   SocialGroupType[],
@@ -48,11 +48,16 @@ export const createSocialGroup = async (
     "name" | "description" | "tags" | "iconUrl"
   >
 ): Promise<SocialGroupType> => {
+  const contentType = getContentType(socialGroup.iconUrl);
+  const upload = await requestUpload([contentType]);
+
+  await uploadImage(socialGroup.iconUrl, upload[0].uploadUrl);
+
   const { data: json } = await authRequest.post(
     `${urls.api}/socialGroup`,
     JSON.stringify({
       ...socialGroup,
-      iconUrl: null,
+      iconUrl: upload[0].fileUrl,
     }),
     {
       headers: {
@@ -60,8 +65,6 @@ export const createSocialGroup = async (
       },
     }
   );
-
-  await uploadImage(socialGroup.iconUrl, json.uploadUrl);
 
   return json.socialGroup;
 };

@@ -1,5 +1,8 @@
 import { Platform } from "react-native";
 import * as FileSystem from "expo-file-system";
+import mime from "mime";
+import { authRequest } from "./request";
+import urls from "./urls";
 
 export interface ImageUploadInfo {
   url: string;
@@ -9,6 +12,26 @@ export interface ImageUploadInfo {
     bucket: string;
   };
 }
+
+export const getContentType = (fileUri: string): string =>
+  mime.getType(fileUri);
+
+export const requestUpload = async (
+  contentType: string[]
+): Promise<
+  {
+    fileUrl: string;
+    uploadUrl: ImageUploadInfo;
+  }[]
+> => {
+  const { data: json } = await authRequest.get(`${urls.api}/image`, {
+    params: {
+      contentType,
+    },
+  });
+
+  return json.photoUrls;
+};
 
 export const uploadImage = async (
   imageUri: string,

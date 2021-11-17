@@ -3,7 +3,7 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { OfferType } from "../types/Offer";
 import type { CoordinatesType } from "../types/Location";
-import { uploadImage } from "../utils/image";
+import { requestUpload, getContentType, uploadImage } from "../utils/image";
 
 export const fetchOffers: QueryFunction<
   OfferType[],
@@ -48,11 +48,16 @@ export const createOffer = async (
     "restaurant" | "photoUrl" | "title" | "body" | "prompt" | "expiresAt"
   >
 ): Promise<OfferType> => {
+  const contentType = getContentType(offer.photoUrl);
+  const upload = await requestUpload([contentType]);
+
+  await uploadImage(offer.photoUrl, upload[0].uploadUrl);
+
   const { data: json } = await authRequest.post(
     `${urls.api}/offer`,
     JSON.stringify({
       ...offer,
-      photoUrl: null,
+      photoUrl: upload[0].fileUrl,
     }),
     {
       headers: {
@@ -60,8 +65,6 @@ export const createOffer = async (
       },
     }
   );
-
-  await uploadImage(offer.photoUrl, json.uploadUrl);
 
   return json.offer;
 };

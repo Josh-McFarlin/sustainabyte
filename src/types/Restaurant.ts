@@ -33,6 +33,7 @@ export interface RestaurantType {
   avatarUrl: string;
   headerUrl: string;
   bio?: string;
+  category: string;
   tags: string[];
   openHours: OpenHoursType;
   address: AddressType;

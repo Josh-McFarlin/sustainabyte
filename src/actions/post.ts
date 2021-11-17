@@ -1,7 +1,7 @@
 import type { QueryFunction } from "react-query";
 import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
-import { uploadImage } from "../utils/image";
+import { requestUpload, getContentType, uploadImage } from "../utils/image";
 import type { PostType } from "../types/Post";
 
 export const fetchPosts: QueryFunction<
@@ -45,25 +45,27 @@ export const createPost = async (
     "ownerType" | "restaurant" | "body" | "photoUrls" | "tags"
   >
 ): Promise<PostType> => {
-  const photoUrls = post.photoUrls.filter((i) => i != null);
+  const uploads = await requestUpload(post.photoUrls.map(getContentType));
+
+  const photoUrls = await Promise.all(
+    uploads.map(async (upload, index) => {
+      await uploadImage(post.photoUrls[index], upload.uploadUrl);
+
+      return upload.fileUrl;
+    })
+  );
 
   const { data: json } = await authRequest.post(
     `${urls.api}/post`,
     JSON.stringify({
       ...post,
-      photoUrls: [...new Array(photoUrls.length).fill(null)],
+      photoUrls,
     }),
     {
       headers: {
         "Content-Type": "application/json",
       },
     }
-  );
-
-  await Promise.all(
-    json.uploadUrls.map((uploadUrl, index) =>
-      uploadImage(photoUrls[index], uploadUrl)
-    )
   );
 
   return json.post;

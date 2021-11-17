@@ -2,8 +2,7 @@ import type { QueryFunction } from "react-query";
 import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { ReviewSummaryType, ReviewType } from "../types/Review";
-import type { RestaurantType } from "../types/Restaurant";
-import { uploadImage } from "../utils/image";
+import { requestUpload, getContentType, uploadImage } from "../utils/image";
 
 export const fetchReviews: QueryFunction<
   ReviewType[],
@@ -58,25 +57,27 @@ export const createReview = async (
     "restaurant" | "stars" | "body" | "tags" | "photoUrls"
   >
 ): Promise<ReviewType> => {
-  const photoUrls = review.photoUrls.filter((i) => i != null);
+  const uploads = await requestUpload(review.photoUrls.map(getContentType));
+
+  const photoUrls = await Promise.all(
+    uploads.map(async (upload, index) => {
+      await uploadImage(review.photoUrls[index], upload.uploadUrl);
+
+      return upload.fileUrl;
+    })
+  );
 
   const { data: json } = await authRequest.post(
     `${urls.api}/review`,
     JSON.stringify({
       ...review,
-      photoUrls: [...new Array(photoUrls.length).fill(null)],
+      photoUrls,
     }),
     {
       headers: {
         "Content-Type": "application/json",
       },
     }
-  );
-
-  await Promise.all(
-    json.uploadUrls.map((uploadUrl, index) =>
-      uploadImage(photoUrls[index], uploadUrl)
-    )
   );
 
   return json.review;
