@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Image, Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import { hashtagsToIcons } from "../../utils/hashtags";
 import { RestaurantType } from "../../types/Restaurant";
 import { getOpenStatus } from "../../utils/date";
@@ -134,7 +133,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    backgroundColor: "#77bd67",
     color: "#000",
     marginRight: 8,
   },

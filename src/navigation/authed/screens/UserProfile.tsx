@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
+  Platform,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
@@ -17,17 +18,17 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { view } from "@risingstack/react-easy-state";
 import SettingsSheet from "../../../components/SettingsSheet";
+import CategoryPostGallery from "../../../components/CategoryPostGallery";
 import PostGallery from "../../../components/PostGallery";
 import type { TabNavParamList } from "../types";
 import { CheckInType } from "../../../types/CheckIn";
 import { fetchCheckIns } from "../../../actions/checkIn";
 import CheckInHistory from "../../../components/CheckInHistory";
 import { fetchPosts } from "../../../actions/post";
-import { PostType } from "../../../types/Post";
+import { CategoryPostsType, PostType } from "../../../types/Post";
 import { StackNavParamList } from "../types";
 import usersStore from "../../../utils/userData";
 import { useAuth } from "../../../utils/auth";
-import { UserType } from "../../../types/User";
 import { useRefetchOnFocus } from "../../../utils/screen";
 
 type PropTypes = CompositeScreenProps<
@@ -47,7 +48,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const isOwnProfile = id === authedUser._id;
   const user = usersStore.getFull(id);
   const isFollowing = isOwnProfile || authedUser.following?.has(id) || false;
-  const settingsSheetRef = React.useRef<BottomSheet>();
+  const settingsSheetRef = React.useRef<BottomSheet>(null);
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const {
     data: posts,
@@ -81,7 +82,13 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }, [user, navigation]);
 
   const openSheet = React.useCallback(() => {
-    settingsSheetRef.current.expand();
+    settingsSheetRef.current.expand(
+      Platform.OS === "web"
+        ? {
+            duration: 0,
+          }
+        : {}
+    );
   }, [settingsSheetRef]);
 
   const tabs = React.useMemo(
@@ -89,21 +96,24 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       [TabTypes.GALLERY]: {
         type: TabTypes.GALLERY,
         icon: ({ ...props }) => <Ionicons name="grid" {...props} />,
-        data: posts,
-        listProps: PostGallery.listProps,
-        Header: () => null,
-        renderItem: (i) => (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Post", {
-                id: i.item._id,
-                post: i.item,
-              })
+        data: Object.values(
+          posts.reduce((accum: Record<string, CategoryPostsType>, post) => {
+            if (!Object.prototype.hasOwnProperty.call(accum, post.category)) {
+              // eslint-disable-next-line no-param-reassign
+              accum[post.category] = {
+                type: post.category,
+                posts: [],
+                lastUpdated: new Date(post.createdAt),
+              };
             }
-          >
-            {PostGallery.renderItem(i)}
-          </TouchableOpacity>
+
+            accum[post.category].posts.push(post);
+
+            return accum;
+          }, {})
         ),
+        listProps: CategoryPostGallery.listProps,
+        renderItem: (i) => <CategoryPostGallery.RenderItem {...i} />,
         refetch: refetchPosts,
       },
       [TabTypes.CHECKINS]: {
@@ -111,8 +121,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         icon: ({ ...props }) => <FontAwesome5 name="map-pin" {...props} />,
         data: checkIns,
         listProps: CheckInHistory.listProps,
-        Header: () => null,
-        renderItem: CheckInHistory.renderItem,
+        renderItem: (i) => <CheckInHistory.RenderItem {...i} />,
         refetch: refetchCheckIns,
       },
       [TabTypes.SAVED]: {
@@ -120,37 +129,25 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         icon: ({ ...props }) => <Ionicons name="bookmark" {...props} />,
         data: posts,
         listProps: PostGallery.listProps,
-        Header: () => null,
-        renderItem: (i) => (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Post", {
-                id: i.item._id,
-                post: i.item,
-              })
-            }
-          >
-            {PostGallery.renderItem(i)}
-          </TouchableOpacity>
-        ),
+        renderItem: (i) => <PostGallery.RenderItem {...i} />,
         refetch: refetchPosts,
       },
     }),
-    [navigation, checkIns, posts, refetchPosts, refetchCheckIns]
+    [checkIns, posts, refetchPosts, refetchCheckIns]
   );
 
   if (user == null) {
     return null;
   }
 
-  const { data, Header, renderItem, listProps, refetch } = tabs[curTab];
+  const { data, renderItem, listProps, refetch } = tabs[curTab];
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList<PostType | CheckInType>
+      <FlatList<PostType | CheckInType | CategoryPostsType>
         style={styles.container}
         data={data}
-        keyExtractor={(i) => i._id}
+        keyExtractor={(i) => ("_id" in i ? i._id : i.type)}
         renderItem={renderItem}
         refreshControl={
           <RefreshControl
@@ -262,7 +259,6 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                 </TouchableOpacity>
               ))}
             </View>
-            <Header />
           </View>
         )}
         key={curTab}

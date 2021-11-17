@@ -5,21 +5,37 @@ import {
   Dimensions,
   View,
   ListRenderItem,
+  TouchableOpacity,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import type { PostType } from "../../types/Post";
+import { AuthNavigationProp } from "../../navigation/authed/types";
 
 const numColumns = 3;
 
-export const renderItem: ListRenderItem<PostType> = ({ item }) => (
-  <View key={item._id} style={styles.post}>
-    <Image
-      style={styles.image}
-      source={{
-        uri: item.photoUrls[0],
-      }}
-    />
-  </View>
-);
+export const RenderItem: ListRenderItem<PostType> = ({ item }) => {
+  const navigation = useNavigation<AuthNavigationProp>();
+
+  return (
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("Post", {
+          id: item._id,
+          post: item,
+        })
+      }
+    >
+      <View style={styles.post}>
+        <Image
+          style={styles.image}
+          source={{
+            uri: item.photoUrls[0],
+          }}
+        />
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const screenWidth = Dimensions.get("window").width;
 const padding = 4;

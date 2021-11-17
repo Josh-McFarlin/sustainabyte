@@ -7,7 +7,6 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
-  Pressable,
   Platform,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -153,15 +152,7 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
             style={styles.list}
             data={recent}
             keyExtractor={(i) => i._id}
-            renderItem={({ item }) => (
-              <Pressable
-                onPress={() => {
-                  console.log(item._id);
-                }}
-              >
-                <DiscoverItem item={item} />
-              </Pressable>
-            )}
+            renderItem={({ item }) => <DiscoverItem item={item} />}
             ItemSeparatorComponent={() => <View style={styles.spacer} />}
           />
         ),

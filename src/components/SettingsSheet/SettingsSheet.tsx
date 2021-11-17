@@ -1,5 +1,13 @@
 import * as React from "react";
-import { StyleSheet, View, Text, TouchableHighlight } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableHighlight,
+  Dimensions,
+  Pressable,
+  Platform,
+} from "react-native";
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetBackdrop,
@@ -43,19 +51,26 @@ const settings: {
   },
 ];
 
+const useBackdrop = Platform.select({
+  web: false,
+  default: true,
+});
+
 const SettingsSheet = React.forwardRef<BottomSheet>((_, sheetRef) => {
   const navigation = useNavigation<AuthNavigationProp>();
   const snapPoints = React.useMemo(() => ["50%"], []);
 
   const renderBackdrop = React.useCallback(
-    (props) => (
-      <BottomSheetBackdrop
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        pressBehavior="close"
-        {...props}
-      />
-    ),
+    (props) =>
+      useBackdrop ? (
+        <BottomSheetBackdrop
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          pressBehavior="close"
+          enableTouchThrough
+          {...props}
+        />
+      ) : null,
     []
   );
 
@@ -67,6 +82,7 @@ const SettingsSheet = React.forwardRef<BottomSheet>((_, sheetRef) => {
       enablePanDownToClose
       enableContentPanningGesture
       style={styles.sheet}
+      animateOnMount={false}
       backdropComponent={renderBackdrop}
     >
       <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
@@ -121,6 +137,15 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+  },
+  backdrop: {
+    position: "absolute",
+    top: 0,
+    width: Dimensions.get("screen").width,
+    height: Dimensions.get("screen").height,
+    backgroundColor: "#000",
+    opacity: 0.3,
+    zIndex: 10000000,
   },
 });
 

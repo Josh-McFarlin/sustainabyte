@@ -16,11 +16,24 @@ import { AuthNavigationProp } from "../../navigation/authed/types";
 import StarRating from "../StarRating";
 import Hashtag from "../Hashtag/Hashtag";
 
-export const renderItem: ListRenderItem<ReviewType> = ({ item }) => (
-  <View style={styles.item}>
-    <ListReview review={item} />
-  </View>
-);
+export const RenderItem: ListRenderItem<ReviewType> = ({ item }) => {
+  const navigation = useNavigation<AuthNavigationProp>();
+
+  return (
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("Review", {
+          id: item._id,
+          review: item,
+        })
+      }
+    >
+      <View style={styles.item}>
+        <ListReview review={item} />
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 type PropTypes = {
   restaurant: BasicRestaurantType;

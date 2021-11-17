@@ -12,3 +12,9 @@ export interface PostType {
   tags: string[];
   createdAt: Date;
 }
+
+export type CategoryPostsType = {
+  type: string;
+  posts: PostType[];
+  lastUpdated: Date | number | string;
+};

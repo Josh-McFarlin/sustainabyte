@@ -105,12 +105,14 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
           {restaurant != null && (
-            <Image
-              style={styles.avatar}
-              source={{
-                uri: restaurant?.avatarUrl,
-              }}
-            />
+            <View style={styles.avatarWrapper}>
+              <Image
+                style={styles.avatar}
+                source={{
+                  uri: restaurant?.avatarUrl,
+                }}
+              />
+            </View>
           )}
           <View style={styles.nameTags}>
             {restaurant != null && (
@@ -164,11 +166,16 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 12,
-    marginRight: 8,
+    margin: 8,
     backgroundColor: "#ccc",
+  },
+  avatarWrapper: {
+    backgroundColor: "#fff",
+    zIndex: 5,
   },
   nameTags: {
     flex: 1,
+    paddingBottom: 8,
   },
   restName: {
     fontSize: 16,
@@ -263,6 +270,7 @@ const styles = StyleSheet.create({
   },
   hashtagContainer: {
     overflow: "visible",
+    zIndex: -1,
   },
 });
 

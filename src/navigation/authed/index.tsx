@@ -14,6 +14,7 @@ import AccountSettingsScreen from "./screens/AccountSettings";
 import UploadPostScreen from "./screens/UploadPost";
 import UploadReviewScreen from "./screens/UploadReview";
 import PostScreen from "./screens/Post";
+import PostCategoryScreen from "./screens/PostCategory";
 import ReviewScreen from "./screens/Review";
 import CreateChallenge from "./screens/CreateChallenge";
 
@@ -157,6 +158,14 @@ const AuthedNavigator: React.FC = () => {
           component={PostScreen}
           options={{
             headerTitle: "Post",
+          }}
+        />
+        <Stack.Screen
+          name="PostCategory"
+          component={PostCategoryScreen}
+          options={{
+            headerTitle: "",
+            headerBackTitle: "",
           }}
         />
         <Stack.Screen

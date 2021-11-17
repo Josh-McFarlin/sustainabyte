@@ -23,6 +23,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { view } from "@risingstack/react-easy-state";
 import SettingsSheet from "../../../components/SettingsSheet";
 import PostGallery from "../../../components/PostGallery";
+import CategoryPostGallery from "../../../components/CategoryPostGallery";
 import { ReviewSummaryType, ReviewType } from "../../../types/Review";
 import { fetchReviewSummary } from "../../../actions/review";
 import { CheckInType } from "../../../types/CheckIn";
@@ -43,6 +44,7 @@ import restaurantsStore from "../../../utils/restaurantData";
 import { RestaurantType } from "../../../types/Restaurant";
 import { useAuth } from "../../../utils/auth";
 import { useRefetchOnFocus } from "../../../utils/screen";
+import { CategoryPostsType } from "../../../types/Post";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -163,21 +165,25 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       [TabTypes.GALLERY]: {
         type: TabTypes.GALLERY,
         icon: (props) => <Ionicons name="grid" {...props} />,
-        data: posts,
+        data: Object.values(
+          posts.reduce((accum: Record<string, CategoryPostsType>, post) => {
+            if (!Object.prototype.hasOwnProperty.call(accum, post.category)) {
+              // eslint-disable-next-line no-param-reassign
+              accum[post.category] = {
+                type: post.category,
+                posts: [],
+                lastUpdated: new Date(post.createdAt),
+              };
+            }
+
+            accum[post.category].posts.push(post);
+
+            return accum;
+          }, {})
+        ),
         listProps: PostGallery.listProps,
         Header: () => null,
-        renderItem: (i) => (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Post", {
-                id: i.item._id,
-                post: i.item,
-              })
-            }
-          >
-            {PostGallery.renderItem(i)}
-          </TouchableOpacity>
-        ),
+        renderItem: (i) => <CategoryPostGallery.RenderItem {...i} />,
         refetch: refetchPosts,
       },
       [TabTypes.MENU]: {
@@ -196,7 +202,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         data: checkIns,
         listProps: CheckInHistory.listProps,
         Header: () => null,
-        renderItem: CheckInHistory.renderItem,
+        renderItem: (i) => <CheckInHistory.RenderItem {...i} />,
         refetch: refetchCheckIns,
       },
       [TabTypes.REVIEWS]: {
@@ -213,23 +219,11 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             tags={reviewSummary.tags}
           />
         ),
-        renderItem: (i) => (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Review", {
-                id: i.item._id,
-                review: i.item,
-              })
-            }
-          >
-            {ReviewHistory.renderItem(i)}
-          </TouchableOpacity>
-        ),
+        renderItem: (i) => <ReviewHistory.RenderItem {...i} />,
         refetch: refetchReviews,
       },
     }),
     [
-      navigation,
       checkIns,
       posts,
       reviewSummary,
@@ -248,10 +242,10 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FlatList<PostType | ReviewType | CheckInType>
+      <FlatList<PostType | CategoryPostsType | ReviewType | CheckInType>
         style={styles.container}
         data={data}
-        keyExtractor={(i) => i._id}
+        keyExtractor={(i) => ("_id" in i ? i._id : i.type)}
         renderItem={renderItem}
         refreshControl={
           <RefreshControl

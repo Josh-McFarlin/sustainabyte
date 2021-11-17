@@ -6,7 +6,7 @@ import type {
   BasicRestaurantType,
   RestaurantType,
 } from "../../types/Restaurant";
-import { PostType } from "../../types/Post";
+import { CategoryPostsType, PostType } from "../../types/Post";
 import { ReviewType } from "../../types/Review";
 
 export type TabNavParamList = {
@@ -39,6 +39,7 @@ export type StackNavParamList = {
     id: PostType["_id"];
     post?: PostType;
   };
+  PostCategory: CategoryPostsType;
   Review: {
     id: ReviewType["_id"];
     review?: ReviewType;
