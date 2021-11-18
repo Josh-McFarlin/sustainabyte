@@ -12,7 +12,6 @@ const SettingsSheet = React.forwardRef<BottomSheetModal>((_, sheetRef) => {
         appearsOnIndex={0}
         disappearsOnIndex={-1}
         pressBehavior="close"
-        enableTouchThrough
         {...props}
       />
     ),
@@ -27,6 +26,7 @@ const SettingsSheet = React.forwardRef<BottomSheetModal>((_, sheetRef) => {
       enableContentPanningGesture
       style={styles.sheet}
       backdropComponent={renderBackdrop}
+      stackBehavior="replace"
     >
       <SheetContents />
     </BottomSheetModal>

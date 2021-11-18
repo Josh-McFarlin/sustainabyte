@@ -23,7 +23,6 @@ const RestaurantSheet = React.forwardRef<BottomSheetModal, PropTypes>(
           disappearsOnIndex={-1}
           opacity={0}
           pressBehavior="close"
-          enableTouchThrough
           {...props}
         />
       ),
@@ -37,6 +36,7 @@ const RestaurantSheet = React.forwardRef<BottomSheetModal, PropTypes>(
         enablePanDownToClose
         enableContentPanningGesture
         backdropComponent={renderBackdrop}
+        stackBehavior="replace"
         style={styles.sheet}
       >
         <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
