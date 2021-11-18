@@ -122,83 +122,55 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
     }));
   }, [mapRef]);
 
-  const tabs = React.useMemo(
-    () => ({
-      [TabTypes.RECENT]: {
-        type: TabTypes.RECENT,
-        title: "Recent",
-        Content: () => (
-          <FlatList
-            style={styles.list}
-            data={recent}
-            keyExtractor={(i) => i._id}
-            renderItem={({ item }) => <DiscoverItem item={item} />}
-            ItemSeparatorComponent={() => <View style={styles.spacer} />}
-          />
-        ),
-      },
-      [TabTypes.SEARCH]: {
-        type: TabTypes.SEARCH,
-        title: "Search",
-        Content: () => (
-          <>
-            <MapView
-              ref={mapRef}
-              showsUserLocation
-              showsPointsOfInterest={false}
-              loadingEnabled
-              style={styles.map}
-              provider={PROVIDER_GOOGLE}
-              customMapStyle={mapStyle}
-              initialRegion={searchRegion}
-              onRegionChangeComplete={onRegionChangeComplete}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              options={{
-                disableDefaultUI: true,
-              }}
-            >
-              {restaurants?.map((restaurant) => (
-                <Marker
-                  key={restaurant._id}
-                  coordinate={{
-                    latitude: restaurant.coordinates.coordinates[0],
-                    longitude: restaurant.coordinates.coordinates[1],
-                  }}
-                  onPress={() => handleMarkerPress(restaurant)}
-                />
-              ))}
-            </MapView>
-            {wasMoved && (
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={handleSearchArea}>
-                  <View style={styles.button}>
-                    <Text style={styles.buttonText}>Search This Area</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            )}
-          </>
-        ),
-      },
-    }),
-    [
-      recent,
-      searchRegion,
-      handleMarkerPress,
-      wasMoved,
-      restaurants,
-      onRegionChangeComplete,
-      handleSearchArea,
-    ]
-  );
-
-  const { Content } = tabs[curTab];
-
   return (
     <SafeAreaView style={styles.container}>
       <SearchBar onChange={handleSearch} />
-      <Content />
+      {curTab === TabTypes.RECENT ? (
+        <FlatList
+          style={styles.list}
+          data={recent}
+          keyExtractor={(i) => i._id}
+          renderItem={({ item }) => <DiscoverItem item={item} />}
+          ItemSeparatorComponent={() => <View style={styles.spacer} />}
+        />
+      ) : (
+        <MapView
+          ref={mapRef}
+          showsUserLocation
+          showsPointsOfInterest={false}
+          loadingEnabled
+          style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={mapStyle}
+          initialRegion={searchRegion}
+          onRegionChangeComplete={onRegionChangeComplete}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          options={{
+            disableDefaultUI: true,
+          }}
+        >
+          {restaurants?.map((restaurant) => (
+            <Marker
+              key={restaurant._id}
+              coordinate={{
+                latitude: restaurant.coordinates.coordinates[0],
+                longitude: restaurant.coordinates.coordinates[1],
+              }}
+              onPress={() => handleMarkerPress(restaurant)}
+            />
+          ))}
+        </MapView>
+      )}
+      {curTab === TabTypes.SEARCH && wasMoved && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={handleSearchArea}>
+            <View style={styles.button}>
+              <Text style={styles.buttonText}>Search This Area</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      )}
       <RestaurantSheet ref={sheetRef} restaurant={selectedRest} />
     </SafeAreaView>
   );
