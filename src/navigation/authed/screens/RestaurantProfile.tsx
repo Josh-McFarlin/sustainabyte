@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
-  Platform,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import {
@@ -16,7 +15,7 @@ import {
   MaterialIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import BottomSheet from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -66,7 +65,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const isFollowing = isOwnProfile || authedUser?.following?.has(id) || false;
   const [selOffer, setSelOffer] = React.useState<number | null>(null);
   const [visitOpen, setVisitOpen] = React.useState<boolean>(false);
-  const settingsSheetRef = React.useRef<BottomSheet>();
+  const settingsSheetRef = React.useRef<BottomSheetModal>();
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
 
   const { data: offers } = useQuery<OfferType[], Error>(
@@ -126,13 +125,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }, [restaurant, navigation]);
 
   const openSheet = React.useCallback(() => {
-    settingsSheetRef.current.expand(
-      Platform.OS === "web"
-        ? {
-            duration: 0,
-          }
-        : {}
-    );
+    settingsSheetRef.current.present();
   }, [settingsSheetRef]);
 
   const goForwardOffer = React.useCallback(

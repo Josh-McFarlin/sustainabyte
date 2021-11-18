@@ -1,0 +1,39 @@
+diff --git a/node_modules/@gorhom/bottom-sheet/lib/commonjs/components/bottomSheet/BottomSheet.js b/node_modules/@gorhom/bottom-sheet/lib/commonjs/components/bottomSheet/BottomSheet.js
+index 1d95649..91fd4fb 100644
+--- a/node_modules/@gorhom/bottom-sheet/lib/commonjs/components/bottomSheet/BottomSheet.js
++++ b/node_modules/@gorhom/bottom-sheet/lib/commonjs/components/bottomSheet/BottomSheet.js
+@@ -763,7 +763,7 @@ const BottomSheetComponent = /*#__PURE__*/(0, _react.forwardRef)(function Bottom
+   //#region styles
+ 
+   const containerAnimatedStyle = (0, _reactNativeReanimated.useAnimatedStyle)(() => ({
+-    opacity: animatedIndex.value === -1 ? 0 : 1,
++    // opacity: animatedIndex.value === -1 ? 0 : 1,
+     transform: [{
+       translateY: animatedPosition.value
+     }]
+diff --git a/node_modules/@gorhom/bottom-sheet/lib/module/components/bottomSheet/BottomSheet.js b/node_modules/@gorhom/bottom-sheet/lib/module/components/bottomSheet/BottomSheet.js
+index 5bdbec6..f936895 100644
+--- a/node_modules/@gorhom/bottom-sheet/lib/module/components/bottomSheet/BottomSheet.js
++++ b/node_modules/@gorhom/bottom-sheet/lib/module/components/bottomSheet/BottomSheet.js
+@@ -731,7 +731,7 @@ const BottomSheetComponent = /*#__PURE__*/forwardRef(function BottomSheet(props,
+   //#region styles
+ 
+   const containerAnimatedStyle = useAnimatedStyle(() => ({
+-    opacity: animatedIndex.value === -1 ? 0 : 1,
++    // opacity: animatedIndex.value === -1 ? 0 : 1,
+     transform: [{
+       translateY: animatedPosition.value
+     }]
+diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
+index 3606001..5a5c80b 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
++++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
+@@ -1149,7 +1149,7 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetProps>(
+     //#region styles
+     const containerAnimatedStyle = useAnimatedStyle(
+       () => ({
+-        opacity: animatedIndex.value === -1 ? 0 : 1,
++        // opacity: animatedIndex.value === -1 ? 0 : 1,
+         transform: [
+           {
+             translateY: animatedPosition.value,

@@ -7,7 +7,6 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
-  Platform,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -16,7 +15,7 @@ import MapView, {
   Region,
   Marker as MarkerBase,
 } from "react-native-maps";
-import BottomSheet from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { view } from "@risingstack/react-easy-state";
@@ -46,7 +45,7 @@ type PropTypes = CompositeScreenProps<
 
 const DiscoverScreen: React.FC<PropTypes> = () => {
   const coordinates = useLocation();
-  const sheetRef = React.useRef<BottomSheet>(null);
+  const sheetRef = React.useRef<BottomSheetModal>(null);
   const mapRef = React.useRef<MapView>(null);
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.RECENT);
   const [wasMoved, setWasMoved] = React.useState<boolean>(false);
@@ -95,38 +94,19 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
   const handleMarkerPress = React.useCallback(
     (restaurant) => {
       setRestaurant(restaurant);
-      sheetRef.current.snapToIndex(
-        0,
-        Platform.OS === "web"
-          ? {
-              duration: 0,
-            }
-          : {}
-      );
+      sheetRef.current.present();
     },
     [sheetRef, setRestaurant]
   );
 
-  const handleMapPress = React.useCallback(
-    (event) => {
-      if (event?.nativeEvent?.action === "marker-press") {
-        return;
-      }
-
-      // setRestaurant(null);
-      sheetRef.current.close();
-    },
-    [sheetRef]
-  );
-
   const handleSearch = React.useCallback((search: string, tags: string[]) => {
     if (search.length > 0 || tags.length > 0) {
-      sheetRef.current.close();
+      sheetRef.current.dismiss();
       setFilteringTags(tags);
       setFilteringText(search);
       setCurTab(TabTypes.SEARCH);
     } else {
-      sheetRef.current.close();
+      sheetRef.current.dismiss();
       setCurTab(TabTypes.RECENT);
       setFilteringTags(null);
       setFilteringText(null);
@@ -172,7 +152,6 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
               customMapStyle={mapStyle}
               initialRegion={searchRegion}
               onRegionChangeComplete={onRegionChangeComplete}
-              onPress={handleMapPress}
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               options={{
@@ -206,7 +185,6 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
     [
       recent,
       searchRegion,
-      handleMapPress,
       handleMarkerPress,
       wasMoved,
       restaurants,

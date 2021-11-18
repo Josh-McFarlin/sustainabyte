@@ -28,6 +28,7 @@ export type StackNavParamList = {
   };
   Preferences: Record<string, never>;
   AccountSettings: Record<string, never>;
+  UpdateProfile: Record<string, never>;
   UploadPost: {
     restaurant?: RestaurantType | BasicRestaurantType;
   };

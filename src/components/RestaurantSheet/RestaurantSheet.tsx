@@ -1,6 +1,10 @@
 import * as React from "react";
 import { StyleSheet } from "react-native";
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
 import SheetContents from "./SheetContents";
 import { RestaurantType } from "../../types/Restaurant";
 
@@ -8,23 +12,37 @@ interface PropTypes {
   restaurant: RestaurantType | null;
 }
 
-const RestaurantSheet = React.forwardRef<BottomSheet, PropTypes>(
+const RestaurantSheet = React.forwardRef<BottomSheetModal, PropTypes>(
   ({ restaurant }, sheetRef) => {
-    const snapPoints = React.useMemo(() => ["33%", "80%"], []);
+    const snapPoints = React.useMemo(() => ["33%"], []);
+
+    const renderBackdrop = React.useCallback(
+      (props) => (
+        <BottomSheetBackdrop
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          opacity={0}
+          pressBehavior="close"
+          enableTouchThrough
+          {...props}
+        />
+      ),
+      []
+    );
 
     return (
-      <BottomSheet
+      <BottomSheetModal
         ref={sheetRef}
-        index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose
         enableContentPanningGesture
+        backdropComponent={renderBackdrop}
         style={styles.sheet}
       >
         <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
           {restaurant != null && <SheetContents restaurant={restaurant} />}
         </BottomSheetScrollView>
-      </BottomSheet>
+      </BottomSheetModal>
     );
   }
 );

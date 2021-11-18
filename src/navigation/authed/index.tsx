@@ -17,6 +17,7 @@ import PostScreen from "./screens/Post";
 import PostCategoryScreen from "./screens/PostCategory";
 import ReviewScreen from "./screens/Review";
 import CreateChallenge from "./screens/CreateChallenge";
+import UpdateProfileScreen from "./screens/UpdateProfile";
 
 const Stack = createNativeStackNavigator<StackNavParamList>();
 const Tab = createBottomTabNavigator<TabNavParamList>();
@@ -126,6 +127,14 @@ const AuthedNavigator: React.FC = () => {
           component={AccountSettingsScreen}
           options={{
             headerTitle: "Account Settings",
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="UpdateProfile"
+          component={UpdateProfileScreen}
+          options={{
+            headerTitle: "Update Profile",
             gestureEnabled: false,
           }}
         />

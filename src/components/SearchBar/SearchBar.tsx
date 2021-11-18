@@ -63,11 +63,13 @@ const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
         )}
       </View>
       <FlatList
+        style={styles.overflow}
+        contentContainerStyle={styles.overflow}
         horizontal
         data={orderedTags}
         keyExtractor={(i) => i}
         renderItem={({ item }) => (
-          <Pressable onPress={() => toggleTag(item)}>
+          <Pressable style={styles.overflow} onPress={() => toggleTag(item)}>
             <Hashtag
               style={styles.touchable}
               hashtag={item}
@@ -108,6 +110,9 @@ const styles = StyleSheet.create({
   },
   touchable: {
     marginRight: 8,
+  },
+  overflow: {
+    overflow: "visible",
   },
 });
 

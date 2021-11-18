@@ -7,12 +7,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { view } from "@risingstack/react-easy-state";
 import type { StackNavParamList } from "../types";
 import { useAuth } from "../../../utils/auth";
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "AccountSettings">;
 
-const AccountSettingsScreen: React.FC<PropTypes> = () => {
+const AccountSettingsScreen: React.FC<PropTypes> = ({ navigation }) => {
   const { user, logout } = useAuth();
 
   return (
@@ -21,6 +22,15 @@ const AccountSettingsScreen: React.FC<PropTypes> = () => {
         <View style={styles.section}>
           <Text>Currently signed in as:</Text>
           <Text>{user.name}</Text>
+        </View>
+        <View style={styles.section}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("UpdateProfile")}
+          >
+            <View style={styles.button}>
+              <Text style={styles.buttonText}>Update Profile</Text>
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.section}>
           <TouchableOpacity onPress={logout}>
@@ -57,4 +67,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AccountSettingsScreen;
+export default view(AccountSettingsScreen);

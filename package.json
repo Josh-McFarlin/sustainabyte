@@ -32,7 +32,8 @@
     "deploy-ios": "npx expo-optimize && expo build:ios",
     "deploy-web": "expo build:web && cd web-build && vercel",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/vector-icons": "^12.0.0",
@@ -114,6 +115,7 @@
     "jest": "^27.3.1",
     "jest-expo": "^43.0.1",
     "lint-staged": "^11.1.2",
+    "patch-package": "^6.4.7",
     "prettier": "^2.4.0",
     "ts-jest": "^27.0.7",
     "typescript": "~4.3.5"

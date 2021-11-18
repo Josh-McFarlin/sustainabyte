@@ -3,6 +3,7 @@ import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
 import type { UserType } from "../types/User";
 import usersStore, { storeUser } from "../utils/userData";
+import { getContentType, requestUpload, uploadImage } from "../utils/image";
 
 export const fetchUsers: QueryFunction<
   UserType[],
@@ -75,14 +76,37 @@ export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
 };
 
 export const updateUser = async (
-  user: Pick<
-    UserType,
-    "name" | "avatarUrl" | "locations" | "groups" | "followers" | "following"
+  id: UserType["_id"],
+  user: Partial<
+    Pick<
+      UserType,
+      | "name"
+      | "email"
+      | "avatarUrl"
+      | "locations"
+      | "groups"
+      | "followers"
+      | "following"
+      | "bio"
+    >
   >
 ): Promise<UserType> => {
+  const payload = {
+    ...user,
+  };
+
+  if (user.avatarUrl != null) {
+    const contentType = getContentType(user.avatarUrl);
+    const upload = await requestUpload([contentType]);
+
+    await uploadImage(user.avatarUrl, upload[0].uploadUrl);
+
+    payload.avatarUrl = upload[0].fileUrl;
+  }
+
   const { data: json } = await authRequest.put(
-    `${urls.api}/user`,
-    JSON.stringify(user),
+    `${urls.api}/user/${id}`,
+    JSON.stringify(payload),
     {
       headers: {
         "Content-Type": "application/json",
@@ -90,7 +114,13 @@ export const updateUser = async (
     }
   );
 
-  const newUser: UserType = json.user;
+  const newUser: UserType = <UserType>{
+    ...usersStore.users.get(id),
+  };
+
+  Object.keys(user).forEach((field) => {
+    newUser[field] = json.user[field];
+  });
 
   await storeUser(newUser);
 

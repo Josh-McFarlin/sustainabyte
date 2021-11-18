@@ -14,6 +14,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import AuthedNavigator from "./src/navigation/authed";
 import UnauthedNavigator from "./src/navigation/unauthed";
 import { useAuth } from "./src/utils/auth";
@@ -80,7 +81,9 @@ const Navigation: React.FC = () => {
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? <AuthedNavigator /> : <UnauthedNavigator />}
+      <BottomSheetModalProvider>
+        {isLoggedIn ? <AuthedNavigator /> : <UnauthedNavigator />}
+      </BottomSheetModalProvider>
     </NavigationContainer>
   );
 };
@@ -89,6 +92,7 @@ const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <SingletonHooksContainer />
     <StatusBar style="dark" />
+
     <Navigation />
   </QueryClientProvider>
 );

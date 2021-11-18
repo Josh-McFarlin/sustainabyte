@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
-import BottomSheet from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useQuery } from "react-query";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -48,7 +48,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const isOwnProfile = id === authedUser._id;
   const user = usersStore.getFull(id);
   const isFollowing = isOwnProfile || authedUser.following?.has(id) || false;
-  const settingsSheetRef = React.useRef<BottomSheet>(null);
+  const settingsSheetRef = React.useRef<BottomSheetModal>(null);
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const {
     data: posts,
@@ -82,13 +82,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }, [user, navigation]);
 
   const openSheet = React.useCallback(() => {
-    settingsSheetRef.current.expand(
-      Platform.OS === "web"
-        ? {
-            duration: 0,
-          }
-        : {}
-    );
+    settingsSheetRef.current.present();
   }, [settingsSheetRef]);
 
   const tabs = React.useMemo(
@@ -228,14 +222,14 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                     color={isFollowing ? "#3C8D90" : "#9EC1C3"}
                   />
                   <Text style={styles.statsText}>
-                    {("followers" in user && user?.followers?.size) || 0}
+                    {"followers" in user ? user?.followers?.size : 0}
                   </Text>
                   <Text style={styles.statsDetails}>Followers</Text>
                 </View>
               </View>
             </View>
             <View style={[styles.hRow, styles.center, styles.marginBottom]}>
-              <Text style={styles.bio}>Tap to add a bio</Text>
+              <Text style={styles.bio}>{"bio" in user ? user?.bio : ""}</Text>
             </View>
             <View style={[styles.hRow, styles.border, styles.noPadding]}>
               {Object.values(tabs).map((tab) => (

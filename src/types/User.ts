@@ -8,6 +8,7 @@ export interface UserType {
   email: string;
   username: string;
   avatarUrl: string;
+  bio?: string;
   score: number;
   locations: LocationType[];
   groups: SocialGroupType["_id"][];
