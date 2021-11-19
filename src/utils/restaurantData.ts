@@ -2,7 +2,6 @@ import { store, autoEffect } from "@risingstack/react-easy-state";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BasicRestaurantType, RestaurantType } from "../types/Restaurant";
 import { fetchRestaurant } from "../actions/restaurant";
-import { UserType } from "../types/User";
 
 const restaurantsKey = "RESTAURANTS";
 const restaurantKey = (restaurantId: RestaurantType["_id"]) =>
@@ -96,7 +95,7 @@ const restaurantsStore = store({
         count: 0,
       },
       menuPercents: {},
-      followers: new Set<UserType["_id"]>(),
+      followers: 0,
       createdAt: new Date(),
     };
   },

@@ -18,16 +18,16 @@ type PropTypes = {
 const DiscoverItem: React.FC<PropTypes> = ({ item }) => {
   const { type, data } = item;
   const { user: userId, restaurant: restaurantId } = data || {};
-  const { user: authedUser, saved: savedPosts } = useAuth();
+  const { user: authedUser } = useAuth();
   const user = userId != null ? usersStore.get(userId) : null;
   const restaurant =
     restaurantId != null ? restaurantsStore.get(restaurantId) : null;
 
   const follows =
     authedUser._id === user._id ||
-    authedUser?.following?.has(userId || restaurantId) ||
+    usersStore?.following?.has(userId || restaurantId) ||
     false;
-  const saved = savedPosts?.has(data._id) || false;
+  const saved = usersStore?.saved?.has(data._id) || false;
 
   if (type === "Post") {
     return (

@@ -6,14 +6,18 @@ import {
   StyleSheet,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from "react-native";
 import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { view } from "@risingstack/react-easy-state";
 import type { BasicUserType } from "../../types/User";
 import { BasicRestaurantType } from "../../types/Restaurant";
 import { CheckInType } from "../../types/CheckIn";
 import { AuthNavigationProp } from "../../navigation/authed/types";
+import { toggleSave } from "../../actions/save";
+import { useAuth } from "../../utils/auth";
 
 type PropTypes = {
   user?: BasicUserType;
@@ -33,6 +37,8 @@ const DiscoverCheckIn: React.FC<PropTypes> = ({
   saved,
 }) => {
   const { withUsers, createdAt } = data;
+  const { user: authedUser } = useAuth();
+  const isOwnProfile = user != null && authedUser._id === user._id;
   const navigation = useNavigation<AuthNavigationProp>();
 
   const crownImage = React.useCallback(() => {
@@ -43,9 +49,14 @@ const DiscoverCheckIn: React.FC<PropTypes> = ({
     console.log("Liked image");
   }, []);
 
-  const saveImage = React.useCallback(() => {
-    console.log("Saved image");
-  }, []);
+  const saveImage = React.useCallback(async () => {
+    try {
+      await toggleSave("CheckIn", data._id);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Failed to save!");
+    }
+  }, [data]);
 
   return (
     <View style={styles.container}>
@@ -97,9 +108,12 @@ const DiscoverCheckIn: React.FC<PropTypes> = ({
           <TouchableOpacity style={styles.button} onPress={likeImage}>
             <FontAwesome name="heart" size={24} color={heartColor(true)} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={saveImage}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={isOwnProfile ? null : saveImage}
+          >
             <FontAwesome
-              name={saved ? "bookmark" : "bookmark-o"}
+              name={isOwnProfile || saved ? "bookmark" : "bookmark-o"}
               size={24}
               color={iconColor}
             />
@@ -221,4 +235,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(DiscoverCheckIn);
+export default view(DiscoverCheckIn);

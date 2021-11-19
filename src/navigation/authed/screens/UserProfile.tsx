@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
-  Platform,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FontAwesome, FontAwesome5, Ionicons } from "@expo/vector-icons";
@@ -30,6 +29,7 @@ import { StackNavParamList } from "../types";
 import usersStore from "../../../utils/userData";
 import { useAuth } from "../../../utils/auth";
 import { useRefetchOnFocus } from "../../../utils/screen";
+import { fetchSavesById, SavesResponseType } from "../../../actions/save";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -47,7 +47,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const { user: authedUser } = useAuth();
   const isOwnProfile = id === authedUser._id;
   const user = usersStore.getFull(id);
-  const isFollowing = isOwnProfile || authedUser.following?.has(id) || false;
+  const isFollowing = isOwnProfile || usersStore?.following?.has(id) || false;
   const settingsSheetRef = React.useRef<BottomSheetModal>(null);
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.GALLERY);
   const {
@@ -70,8 +70,33 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       enabled: id != null,
     }
   );
+  const {
+    data: saves,
+    refetch: refetchSaves,
+    isLoading: isRefetchingSaves,
+  } = useQuery<SavesResponseType, Error>(
+    [
+      "userSaves",
+      {
+        id: user?._id,
+        format: "simple",
+        filter: "Post",
+      },
+    ],
+    fetchSavesById,
+    {
+      enabled: user != null,
+      initialData: null,
+      onSuccess: (data) => {
+        usersStore.saved = new Set<string>(data as string[]);
+      },
+    }
+  );
   useRefetchOnFocus(refetchPosts);
   useRefetchOnFocus(refetchCheckIns);
+  useRefetchOnFocus(refetchSaves);
+
+  console.log("saves", saves);
 
   React.useEffect(() => {
     if (user != null) {
@@ -136,6 +161,8 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
 
   const { data, renderItem, listProps, refetch } = tabs[curTab];
 
+  console.log("user", user);
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList<PostType | CheckInType | CategoryPostsType>
@@ -145,11 +172,15 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         renderItem={renderItem}
         refreshControl={
           <RefreshControl
-            refreshing={isRefetchingPosts || isRefetchingCheckIns}
+            refreshing={
+              isRefetchingPosts || isRefetchingCheckIns || isRefetchingSaves
+            }
             onRefresh={refetch}
           />
         }
-        refreshing={isRefetchingPosts || isRefetchingCheckIns}
+        refreshing={
+          isRefetchingPosts || isRefetchingCheckIns || isRefetchingSaves
+        }
         ListHeaderComponent={() => (
           <View>
             <View style={styles.vRow}>
@@ -222,7 +253,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                     color={isFollowing ? "#3C8D90" : "#9EC1C3"}
                   />
                   <Text style={styles.statsText}>
-                    {"followers" in user ? user?.followers?.size : 0}
+                    {"followers" in user ? user?.followers : 0}
                   </Text>
                   <Text style={styles.statsDetails}>Followers</Text>
                 </View>

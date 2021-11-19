@@ -25,32 +25,8 @@ export const fetchAuth: QueryFunction<UserType, [string, string]> = async ({
       throw new Error("Invalid user!");
     }
 
-    const { data: followersJson } = await authRequest.get(
-      `${urls.api}/follow`,
-      {
-        params: {
-          toType: "User",
-          to: json.auth._id,
-          simpleType: "from",
-        },
-      }
-    );
-
-    const { data: followingJson } = await authRequest.get(
-      `${urls.api}/follow`,
-      {
-        params: {
-          fromType: "User",
-          from: json.auth._id,
-          simpleType: "to",
-        },
-      }
-    );
-
     const user: UserType = {
       ...json.auth,
-      followers: new Set<UserType["_id"]>(followersJson.follows),
-      following: new Set<UserType["_id"]>(followingJson.follows),
     };
 
     await storeUser(user);

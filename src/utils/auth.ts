@@ -11,6 +11,10 @@ import type { AuthContextType, Auth0User } from "../types/Auth";
 import { fetchAuth } from "../actions/auth";
 import { UserType } from "../types/User";
 import { authRequest } from "./request";
+import { fetchFollowsById, FollowsResponseType } from "../actions/follow";
+import { fetchSavesById, SavesResponseType } from "../actions/save";
+import urls from "./urls";
+import usersStore from "./userData";
 
 const authStorageKey = "AuthObject";
 const auth0ClientId = "g5aCxDpiXTWG4pqNSNPYyN06KBgw610q";
@@ -69,6 +73,41 @@ export const useAuthBase = (): AuthContextType => {
       initialData: null,
       onSuccess: () => {
         setIsInitializing(false);
+      },
+    }
+  );
+  const { remove: removeFollows } = useQuery<FollowsResponseType, Error>(
+    [
+      "userFollows",
+      {
+        id: user?._id,
+        format: "simple",
+      },
+    ],
+    fetchFollowsById,
+    {
+      enabled: user != null,
+      initialData: null,
+      onSuccess: (data) => {
+        usersStore.followers = new Set<string>(data.followers as string[]);
+        usersStore.following = new Set<string>(data.following as string[]);
+      },
+    }
+  );
+  const { remove: removeSaved } = useQuery<SavesResponseType, Error>(
+    [
+      "userSaves",
+      {
+        id: user?._id,
+        format: "simple",
+      },
+    ],
+    fetchSavesById,
+    {
+      enabled: user != null,
+      initialData: null,
+      onSuccess: (data) => {
+        usersStore.saved = new Set<string>(data as string[]);
       },
     }
   );
@@ -136,7 +175,9 @@ export const useAuthBase = (): AuthContextType => {
     setAuth0Token(null);
     await clearAuthObject();
     remove();
-  }, [remove]);
+    removeSaved();
+    removeFollows();
+  }, [remove, removeSaved, removeFollows]);
 
   React.useEffect(() => {
     console.log("create interceptor:", auth0Token != null);
@@ -178,7 +219,6 @@ export const useAuthBase = (): AuthContextType => {
 
   return {
     user,
-    saved: new Set<string>(),
     isInitializing: !request || isInitializing,
     isLoggedIn: auth0User != null && user != null,
     login,
@@ -188,7 +228,6 @@ export const useAuthBase = (): AuthContextType => {
 
 const initAuth: AuthContextType = {
   user: null,
-  saved: new Set<string>(),
   isInitializing: true,
   isLoggedIn: false,
   login: null,

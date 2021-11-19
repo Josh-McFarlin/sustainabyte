@@ -10,6 +10,9 @@ const usersStore = store({
   users: new Map<UserType["_id"], BasicUserType | UserType>(),
   retrieving: new Set<UserType["_id"]>(),
   retrieved: new Set<UserType["_id"]>(),
+  followers: new Set<string>(),
+  following: new Set<string>(),
+  saved: new Set<string>(),
   get(userId: UserType["_id"]): BasicUserType | null {
     if (
       !usersStore.retrieving.has(userId) &&
@@ -65,8 +68,9 @@ const usersStore = store({
       score: 0,
       locations: [],
       groups: [],
-      followers: new Set<UserType["_id"]>(),
-      following: new Set<UserType["_id"]>(),
+      followers: 0,
+      following: 0,
+      saved: 0,
       createdAt: new Date(),
     };
   },

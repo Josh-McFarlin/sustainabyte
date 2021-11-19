@@ -20,6 +20,7 @@ import restaurantsStore from "../../../utils/restaurantData";
 import usersStore from "../../../utils/userData";
 import Hashtag from "../../../components/Hashtag/Hashtag";
 import { useAuth } from "../../../utils/auth";
+import { toggleFollow } from "../../../actions/follow";
 
 const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
 const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
@@ -29,7 +30,7 @@ type PropTypes = NativeStackScreenProps<StackNavParamList, "Review">;
 
 const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
   const { id, review: initialReview } = route.params;
-  const { user: authedUser, saved: savedPosts } = useAuth();
+  const { user: authedUser } = useAuth();
 
   const { data: review } = useQuery<ReviewType, Error>(
     ["review", id],
@@ -46,9 +47,12 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
   const user =
     review != null && review?.user != null ? usersStore.get(review.user) : null;
 
-  const handlePlus = React.useCallback(() => {
-    console.log("Pressed plus");
-  }, []);
+  const handleFollow = React.useCallback(async () => {
+    await toggleFollow(
+      user == null ? "Restaurant" : "User",
+      user == null ? restaurant._id : user._id
+    );
+  }, [user, restaurant]);
 
   const crownImage = React.useCallback(() => {
     console.log("Crowned image");
@@ -69,9 +73,10 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
   const { tags, photoUrls, body, createdAt } = review;
   const follows =
     authedUser._id === user._id ||
-    authedUser?.following?.has(user._id) ||
+    usersStore?.following?.has(user._id) ||
     false;
-  const saved = savedPosts?.has(review._id) || false;
+  const saved =
+    authedUser._id === user._id || usersStore.saved?.has(review._id) || false;
 
   return (
     <View style={styles.container}>
@@ -87,7 +92,7 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
           <Text style={styles.otherText}>checked into</Text>{" "}
           <Text style={styles.restName}>{restaurant?.name || ""}</Text>
         </Text>
-        <TouchableOpacity style={styles.flex} onPress={handlePlus}>
+        <TouchableOpacity style={styles.flex} onPress={handleFollow}>
           <Text style={styles.topFollowText}>
             {follows ? "Follow" : "Following"}
           </Text>

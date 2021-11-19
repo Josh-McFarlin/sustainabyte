@@ -44,6 +44,7 @@ import { RestaurantType } from "../../../types/Restaurant";
 import { useAuth } from "../../../utils/auth";
 import { useRefetchOnFocus } from "../../../utils/screen";
 import { CategoryPostsType } from "../../../types/Post";
+import usersStore from "../../../utils/userData";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -62,7 +63,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const isOwnProfile = id === authedUser._id;
   const coordinates = useLocation();
   const restaurant = restaurantsStore.getFull(id);
-  const isFollowing = isOwnProfile || authedUser?.following?.has(id) || false;
+  const isFollowing = isOwnProfile || usersStore?.following?.has(id) || false;
   const [selOffer, setSelOffer] = React.useState<number | null>(null);
   const [visitOpen, setVisitOpen] = React.useState<boolean>(false);
   const settingsSheetRef = React.useRef<BottomSheetModal>();

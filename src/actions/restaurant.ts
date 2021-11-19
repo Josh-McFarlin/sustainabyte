@@ -47,20 +47,8 @@ export const fetchRestaurant: QueryFunction<RestaurantType, [string, string]> =
         `${urls.api}/restaurant/${encodeURIComponent(restaurantId)}`
       );
 
-      const { data: followersJson } = await authRequest.get(
-        `${urls.api}/follow`,
-        {
-          params: {
-            toType: "Restaurant",
-            to: json.restaurant._id,
-            simpleType: "from",
-          },
-        }
-      );
-
       const restaurant: RestaurantType = {
         ...json.restaurant,
-        followers: new Set<UserType["_id"]>(followersJson.follows),
       };
 
       await storeRestaurant(restaurant);

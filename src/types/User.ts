@@ -12,8 +12,9 @@ export interface UserType {
   score: number;
   locations: LocationType[];
   groups: SocialGroupType["_id"][];
-  followers: Set<UserType["_id"]>;
-  following: Set<UserType["_id"]>;
+  followers: number;
+  following: number;
+  saved: number;
   createdAt: Date;
 }
 

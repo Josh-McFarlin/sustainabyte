@@ -39,32 +39,8 @@ export const fetchUser: QueryFunction<UserType, [string, string]> = async ({
       `${urls.api}/user/${encodeURIComponent(userId)}`
     );
 
-    const { data: followersJson } = await authRequest.get(
-      `${urls.api}/follow`,
-      {
-        params: {
-          toType: "User",
-          to: json.user._id,
-          simpleType: "from",
-        },
-      }
-    );
-
-    const { data: followingJson } = await authRequest.get(
-      `${urls.api}/follow`,
-      {
-        params: {
-          fromType: "User",
-          from: json.user._id,
-          simpleType: "to",
-        },
-      }
-    );
-
     const user: UserType = {
       ...json.user,
-      followers: new Set<UserType["_id"]>(followersJson.follows),
-      following: new Set<UserType["_id"]>(followingJson.follows),
     };
 
     await storeUser(user);

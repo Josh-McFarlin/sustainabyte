@@ -19,7 +19,8 @@ import { ReviewType } from "../../types/Review";
 import StarRating from "../StarRating";
 import Hashtag from "../Hashtag/Hashtag";
 import { AuthNavigationProp } from "../../navigation/authed/types";
-import { createFollow } from "../../actions/follow";
+import { toggleFollow } from "../../actions/follow";
+import { useAuth } from "../../utils/auth";
 
 type PropTypes = {
   data: ReviewType;
@@ -41,14 +42,15 @@ const DiscoverReview: React.FC<PropTypes> = ({
   saved,
 }) => {
   const { tags, photoUrls, body, createdAt } = data;
+  const { user: authedUser } = useAuth();
+  const isOwnProfile = user != null && authedUser._id === user._id;
   const navigation = useNavigation<AuthNavigationProp>();
 
   const handleFollow = React.useCallback(async () => {
-    await createFollow({
-      fromType: "User",
-      toType: user == null ? "Restaurant" : "User",
-      to: user == null ? restaurant._id : user._id,
-    });
+    await toggleFollow(
+      user == null ? "Restaurant" : "User",
+      user == null ? restaurant._id : user._id
+    );
   }, [user, restaurant]);
 
   const crownImage = React.useCallback(() => {
@@ -87,11 +89,15 @@ const DiscoverReview: React.FC<PropTypes> = ({
           <Text style={styles.otherText}>checked into</Text>{" "}
           <Text style={styles.restName}>{restaurant?.name || ""}</Text>
         </Text>
-        <TouchableOpacity style={styles.flex} onPress={handleFollow}>
-          <Text style={styles.topFollowText}>
-            {follows ? "Following" : "Follow"}
-          </Text>
-        </TouchableOpacity>
+        {isOwnProfile ? (
+          <Text style={[styles.flex, styles.topFollowText]}>Following</Text>
+        ) : (
+          <TouchableOpacity style={styles.flex} onPress={handleFollow}>
+            <Text style={styles.topFollowText}>
+              {follows ? "Following" : "Follow"}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
       <View style={styles.curvedBar} />
@@ -131,9 +137,12 @@ const DiscoverReview: React.FC<PropTypes> = ({
           <TouchableOpacity style={styles.button} onPress={likeImage}>
             <FontAwesome name="heart" size={24} color={heartColor(true)} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={saveImage}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={isOwnProfile ? null : saveImage}
+          >
             <FontAwesome
-              name={saved ? "bookmark" : "bookmark-o"}
+              name={isOwnProfile || saved ? "bookmark" : "bookmark-o"}
               size={24}
               color={iconColor}
             />
@@ -143,7 +152,6 @@ const DiscoverReview: React.FC<PropTypes> = ({
         <View style={styles.bodyRow}>
           <Text>{body}</Text>
         </View>
-
         <Text style={styles.date}>{dayjs(createdAt).format("MMM D")}</Text>
       </View>
     </View>

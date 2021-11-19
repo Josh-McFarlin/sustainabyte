@@ -1,21 +1,26 @@
 import type { QueryFunction } from "react-query";
 import { authRequest } from "../utils/request";
 import urls from "../utils/urls";
-import type { FollowType } from "../types/Follow";
-import usersStore from "../utils/userData";
-import restaurantsStore from "../utils/restaurantData";
+import usersStore, { storeUser } from "../utils/userData";
 import { UserType } from "../types/User";
+import { RestaurantType } from "../types/Restaurant";
+import { AccountRefType } from "../types/AccountRef";
 
-export const fetchFollows: QueryFunction<
-  FollowType[],
+export type FollowsResponseType = {
+  followers: (UserType | RestaurantType)[] | AccountRefType[] | string[];
+  following: (UserType | RestaurantType)[] | AccountRefType[] | string[];
+};
+
+export const fetchFollowsById: QueryFunction<
+  FollowsResponseType,
   [
     string,
-    Partial<FollowType> & {
-      page?: number;
-      perPage?: number;
+    {
+      id: UserType["_id"];
+      format?: "simple" | "detailed";
     }
   ]
-> = async ({ queryKey }): Promise<FollowType[]> => {
+> = async ({ queryKey }): Promise<FollowsResponseType> => {
   const [_key, params = {}] = queryKey;
 
   const { data: json } = await authRequest.get(`${urls.api}/follow`, {
@@ -25,13 +30,15 @@ export const fetchFollows: QueryFunction<
   return json.follows;
 };
 
-export const createFollow = async (
-  follow: Pick<FollowType, "fromType" | "toType" | "to">
-): Promise<FollowType> => {
+export const toggleFollow = async (
+  followType: "User" | "Restaurant",
+  followId: UserType["_id"] | RestaurantType["_id"]
+): Promise<UserType> => {
   const { data: json } = await authRequest.post(
     `${urls.api}/follow`,
     JSON.stringify({
-      ...follow,
+      followType,
+      followId,
     }),
     {
       headers: {
@@ -40,31 +47,25 @@ export const createFollow = async (
     }
   );
 
-  const from =
-    json.follow.fromType === "User"
-      ? usersStore.users.get(json.follow.from)
-      : restaurantsStore.restaurants.get(json.follow.from);
-  const to =
-    json.follow.toType === "User"
-      ? usersStore.users.get(json.follow.to)
-      : restaurantsStore.restaurants.get(json.follow.to);
-
   try {
-    (from as UserType).following.add(to._id);
-    (to as UserType).followers.add(from._id);
+    const newUser: UserType = <UserType>{
+      ...usersStore.users.get(json.user._id),
+    };
+
+    if (usersStore.following.has(followId)) {
+      usersStore.following.delete(followId);
+      newUser.following -= 1;
+      (usersStore.users.get(followId) as UserType).followers -= 1;
+    } else {
+      usersStore.following.add(followId);
+      newUser.following += 1;
+      (usersStore.users.get(followId) as UserType).followers += 1;
+    }
+
+    await storeUser(newUser);
   } catch (error) {
     //
   }
 
-  return json.follow;
-};
-
-export const deleteFollow = async (
-  followId: FollowType["_id"]
-): Promise<FollowType> => {
-  const { data: json } = await authRequest.delete(
-    `${urls.api}/follow/${followId}`
-  );
-
-  return json.follow;
+  return json.user;
 };

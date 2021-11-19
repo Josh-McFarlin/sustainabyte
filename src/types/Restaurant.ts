@@ -45,7 +45,7 @@ export interface RestaurantType {
     sum: number;
   };
   menuPercents: Record<string, number>;
-  followers: Set<UserType["_id"]>;
+  followers: number;
   createdAt: Date;
 }
 
