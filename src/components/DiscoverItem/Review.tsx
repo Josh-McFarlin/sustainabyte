@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from "react-native";
 import dayjs from "dayjs";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
@@ -21,6 +22,7 @@ import Hashtag from "../Hashtag/Hashtag";
 import { AuthNavigationProp } from "../../navigation/authed/types";
 import { toggleFollow } from "../../actions/follow";
 import { useAuth } from "../../utils/auth";
+import { toggleSave } from "../../actions/save";
 
 type PropTypes = {
   data: ReviewType;
@@ -61,9 +63,14 @@ const DiscoverReview: React.FC<PropTypes> = ({
     console.log("Liked image");
   }, []);
 
-  const saveImage = React.useCallback(() => {
-    console.log("Saved image");
-  }, []);
+  const saveImage = React.useCallback(async () => {
+    try {
+      await toggleSave("CheckIn", data._id);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Failed to save!");
+    }
+  }, [data]);
 
   const rating = restaurant?.ratings?.sum / restaurant?.ratings?.count;
 
