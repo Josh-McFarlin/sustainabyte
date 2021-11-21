@@ -96,8 +96,6 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   useRefetchOnFocus(refetchCheckIns);
   useRefetchOnFocus(refetchSaves);
 
-  console.log("saves", saves);
-
   React.useEffect(() => {
     if (user != null) {
       navigation.setOptions({
@@ -160,8 +158,6 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }
 
   const { data, renderItem, listProps, refetch } = tabs[curTab];
-
-  console.log("user", user);
 
   return (
     <SafeAreaView style={styles.container}>

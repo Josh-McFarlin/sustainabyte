@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useQuery } from "react-query";
@@ -21,9 +22,9 @@ import usersStore from "../../../utils/userData";
 import Hashtag from "../../../components/Hashtag/Hashtag";
 import { useAuth } from "../../../utils/auth";
 import { toggleFollow } from "../../../actions/follow";
+import { toggleLike } from "../../../actions/like";
+import { toggleSave } from "../../../actions/save";
 
-const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
-const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
 const iconColor = "#3C8D90";
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "Review">;
@@ -46,6 +47,10 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
       : null;
   const user =
     review != null && review?.user != null ? usersStore.get(review.user) : null;
+  const isOwnProfile = user != null && authedUser._id === user._id;
+  const [liked, setLiked] = React.useState<boolean>(
+    review?.likedBy?.includes(authedUser._id) || false
+  );
 
   const handleFollow = React.useCallback(async () => {
     await toggleFollow(
@@ -54,17 +59,22 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
     );
   }, [user, restaurant]);
 
-  const crownImage = React.useCallback(() => {
-    console.log("Crowned image");
-  }, []);
+  const likeImage = React.useCallback(async () => {
+    const newData = await toggleLike("Review", review._id);
 
-  const likeImage = React.useCallback(() => {
-    console.log("Liked image");
-  }, []);
+    setLiked(newData?.likedBy?.includes(authedUser._id) || false);
+  }, [review, authedUser]);
 
-  const saveImage = React.useCallback(() => {
-    console.log("Saved image");
-  }, []);
+  const saveImage = React.useCallback(async () => {
+    try {
+      if (isOwnProfile) return;
+
+      await toggleSave("CheckIn", review._id);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Failed to save!");
+    }
+  }, [review, isOwnProfile]);
 
   if (review == null || (restaurant == null && user == null)) {
     return null;
@@ -117,12 +127,27 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
           </View>
         </View>
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.button} onPress={crownImage}>
-            <FontAwesome5 name="crown" size={24} color={crownColor(true)} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={likeImage}>
-            <FontAwesome name="heart" size={24} color={heartColor(true)} />
-          </TouchableOpacity>
+          <View style={styles.buttonCol}>
+            <FontAwesome5
+              style={styles.button}
+              name="crown"
+              size={24}
+              color="#FFC601"
+            />
+            <Text style={styles.buttonColText}>+15</Text>
+          </View>
+          <View style={styles.buttonCol}>
+            <TouchableOpacity style={styles.button} onPress={likeImage}>
+              {liked ? (
+                <FontAwesome name="heart" size={24} color="#FA5B6B" />
+              ) : (
+                <FontAwesome5 name="heart" size={24} color="#FA5B6B" />
+              )}
+            </TouchableOpacity>
+            <Text style={styles.buttonColText}>
+              {review.likedBy?.length || 0}
+            </Text>
+          </View>
           <TouchableOpacity style={styles.button} onPress={saveImage}>
             <FontAwesome
               name={saved ? "bookmark" : "bookmark-o"}
@@ -258,6 +283,15 @@ const styles = StyleSheet.create({
   },
   hashtagContainer: {
     overflow: "visible",
+  },
+  buttonCol: {
+    alignItems: "center",
+  },
+  buttonColText: {
+    fontSize: 14,
+    color: "#000",
+    marginTop: 4,
+    fontWeight: "500",
   },
 });
 

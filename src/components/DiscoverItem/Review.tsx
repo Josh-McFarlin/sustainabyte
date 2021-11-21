@@ -65,12 +65,14 @@ const DiscoverReview: React.FC<PropTypes> = ({
 
   const saveImage = React.useCallback(async () => {
     try {
+      if (isOwnProfile) return;
+
       await toggleSave("CheckIn", data._id);
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "Failed to save!");
     }
-  }, [data]);
+  }, [data, isOwnProfile]);
 
   const rating = restaurant?.ratings?.sum / restaurant?.ratings?.count;
 
@@ -138,23 +140,28 @@ const DiscoverReview: React.FC<PropTypes> = ({
           </View>
         </View>
         <View style={styles.buttonRow}>
-          <FontAwesome5
-            style={styles.button}
-            name="crown"
-            size={24}
-            color="#FFC601"
-          />
-          <TouchableOpacity style={styles.button} onPress={likeImage}>
-            {liked ? (
-              <FontAwesome name="heart" size={24} color="#FA5B6B" />
-            ) : (
-              <FontAwesome5 name="heart" size={24} color="#FA5B6B" />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={isOwnProfile ? null : saveImage}
-          >
+          <View style={styles.buttonCol}>
+            <FontAwesome5
+              style={styles.button}
+              name="crown"
+              size={24}
+              color="#FFC601"
+            />
+            <Text style={styles.buttonColText}>+15</Text>
+          </View>
+          <View style={styles.buttonCol}>
+            <TouchableOpacity style={styles.button} onPress={likeImage}>
+              {liked ? (
+                <FontAwesome name="heart" size={24} color="#FA5B6B" />
+              ) : (
+                <FontAwesome5 name="heart" size={24} color="#FA5B6B" />
+              )}
+            </TouchableOpacity>
+            <Text style={styles.buttonColText}>
+              {data.likedBy?.length || 0}
+            </Text>
+          </View>
+          <TouchableOpacity style={styles.button} onPress={saveImage}>
             <FontAwesome
               name={isOwnProfile || saved ? "bookmark" : "bookmark-o"}
               size={24}
@@ -307,6 +314,15 @@ const styles = StyleSheet.create({
   },
   hashtagContainer: {
     overflow: "visible",
+  },
+  buttonCol: {
+    alignItems: "center",
+  },
+  buttonColText: {
+    fontSize: 14,
+    color: "#000",
+    marginTop: 4,
+    fontWeight: "500",
   },
 });
 

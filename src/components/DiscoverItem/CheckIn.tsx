@@ -52,12 +52,14 @@ const DiscoverCheckIn: React.FC<PropTypes> = ({
 
   const saveImage = React.useCallback(async () => {
     try {
+      if (isOwnProfile) return;
+
       await toggleSave("CheckIn", data._id);
     } catch (error) {
       console.error(error);
       Alert.alert("Error", "Failed to save!");
     }
-  }, [data]);
+  }, [data, isOwnProfile]);
 
   return (
     <View style={styles.container}>
@@ -103,19 +105,27 @@ const DiscoverCheckIn: React.FC<PropTypes> = ({
           </View>
         </View>
         <View style={styles.buttonRow}>
-          <FontAwesome5
-            style={styles.button}
-            name="crown"
-            size={24}
-            color="#FFC601"
-          />
-          <TouchableOpacity style={styles.button} onPress={likeImage}>
-            {liked ? (
-              <FontAwesome name="heart" size={24} color="#FA5B6B" />
-            ) : (
-              <FontAwesome5 name="heart" size={24} color="#FA5B6B" />
-            )}
-          </TouchableOpacity>
+          <View style={styles.buttonCol}>
+            <FontAwesome5
+              style={styles.button}
+              name="crown"
+              size={24}
+              color="#FFC601"
+            />
+            <Text style={styles.buttonColText}>+5</Text>
+          </View>
+          <View style={styles.buttonCol}>
+            <TouchableOpacity style={styles.button} onPress={likeImage}>
+              {liked ? (
+                <FontAwesome name="heart" size={24} color="#FA5B6B" />
+              ) : (
+                <FontAwesome5 name="heart" size={24} color="#FA5B6B" />
+              )}
+            </TouchableOpacity>
+            <Text style={styles.buttonColText}>
+              {data.likedBy?.length || 0}
+            </Text>
+          </View>
           <TouchableOpacity
             style={styles.button}
             onPress={isOwnProfile ? null : saveImage}
@@ -240,6 +250,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#3C8D90",
+  },
+  buttonCol: {
+    alignItems: "center",
+  },
+  buttonColText: {
+    fontSize: 14,
+    color: "#000",
+    marginTop: 4,
+    fontWeight: "500",
   },
 });
 
