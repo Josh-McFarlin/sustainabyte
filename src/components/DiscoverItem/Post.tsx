@@ -23,6 +23,7 @@ import { AuthNavigationProp } from "../../navigation/authed/types";
 import { toggleFollow } from "../../actions/follow";
 import { useAuth } from "../../utils/auth";
 import { toggleSave } from "../../actions/save";
+import { toggleLike } from "../../actions/like";
 
 type PropTypes = {
   data: PostType;
@@ -32,8 +33,6 @@ type PropTypes = {
   saved: boolean;
 };
 
-const crownColor = (selected: boolean) => (selected ? "#FFC601" : "#b4b4b4");
-const heartColor = (selected: boolean) => (selected ? "#FA5B6B" : "#b4b4b4");
 const iconColor = "#3C8D90";
 
 const DiscoverPost: React.FC<PropTypes> = ({
@@ -47,6 +46,9 @@ const DiscoverPost: React.FC<PropTypes> = ({
   const { user: authedUser } = useAuth();
   const isOwnProfile = user != null && authedUser._id === user._id;
   const navigation = useNavigation<AuthNavigationProp>();
+  const [liked, setLiked] = React.useState<boolean>(
+    data?.likedBy?.includes(authedUser._id) || false
+  );
 
   const handleFollow = React.useCallback(async () => {
     await toggleFollow(
@@ -55,13 +57,11 @@ const DiscoverPost: React.FC<PropTypes> = ({
     );
   }, [user, restaurant]);
 
-  const crownImage = React.useCallback(() => {
-    console.log("Crowned image");
-  }, []);
+  const likeImage = React.useCallback(async () => {
+    const newData = await toggleLike("Post", data._id);
 
-  const likeImage = React.useCallback(() => {
-    console.log("Liked image");
-  }, []);
+    setLiked(newData?.likedBy?.includes(authedUser._id) || false);
+  }, [data, authedUser]);
 
   const saveImage = React.useCallback(async () => {
     try {
@@ -147,11 +147,18 @@ const DiscoverPost: React.FC<PropTypes> = ({
           </View>
         </View>
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.button} onPress={crownImage}>
-            <FontAwesome5 name="crown" size={24} color={crownColor(true)} />
-          </TouchableOpacity>
+          <FontAwesome5
+            style={styles.button}
+            name="crown"
+            size={24}
+            color="#FFC601"
+          />
           <TouchableOpacity style={styles.button} onPress={likeImage}>
-            <FontAwesome name="heart" size={24} color={heartColor(true)} />
+            {liked ? (
+              <FontAwesome name="heart" size={24} color="#FA5B6B" />
+            ) : (
+              <FontAwesome5 name="heart" size={24} color="#FA5B6B" />
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}

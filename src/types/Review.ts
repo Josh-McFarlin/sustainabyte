@@ -9,6 +9,7 @@ export interface ReviewType {
   body: string;
   tags: string[];
   photoUrls: string[];
+  likedBy: UserType["_id"][];
   createdAt: Date;
 }
 

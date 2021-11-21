@@ -10,6 +10,7 @@ export interface PostType {
   photoUrls: string[];
   category: string;
   tags: string[];
+  likedBy: UserType["_id"][];
   createdAt: Date;
 }
 

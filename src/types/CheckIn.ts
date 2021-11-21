@@ -6,5 +6,6 @@ export interface CheckInType {
   user: UserType["_id"];
   restaurant: RestaurantType["_id"];
   withUsers: UserType["_id"][];
+  likedBy: UserType["_id"][];
   createdAt: number;
 }
