@@ -8,14 +8,27 @@ import {
   watchPositionAsync,
   LocationOptions,
 } from "expo-location";
+import PostalAddress from "i18n-postal-address";
 import { AddressType, CoordinatesType, LocationType } from "../types/Location";
 
-const formatAddress = (address: AddressType): string => {
+export const formatAddress = (address: AddressType): string => {
   if (address == null) {
     throw new Error("Invalid address!");
   }
 
-  return `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`;
+  return new PostalAddress()
+    .setAddress1(address.street)
+    .setCity(address.city)
+    .setState(address.state)
+    .setCountry(address.country)
+    .setPostalCode(address.zipCode?.toString() || "")
+    .setFormat({
+      country: "US",
+      type: "business",
+      useTransforms: false,
+    })
+    .toString()
+    .replaceAll("\n", ", ");
 };
 
 export const lookupAddress = async (

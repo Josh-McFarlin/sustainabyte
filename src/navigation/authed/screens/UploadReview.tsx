@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import debounce from "lodash/debounce";
@@ -176,125 +177,126 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }, [selTags, tagSearch]);
 
   return (
-    <ScrollView style={styles.scroll}>
-      <KeyboardAvoidingView style={styles.container} behavior="position">
-        <View style={[styles.section, styles.hRow]}>
+    <KeyboardAwareScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.container}
+    >
+      <View style={[styles.section, styles.hRow]}>
+        <FontAwesome5
+          style={styles.inputIcon}
+          name="map-pin"
+          size={18}
+          color="#3C8D90"
+        />
+        <TextInput
+          style={styles.input}
+          value={restaurant.name}
+          placeholder="Check into a restaurant"
+          placeholderTextColor="#848484"
+        />
+      </View>
+      <Text style={[styles.sectionHeader, styles.smallMargin]}>
+        Rate & Review
+      </Text>
+      <StarRating
+        style={styles.smallMargin}
+        rating={rating}
+        size={24}
+        primaryColor="#cbb131"
+        secondaryColor="#585858"
+        onPress={setRating}
+      />
+      <View style={[styles.section, styles.hRow]}>
+        <FontAwesome
+          style={styles.inputIcon}
+          name="pencil"
+          size={18}
+          color="#3C8D90"
+        />
+        <TextInput
+          style={styles.input}
+          multiline
+          numberOfLines={3}
+          onChangeText={setCaption}
+          value={caption}
+          placeholder="Share your experience"
+          placeholderTextColor="#848484"
+        />
+      </View>
+      <View style={styles.bigMargin}>
+        <View style={[styles.hRow, styles.section, styles.smallMargin]}>
           <FontAwesome5
             style={styles.inputIcon}
-            name="map-pin"
+            name="hashtag"
             size={18}
             color="#3C8D90"
           />
           <TextInput
             style={styles.input}
-            value={restaurant.name}
-            placeholder="Check into a restaurant"
+            onChangeText={setShowingSearch}
+            value={showingSearch}
+            placeholder="Search & Add hashtags"
             placeholderTextColor="#848484"
           />
-        </View>
-        <Text style={[styles.sectionHeader, styles.smallMargin]}>
-          Rate & Review
-        </Text>
-        <StarRating
-          style={styles.smallMargin}
-          rating={rating}
-          size={24}
-          primaryColor="#cbb131"
-          secondaryColor="#585858"
-          onPress={setRating}
-        />
-        <View style={[styles.section, styles.hRow]}>
-          <FontAwesome
-            style={styles.inputIcon}
-            name="pencil"
-            size={18}
-            color="#3C8D90"
-          />
-          <TextInput
-            style={styles.input}
-            multiline
-            numberOfLines={3}
-            onChangeText={setCaption}
-            value={caption}
-            placeholder="Share your experience"
-            placeholderTextColor="#848484"
-          />
-        </View>
-        <View style={styles.bigMargin}>
-          <View style={[styles.hRow, styles.section, styles.smallMargin]}>
-            <FontAwesome5
+          {showingSearch.length > 0 && (
+            <FontAwesome
               style={styles.inputIcon}
-              name="hashtag"
+              name="close"
               size={18}
               color="#3C8D90"
+              onPress={() => {
+                setTagSearch("");
+                setShowingSearchBase("");
+              }}
             />
-            <TextInput
-              style={styles.input}
-              onChangeText={setShowingSearch}
-              value={showingSearch}
-              placeholder="Search & Add hashtags"
-              placeholderTextColor="#848484"
-            />
-            {showingSearch.length > 0 && (
-              <FontAwesome
-                style={styles.inputIcon}
-                name="close"
-                size={18}
-                color="#3C8D90"
-                onPress={() => {
-                  setTagSearch("");
-                  setShowingSearchBase("");
+          )}
+        </View>
+        <FlatList
+          horizontal
+          data={orderedTags}
+          keyExtractor={(i) => i}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => toggleTag(item)}>
+              <Hashtag
+                style={styles.touchable}
+                hashtag={item}
+                selected={selTags.includes(item)}
+              />
+            </Pressable>
+          )}
+        />
+      </View>
+      <ScrollView horizontal>
+        {pictures.map((picture, index) => (
+          <TouchableOpacity
+            key={picture}
+            style={styles.imageSpacer}
+            onPress={() =>
+              setPictures((prevState) =>
+                prevState.filter((_, i) => i !== index)
+              )
+            }
+          >
+            <View style={styles.section}>
+              <Image
+                style={styles.image}
+                source={{
+                  uri: picture,
                 }}
               />
-            )}
-          </View>
-          <FlatList
-            horizontal
-            data={orderedTags}
-            keyExtractor={(i) => i}
-            renderItem={({ item }) => (
-              <Pressable onPress={() => toggleTag(item)}>
-                <Hashtag
-                  style={styles.touchable}
-                  hashtag={item}
-                  selected={selTags.includes(item)}
-                />
-              </Pressable>
-            )}
-          />
-        </View>
-        <ScrollView horizontal>
-          {pictures.map((picture, index) => (
-            <TouchableOpacity
-              key={picture}
-              style={styles.imageSpacer}
-              onPress={() =>
-                setPictures((prevState) =>
-                  prevState.filter((_, i) => i !== index)
-                )
-              }
-            >
-              <View style={styles.section}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: picture,
-                  }}
-                />
-              </View>
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity onPress={selectType} style={styles.imageSpacer}>
-            <View style={styles.section}>
-              <View style={styles.image}>
-                <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
-                <Text>Take a picture</Text>
-              </View>
             </View>
           </TouchableOpacity>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </ScrollView>
+        ))}
+        <TouchableOpacity onPress={selectType} style={styles.imageSpacer}>
+          <View style={styles.section}>
+            <View style={styles.image}>
+              <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
+              <Text>Take a picture</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 

@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
@@ -147,121 +148,122 @@ const CreateChallenge: React.FC<PropTypes> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.scroll}>
-      <KeyboardAvoidingView style={styles.container} behavior="position">
-        <View style={[styles.section, styles.hRow]}>
-          <FontAwesome5
-            style={styles.inputIcon}
-            name="map-pin"
-            size={18}
-            color="#3C8D90"
-          />
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Challenge Name"
-            placeholderTextColor="#848484"
-          />
-        </View>
-        <View style={[styles.section, styles.hRow]}>
-          <FontAwesome
-            style={styles.inputIcon}
-            name="pencil"
-            size={18}
-            color="#3C8D90"
-          />
-          <TextInput
-            style={styles.input}
-            value={body}
-            onChangeText={setBody}
-            placeholder="Challenge Description"
-            placeholderTextColor="#848484"
-          />
-        </View>
-        <View style={[styles.section, styles.hRow]}>
-          <FontAwesome
-            style={styles.inputIcon}
-            name="trophy"
-            size={18}
-            color="#3C8D90"
-          />
-          <TextInput
-            keyboardType="number-pad"
-            style={styles.input}
-            onChangeText={setScore}
-            value={score}
-            placeholder="Points to Award"
-            placeholderTextColor="#848484"
-          />
-        </View>
-        <View style={[styles.section, styles.hRow]}>
-          <FontAwesome
-            style={styles.inputIcon}
-            name="calendar"
-            size={18}
-            color="#3C8D90"
-          />
-          <Pressable
-            style={[styles.flex, styles.center]}
-            onPress={() => setPickerOpen(true)}
+    <KeyboardAwareScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.container}
+    >
+      <View style={[styles.section, styles.hRow]}>
+        <FontAwesome5
+          style={styles.inputIcon}
+          name="map-pin"
+          size={18}
+          color="#3C8D90"
+        />
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Challenge Name"
+          placeholderTextColor="#848484"
+        />
+      </View>
+      <View style={[styles.section, styles.hRow]}>
+        <FontAwesome
+          style={styles.inputIcon}
+          name="pencil"
+          size={18}
+          color="#3C8D90"
+        />
+        <TextInput
+          style={styles.input}
+          value={body}
+          onChangeText={setBody}
+          placeholder="Challenge Description"
+          placeholderTextColor="#848484"
+        />
+      </View>
+      <View style={[styles.section, styles.hRow]}>
+        <FontAwesome
+          style={styles.inputIcon}
+          name="trophy"
+          size={18}
+          color="#3C8D90"
+        />
+        <TextInput
+          keyboardType="number-pad"
+          style={styles.input}
+          onChangeText={setScore}
+          value={score}
+          placeholder="Points to Award"
+          placeholderTextColor="#848484"
+        />
+      </View>
+      <View style={[styles.section, styles.hRow]}>
+        <FontAwesome
+          style={styles.inputIcon}
+          name="calendar"
+          size={18}
+          color="#3C8D90"
+        />
+        <Pressable
+          style={[styles.flex, styles.center]}
+          onPress={() => setPickerOpen(true)}
+        >
+          <View style={[styles.input, styles.center]}>
+            <Text>{dayjs(expiresAt).format("LLL")}</Text>
+          </View>
+        </Pressable>
+      </View>
+      <ScrollView horizontal>
+        {selImgIndex < 0 && (
+          <View style={[styles.section, styles.imageSpacer, styles.selected]}>
+            <Image style={styles.image} source={{ uri: iconUrl }} />
+          </View>
+        )}
+        {iconUrls.map((picture, index) => (
+          <TouchableOpacity
+            key={picture}
+            style={styles.imageSpacer}
+            onPress={() => {
+              setIconUrl(Image.resolveAssetSource(picture).uri);
+              setSelImgIndex(index);
+            }}
           >
-            <View style={[styles.input, styles.center]}>
-              <Text>{dayjs(expiresAt).format("LLL")}</Text>
-            </View>
-          </Pressable>
-        </View>
-        <ScrollView horizontal>
-          {selImgIndex < 0 && (
-            <View style={[styles.section, styles.imageSpacer, styles.selected]}>
-              <Image style={styles.image} source={{ uri: iconUrl }} />
-            </View>
-          )}
-          {iconUrls.map((picture, index) => (
-            <TouchableOpacity
-              key={picture}
-              style={styles.imageSpacer}
-              onPress={() => {
-                setIconUrl(Image.resolveAssetSource(picture).uri);
-                setSelImgIndex(index);
-              }}
+            <View
+              style={[
+                styles.section,
+                selImgIndex === index ? styles.selected : styles.section,
+              ]}
             >
-              <View
-                style={[
-                  styles.section,
-                  selImgIndex === index ? styles.selected : styles.section,
-                ]}
-              >
-                <Image style={styles.image} source={picture} />
-              </View>
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity onPress={selectType} style={styles.imageSpacer}>
-            <View style={styles.section}>
-              <View style={styles.image}>
-                <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
-                <Text>Take a picture</Text>
-              </View>
+              <Image style={styles.image} source={picture} />
             </View>
           </TouchableOpacity>
-        </ScrollView>
-        <DateTimePickerModal
-          isVisible={pickerOpen}
-          date={expiresAt}
-          mode="datetime"
-          display="spinner"
-          textColor="#000000"
-          minimumDate={new Date()}
-          onConfirm={(date) => {
-            setExpiresAt(date);
-            setPickerOpen(false);
-          }}
-          onCancel={() => {
-            setPickerOpen(false);
-          }}
-        />
-      </KeyboardAvoidingView>
-    </ScrollView>
+        ))}
+        <TouchableOpacity onPress={selectType} style={styles.imageSpacer}>
+          <View style={styles.section}>
+            <View style={styles.image}>
+              <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
+              <Text>Take a picture</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+      <DateTimePickerModal
+        isVisible={pickerOpen}
+        date={expiresAt}
+        mode="datetime"
+        display="spinner"
+        textColor="#000000"
+        minimumDate={new Date()}
+        onConfirm={(date) => {
+          setExpiresAt(date);
+          setPickerOpen(false);
+        }}
+        onCancel={() => {
+          setPickerOpen(false);
+        }}
+      />
+    </KeyboardAwareScrollView>
   );
 };
 

@@ -11,10 +11,10 @@ import {
   Dimensions,
   FlatList,
   KeyboardAvoidingView,
-  ScrollView,
   ActivityIndicator,
   Pressable,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
 import {
@@ -26,31 +26,49 @@ import {
 import debounce from "lodash/debounce";
 import { view } from "@risingstack/react-easy-state";
 import { createPost } from "../../../actions/post";
+import { fetchRestaurants } from "../../../actions/restaurant";
 import { StackNavParamList } from "../types";
 import { hashtags } from "../../../utils/hashtags";
 import Hashtag from "../../../components/Hashtag/Hashtag";
+import { RestaurantType } from "../../../types/Restaurant";
+import {
+  distanceBetween,
+  formatAddress,
+  useLocation,
+} from "../../../utils/location";
 
 const useSelect = Platform.select({ web: true, default: false });
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "UploadPost">;
 
 const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
-  const { restaurant } = route.params || {};
+  const location = useLocation();
+  const [restaurant, setRestaurant] = React.useState<RestaurantType>(
+    route?.params?.restaurant as RestaurantType
+  );
   const [picture, setPicture] = React.useState<string | null>(null);
   const [caption, setCaption] = React.useState<string>("");
   const [selTags, setTags] = React.useState<string[]>([]);
   const [tagSearch, setTagSearch] = React.useState<string>("");
-  const [showingSearch, setShowingSearchBase] = React.useState<string>("");
   const [uploading, setUploading] = React.useState<boolean>(false);
+  const [restaurants, setRestaurants] = React.useState<RestaurantType[]>([]);
+  const [isSearching, setIsSearching] = React.useState<boolean>(false);
+  const [searchText, setSearchText] = React.useState<string>(
+    restaurant?.name || ""
+  );
+  const [orderedTags, setOrderedTagsBase] = React.useState<string[]>(hashtags);
 
   const handleUpload = React.useCallback(async () => {
     try {
       setUploading(true);
+
+      if (restaurant == null || picture == null || caption.length === 0) {
+        throw new Error("Please provide all fields!");
+      }
+
       const newPost = await createPost({
         ownerType: "User",
-        ...(restaurant != null && {
-          restaurant: restaurant._id,
-        }),
+        restaurant: restaurant._id,
         body: caption,
         photoUrls: [picture],
         tags: selTags,
@@ -85,13 +103,31 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     });
   }, [navigation, handleUpload, uploading]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debChange = React.useCallback(debounce(setTagSearch, 500), [
-    setTagSearch,
-  ]);
+  const debChange = React.useCallback(
+    debounce(async (name: string) => {
+      try {
+        const rests = await fetchRestaurants({
+          queryKey: [
+            "restSearch",
+            location,
+            {
+              name,
+            },
+          ],
+          meta: {},
+        });
 
-  const setShowingSearch = (text: string) => {
-    setShowingSearchBase(text);
+        setRestaurants(rests);
+      } catch (error) {
+        console.error("Error", error?.message || error);
+        Alert.alert("Error", "Failed to search for restaurants!");
+      }
+    }, 500),
+    []
+  );
+
+  const setRestaurantSearch = (text: string) => {
+    setSearchText(text);
     debChange(text);
   };
 
@@ -153,6 +189,21 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     ]);
   };
 
+  const setOrderedTags = React.useCallback(
+    debounce((selSet: Set<string>, search: string) => {
+      const lowerSearch = search.toLowerCase();
+
+      setOrderedTagsBase([
+        ...selSet,
+        ...hashtags.filter(
+          (i) =>
+            !selSet.has(i) && (search.length === 0 || i.includes(lowerSearch))
+        ),
+      ]);
+    }, 100),
+    []
+  );
+
   const toggleTag = React.useCallback(
     (item: string) =>
       setTags((prevState) => {
@@ -164,28 +215,16 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
           newTags.add(item);
         }
 
+        setOrderedTags(newTags, tagSearch);
         return [...newTags];
       }),
-    []
+    [tagSearch]
   );
 
-  const orderedTags = React.useMemo(() => {
-    const selSet = new Set(selTags);
-    const lowerSearch = tagSearch.toLowerCase();
-
-    return [
-      ...selTags,
-      ...hashtags.filter(
-        (i) =>
-          !selSet.has(i) && (tagSearch.length === 0 || i.includes(lowerSearch))
-      ),
-    ];
-  }, [selTags, tagSearch]);
-
-  return (
-    <ScrollView style={styles.scroll}>
-      <KeyboardAvoidingView style={styles.container} behavior="position">
-        {restaurant != null && (
+  if (isSearching) {
+    return (
+      <View style={styles.scroll}>
+        <KeyboardAvoidingView style={styles.container}>
           <View style={[styles.section, styles.hRow]}>
             <FontAwesome5
               style={styles.inputIcon}
@@ -194,92 +233,200 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
               color="#3C8D90"
             />
             <TextInput
+              autoFocus
               style={styles.input}
-              value={restaurant.name}
+              value={searchText}
+              onChangeText={setRestaurantSearch}
               placeholder="Check into a restaurant"
               placeholderTextColor="#848484"
             />
           </View>
-        )}
-        <TouchableOpacity onPress={selectType}>
-          <View style={styles.section}>
-            {picture ? (
-              <Image
-                style={styles.image}
-                source={{
-                  uri: picture,
+          <FlatList
+            data={restaurants}
+            keyExtractor={(i) => i._id}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => {
+                  setRestaurant(item);
+                  setIsSearching(false);
                 }}
-              />
-            ) : (
-              <View style={styles.image}>
-                <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
-                <Text>Take a picture</Text>
+              >
+                <View style={[styles.restListItem, styles.hRow]}>
+                  <View style={styles.center}>
+                    <View style={styles.bigCircle}>
+                      <FontAwesome5
+                        name="map-marker-alt"
+                        color="#727272"
+                        size={24}
+                      />
+                    </View>
+                    <Text style={styles.distText}>
+                      {distanceBetween(location, {
+                        latitude: item.coordinates.coordinates[0],
+                        longitude: item.coordinates.coordinates[1],
+                      }).toFixed(1)}{" "}
+                      mi
+                    </Text>
+                  </View>
+                  <View style={styles.restListText}>
+                    <Text
+                      style={styles.restListTitle}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {item.name}
+                    </Text>
+                    <Text
+                      style={styles.restListSubtitle}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {formatAddress(item.address)}
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
+            )}
+            ListEmptyComponent={() => (
+              <View style={[styles.restListItem, styles.hRow]}>
+                <View style={styles.center}>
+                  <View style={styles.bigCircle}>
+                    <FontAwesome5
+                      name="map-marker-alt"
+                      color="#727272"
+                      size={24}
+                    />
+                  </View>
+                  <Text style={styles.distText}>0 mi</Text>
+                </View>
+                <View style={styles.restListText}>
+                  <Text
+                    style={styles.restListTitle}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    No restaurants found
+                  </Text>
+                  <Text
+                    style={styles.restListSubtitle}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    Please search a different restaurant!
+                  </Text>
+                </View>
               </View>
             )}
-          </View>
-        </TouchableOpacity>
-        <View style={[styles.section, styles.hRow]}>
-          <Ionicons
+          />
+        </KeyboardAvoidingView>
+      </View>
+    );
+  }
+
+  return (
+    <KeyboardAwareScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.container}
+    >
+      <View style={[styles.section, styles.hRow]}>
+        <FontAwesome5
+          style={styles.inputIcon}
+          name="map-pin"
+          size={18}
+          color="#3C8D90"
+        />
+        <TextInput
+          style={styles.input}
+          value={restaurant?.name || searchText}
+          placeholder="Check into a restaurant"
+          placeholderTextColor="#848484"
+          onPressIn={() => setIsSearching(true)}
+        />
+      </View>
+      <TouchableOpacity onPress={selectType}>
+        <View style={styles.section}>
+          {picture ? (
+            <Image
+              style={styles.image}
+              source={{
+                uri: picture,
+              }}
+            />
+          ) : (
+            <View style={styles.image}>
+              <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
+              <Text>Take a picture</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+      <View style={[styles.section, styles.hRow]}>
+        <Ionicons
+          style={styles.inputIcon}
+          name="md-chatbox"
+          size={18}
+          color="#3C8D90"
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={setCaption}
+          value={caption}
+          placeholder="Add a caption"
+          placeholderTextColor="#848484"
+          multiline
+          numberOfLines={6}
+        />
+      </View>
+      <View style={styles.bigMargin}>
+        <View style={[styles.hRow, styles.section, styles.smallMargin]}>
+          <FontAwesome5
             style={styles.inputIcon}
-            name="md-chatbox"
+            name="hashtag"
             size={18}
             color="#3C8D90"
           />
           <TextInput
             style={styles.input}
-            onChangeText={setCaption}
-            value={caption}
-            placeholder="Add a caption"
+            onChangeText={(text) => {
+              setTagSearch(text);
+              setOrderedTags(new Set(selTags), text);
+            }}
+            value={tagSearch}
+            placeholder="Search & Add hashtags"
             placeholderTextColor="#848484"
-            multiline
-            numberOfLines={6}
           />
-        </View>
-        <View style={styles.bigMargin}>
-          <View style={[styles.hRow, styles.section, styles.smallMargin]}>
-            <FontAwesome5
-              style={styles.inputIcon}
-              name="hashtag"
-              size={18}
-              color="#3C8D90"
-            />
-            <TextInput
-              style={styles.input}
-              onChangeText={setShowingSearch}
-              value={showingSearch}
-              placeholder="Search & Add hashtags"
-              placeholderTextColor="#848484"
-            />
-            {showingSearch.length > 0 && (
+          {tagSearch.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setTagSearch("");
+                setOrderedTags(new Set(selTags), "");
+              }}
+            >
               <FontAwesome
                 style={styles.inputIcon}
                 name="close"
-                size={18}
-                color="#3C8D90"
-                onPress={() => {
-                  setTagSearch("");
-                  setShowingSearchBase("");
-                }}
+                size={16}
+                color="#727272"
               />
-            )}
-          </View>
-          <FlatList
-            horizontal
-            data={orderedTags}
-            keyExtractor={(i) => i}
-            renderItem={({ item }) => (
-              <Pressable onPress={() => toggleTag(item)}>
-                <Hashtag
-                  style={styles.touchable}
-                  hashtag={item}
-                  selected={selTags.includes(item)}
-                />
-              </Pressable>
-            )}
-          />
+            </TouchableOpacity>
+          )}
         </View>
-      </KeyboardAvoidingView>
-    </ScrollView>
+        <FlatList
+          horizontal
+          data={orderedTags}
+          keyExtractor={(i) => i}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => toggleTag(item)}>
+              <Hashtag
+                style={styles.touchable}
+                hashtag={item}
+                selected={selTags.includes(item)}
+              />
+            </Pressable>
+          )}
+        />
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -288,12 +435,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     padding: 8,
-    // backgroundColor: "red",
   },
   scroll: {
     flex: 1,
     backgroundColor: "#ffffff",
-    // backgroundColor: "green",
   },
   section: {
     padding: 8,
@@ -338,6 +483,46 @@ const styles = StyleSheet.create({
   },
   star: {
     marginHorizontal: 3,
+  },
+  bigCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    backgroundColor: "#D1D1D1",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  distText: {
+    textAlign: "center",
+    color: "#727272",
+    fontSize: 12,
+    marginTop: 4,
+  },
+  restListItem: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#DBDBDB",
+    alignItems: "center",
+  },
+  restListText: {
+    marginLeft: 8,
+    flex: 1,
+  },
+  restListTitle: {
+    color: "#5C5C5C",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  restListSubtitle: {
+    color: "#727272",
+    fontSize: 14,
+    marginTop: 4,
   },
 });
 

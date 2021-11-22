@@ -46,6 +46,7 @@
       "error",
       "always",
       { "exceptAfterSingleLine": true }
-    ]
+    ],
+    "react-hooks/exhaustive-deps": "off"
   }
 }
