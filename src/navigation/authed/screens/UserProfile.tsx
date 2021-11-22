@@ -115,16 +115,18 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         icon: ({ ...props }) => <Ionicons name="grid" {...props} />,
         data: Object.values(
           posts.reduce((accum: Record<string, CategoryPostsType>, post) => {
-            if (!Object.prototype.hasOwnProperty.call(accum, post.category)) {
+            const type = post?.category || "All";
+
+            if (!Object.prototype.hasOwnProperty.call(accum, type)) {
               // eslint-disable-next-line no-param-reassign
-              accum[post.category] = {
-                type: post.category,
+              accum[type] = {
+                type,
                 posts: [],
                 lastUpdated: new Date(post.createdAt),
               };
             }
 
-            accum[post.category].posts.push(post);
+            accum[type].posts.push(post);
 
             return accum;
           }, {})
