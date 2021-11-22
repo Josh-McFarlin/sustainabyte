@@ -82,11 +82,10 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
 
   const { tags, photoUrls, body, createdAt } = review;
   const follows =
-    authedUser._id === user._id ||
-    usersStore?.following?.has(user._id) ||
+    isOwnProfile ||
+    usersStore?.following?.has(user?._id || restaurant?._id) ||
     false;
-  const saved =
-    authedUser._id === user._id || usersStore.saved?.has(review._id) || false;
+  const saved = isOwnProfile || usersStore.saved?.has(review._id) || false;
 
   return (
     <View style={styles.container}>

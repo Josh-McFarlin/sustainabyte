@@ -30,6 +30,7 @@ import usersStore from "../../../utils/userData";
 import { useAuth } from "../../../utils/auth";
 import { useRefetchOnFocus } from "../../../utils/screen";
 import { fetchSavesById, SavesResponseType } from "../../../actions/save";
+import { toggleFollow } from "../../../actions/follow";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -107,6 +108,10 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const openSheet = React.useCallback(() => {
     settingsSheetRef.current.present();
   }, [settingsSheetRef]);
+
+  const handleFollow = React.useCallback(async () => {
+    await toggleFollow("User", user._id);
+  }, [user]);
 
   const tabs = React.useMemo(
     () => ({
@@ -245,11 +250,13 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                   <Text style={styles.statsDetails}>Posts</Text>
                 </View>
                 <View style={[styles.vRow, styles.center]}>
-                  <FontAwesome
-                    name="user"
-                    size={32}
-                    color={isFollowing ? "#3C8D90" : "#9EC1C3"}
-                  />
+                  <TouchableOpacity onPress={handleFollow}>
+                    <FontAwesome
+                      name="user"
+                      size={32}
+                      color={isFollowing ? "#3C8D90" : "#9EC1C3"}
+                    />
+                  </TouchableOpacity>
                   <Text style={styles.statsText}>
                     {"followers" in user ? user?.followers : 0}
                   </Text>

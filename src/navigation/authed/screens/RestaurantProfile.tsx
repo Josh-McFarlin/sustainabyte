@@ -45,6 +45,7 @@ import { useAuth } from "../../../utils/auth";
 import { useRefetchOnFocus } from "../../../utils/screen";
 import { CategoryPostsType } from "../../../types/Post";
 import usersStore from "../../../utils/userData";
+import { toggleFollow } from "../../../actions/follow";
 
 type PropTypes = CompositeScreenProps<
   BottomTabScreenProps<TabNavParamList, "Profile">,
@@ -128,6 +129,10 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const openSheet = React.useCallback(() => {
     settingsSheetRef.current.present();
   }, [settingsSheetRef]);
+
+  const handleFollow = React.useCallback(async () => {
+    await toggleFollow("Restaurant", restaurant._id);
+  }, [restaurant]);
 
   const goForwardOffer = React.useCallback(
     () => setSelOffer((prevState) => prevState + 1),
@@ -317,7 +322,7 @@ const RestaurantScreen: React.FC<PropTypes> = ({ route, navigation }) => {
                         color="#3C8D90"
                       />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handleFollow}>
                       <FontAwesome
                         style={styles.icon}
                         name={isFollowing ? "bookmark" : "bookmark-o"}
