@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Pressable,
 } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useQuery } from "react-query";
@@ -29,7 +30,7 @@ const iconColor = "#3C8D90";
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "Review">;
 
-const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
+const ReviewScreen: React.FC<PropTypes> = ({ navigation, route }) => {
   const { id, review: initialReview } = route.params;
   const { user: authedUser } = useAuth();
 
@@ -90,12 +91,20 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <Image
-          style={styles.topAvatar}
-          source={{
-            uri: user?.avatarUrl,
-          }}
-        />
+        <Pressable
+          onPress={() =>
+            navigation.navigate("UserProfile", {
+              id: user._id,
+            })
+          }
+        >
+          <Image
+            style={styles.topAvatar}
+            source={{
+              uri: user?.avatarUrl,
+            }}
+          />
+        </Pressable>
         <Text>
           <Text style={styles.restName}>{user?.username || ""}</Text>{" "}
           <Text style={styles.otherText}>checked into</Text>{" "}
@@ -110,12 +119,20 @@ const ReviewScreen: React.FC<PropTypes> = ({ route }) => {
       {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
       <View style={styles.bottomBar}>
         <View style={styles.restInfo}>
-          <Image
-            style={styles.avatar}
-            source={{
-              uri: restaurant?.avatarUrl,
-            }}
-          />
+          <Pressable
+            onPress={() =>
+              navigation.navigate("RestaurantProfile", {
+                id: restaurant._id,
+              })
+            }
+          >
+            <Image
+              style={styles.avatar}
+              source={{
+                uri: restaurant?.avatarUrl,
+              }}
+            />
+          </Pressable>
           <View style={styles.nameTags}>
             <Text style={styles.restName}>{restaurant?.name || ""}</Text>
             <ScrollView horizontal style={styles.hashtagContainer}>

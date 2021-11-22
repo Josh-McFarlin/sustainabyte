@@ -51,7 +51,9 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const [selTags, setTags] = React.useState<string[]>([]);
   const [tagSearch, setTagSearch] = React.useState<string>("");
   const [uploading, setUploading] = React.useState<boolean>(false);
-  const [restaurants, setRestaurants] = React.useState<RestaurantType[]>([]);
+  const [restaurants, setRestaurants] = React.useState<RestaurantType[]>(
+    restaurant != null ? [restaurant] : []
+  );
   const [isSearching, setIsSearching] = React.useState<boolean>(false);
   const [searchText, setSearchText] = React.useState<string>(
     restaurant?.name || ""
@@ -88,17 +90,17 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={handleUpload} disabled={uploading}>
-          <Text>
-            Next{" "}
-            <ActivityIndicator
-              animating={uploading}
-              hidesWhenStopped
-              size="small"
-              color="#0000ff"
-            />
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.hRow}>
+          <TouchableOpacity onPress={handleUpload} disabled={uploading}>
+            <Text>Next </Text>
+          </TouchableOpacity>
+          <ActivityIndicator
+            animating={uploading}
+            hidesWhenStopped
+            size="small"
+            color="#0000ff"
+          />
+        </View>
       ),
     });
   }, [navigation, handleUpload, uploading]);

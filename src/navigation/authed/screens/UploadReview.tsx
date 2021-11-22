@@ -9,10 +9,10 @@ import {
   Platform,
   TextInput,
   FlatList,
-  KeyboardAvoidingView,
   ScrollView,
   ActivityIndicator,
   Pressable,
+  KeyboardAvoidingView,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as ImagePicker from "expo-image-picker";
@@ -25,24 +25,46 @@ import { hashtags } from "../../../utils/hashtags";
 import { StackNavParamList } from "../types";
 import StarRating from "../../../components/StarRating";
 import Hashtag from "../../../components/Hashtag/Hashtag";
+import { RestaurantType } from "../../../types/Restaurant";
+import { fetchRestaurants } from "../../../actions/restaurant";
+import {
+  distanceBetween,
+  formatAddress,
+  useLocation,
+} from "../../../utils/location";
 
 const useSelect = Platform.select({ web: true, default: false });
 
 type PropTypes = NativeStackScreenProps<StackNavParamList, "UploadPost">;
 
 const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
-  const { restaurant } = route.params;
+  const location = useLocation();
+  const [restaurant, setRestaurant] = React.useState<RestaurantType>(
+    route?.params?.restaurant as RestaurantType
+  );
   const [pictures, setPictures] = React.useState<string[]>([]);
   const [caption, setCaption] = React.useState<string>("");
   const [selTags, setTags] = React.useState<string[]>([]);
   const [tagSearch, setTagSearch] = React.useState<string>("");
-  const [showingSearch, setShowingSearchBase] = React.useState<string>("");
   const [rating, setRating] = React.useState<number>(3);
   const [uploading, setUploading] = React.useState<boolean>(false);
+  const [restaurants, setRestaurants] = React.useState<RestaurantType[]>(
+    restaurant != null ? [restaurant] : []
+  );
+  const [isSearching, setIsSearching] = React.useState<boolean>(false);
+  const [searchText, setSearchText] = React.useState<string>(
+    restaurant?.name || ""
+  );
+  const [orderedTags, setOrderedTagsBase] = React.useState<string[]>(hashtags);
 
   const handleUpload = React.useCallback(async () => {
     try {
       setUploading(true);
+
+      if (restaurant == null || pictures == null || caption.length === 0) {
+        throw new Error("Please provide all fields!");
+      }
+
       await createReview({
         restaurant: restaurant._id,
         stars: rating,
@@ -56,6 +78,7 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     } catch (error) {
       console.log("Error", error?.message || error);
       Alert.alert("Error", error?.message);
+      console.error(error);
     } finally {
       setUploading(false);
     }
@@ -64,28 +87,46 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={handleUpload} disabled={uploading}>
-          <Text>
-            Next{" "}
-            <ActivityIndicator
-              animating={uploading}
-              hidesWhenStopped
-              size="small"
-              color="#0000ff"
-            />
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.hRow}>
+          <TouchableOpacity onPress={handleUpload} disabled={uploading}>
+            <Text>Next </Text>
+          </TouchableOpacity>
+          <ActivityIndicator
+            animating={uploading}
+            hidesWhenStopped
+            size="small"
+            color="#0000ff"
+          />
+        </View>
       ),
     });
   }, [navigation, handleUpload, uploading]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debChange = React.useCallback(debounce(setTagSearch, 500), [
-    setTagSearch,
-  ]);
+  const debChange = React.useCallback(
+    debounce(async (name: string) => {
+      try {
+        const rests = await fetchRestaurants({
+          queryKey: [
+            "restSearch",
+            location,
+            {
+              name,
+            },
+          ],
+          meta: {},
+        });
 
-  const setShowingSearch = (text: string) => {
-    setShowingSearchBase(text);
+        setRestaurants(rests);
+      } catch (error) {
+        console.error("Error", error?.message || error);
+        Alert.alert("Error", "Failed to search for restaurants!");
+      }
+    }, 500),
+    []
+  );
+
+  const setRestaurantSearch = (text: string) => {
+    setSearchText(text);
     debChange(text);
   };
 
@@ -147,6 +188,21 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     ]);
   };
 
+  const setOrderedTags = React.useCallback(
+    debounce((selSet: Set<string>, search: string) => {
+      const lowerSearch = search.toLowerCase();
+
+      setOrderedTagsBase([
+        ...selSet,
+        ...hashtags.filter(
+          (i) =>
+            !selSet.has(i) && (search.length === 0 || i.includes(lowerSearch))
+        ),
+      ]);
+    }, 100),
+    []
+  );
+
   const toggleTag = React.useCallback(
     (item: string) =>
       setTags((prevState) => {
@@ -158,23 +214,113 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
           newTags.add(item);
         }
 
+        setOrderedTags(newTags, tagSearch);
         return [...newTags];
       }),
-    []
+    [tagSearch]
   );
 
-  const orderedTags = React.useMemo(() => {
-    const selSet = new Set(selTags);
-    const lowerSearch = tagSearch.toLowerCase();
-
-    return [
-      ...selTags,
-      ...hashtags.filter(
-        (i) =>
-          !selSet.has(i) && (tagSearch.length === 0 || i.includes(lowerSearch))
-      ),
-    ];
-  }, [selTags, tagSearch]);
+  if (isSearching) {
+    return (
+      <View style={styles.scroll}>
+        <KeyboardAvoidingView style={styles.container}>
+          <View style={[styles.section, styles.hRow]}>
+            <FontAwesome5
+              style={styles.inputIcon}
+              name="map-pin"
+              size={18}
+              color="#3C8D90"
+            />
+            <TextInput
+              autoFocus
+              style={styles.input}
+              value={searchText}
+              onChangeText={setRestaurantSearch}
+              placeholder="Check into a restaurant"
+              placeholderTextColor="#848484"
+            />
+          </View>
+          <FlatList
+            data={restaurants}
+            keyExtractor={(i) => i._id}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => {
+                  setRestaurant(item);
+                  setIsSearching(false);
+                }}
+              >
+                <View style={[styles.restListItem, styles.hRow]}>
+                  <View style={styles.center}>
+                    <View style={styles.bigCircle}>
+                      <FontAwesome5
+                        name="map-marker-alt"
+                        color="#727272"
+                        size={24}
+                      />
+                    </View>
+                    <Text style={styles.distText}>
+                      {distanceBetween(location, {
+                        latitude: item.coordinates.coordinates[0],
+                        longitude: item.coordinates.coordinates[1],
+                      }).toFixed(1)}{" "}
+                      mi
+                    </Text>
+                  </View>
+                  <View style={styles.restListText}>
+                    <Text
+                      style={styles.restListTitle}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {item.name}
+                    </Text>
+                    <Text
+                      style={styles.restListSubtitle}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {formatAddress(item.address)}
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
+            )}
+            ListEmptyComponent={() => (
+              <View style={[styles.restListItem, styles.hRow]}>
+                <View style={styles.center}>
+                  <View style={styles.bigCircle}>
+                    <FontAwesome5
+                      name="map-marker-alt"
+                      color="#727272"
+                      size={24}
+                    />
+                  </View>
+                  <Text style={styles.distText}>0 mi</Text>
+                </View>
+                <View style={styles.restListText}>
+                  <Text
+                    style={styles.restListTitle}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    No restaurants found
+                  </Text>
+                  <Text
+                    style={styles.restListSubtitle}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    Please search a different restaurant!
+                  </Text>
+                </View>
+              </View>
+            )}
+          />
+        </KeyboardAvoidingView>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAwareScrollView
@@ -233,22 +379,28 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
           />
           <TextInput
             style={styles.input}
-            onChangeText={setShowingSearch}
-            value={showingSearch}
+            onChangeText={(text) => {
+              setTagSearch(text);
+              setOrderedTags(new Set(selTags), text);
+            }}
+            value={tagSearch}
             placeholder="Search & Add hashtags"
             placeholderTextColor="#848484"
           />
-          {showingSearch.length > 0 && (
-            <FontAwesome
-              style={styles.inputIcon}
-              name="close"
-              size={18}
-              color="#3C8D90"
+          {tagSearch.length > 0 && (
+            <TouchableOpacity
               onPress={() => {
                 setTagSearch("");
-                setShowingSearchBase("");
+                setOrderedTags(new Set(selTags), "");
               }}
-            />
+            >
+              <FontAwesome
+                style={styles.inputIcon}
+                name="close"
+                size={16}
+                color="#727272"
+              />
+            </TouchableOpacity>
           )}
         </View>
         <FlatList
@@ -359,6 +511,46 @@ const styles = StyleSheet.create({
   },
   imageSpacer: {
     marginRight: 8,
+  },
+  bigCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    backgroundColor: "#D1D1D1",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  distText: {
+    textAlign: "center",
+    color: "#727272",
+    fontSize: 12,
+    marginTop: 4,
+  },
+  restListItem: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#DBDBDB",
+    alignItems: "center",
+  },
+  restListText: {
+    marginLeft: 8,
+    flex: 1,
+  },
+  restListTitle: {
+    color: "#5C5C5C",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  restListSubtitle: {
+    color: "#727272",
+    fontSize: 14,
+    marginTop: 4,
   },
 });
 

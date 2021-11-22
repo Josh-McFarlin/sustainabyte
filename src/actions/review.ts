@@ -57,15 +57,19 @@ export const createReview = async (
     "restaurant" | "stars" | "body" | "tags" | "photoUrls"
   >
 ): Promise<ReviewType> => {
-  const uploads = await requestUpload(review.photoUrls.map(getContentType));
+  let photoUrls = [];
 
-  const photoUrls = await Promise.all(
-    uploads.map(async (upload, index) => {
-      await uploadImage(review.photoUrls[index], upload.uploadUrl);
+  if (review.photoUrls.length > 0) {
+    const uploads = await requestUpload(review.photoUrls.map(getContentType));
 
-      return upload.fileUrl;
-    })
-  );
+    photoUrls = await Promise.all(
+      uploads.map(async (upload, index) => {
+        await uploadImage(review.photoUrls[index], upload.uploadUrl);
+
+        return upload.fileUrl;
+      })
+    );
+  }
 
   const { data: json } = await authRequest.post(
     `${urls.api}/review`,

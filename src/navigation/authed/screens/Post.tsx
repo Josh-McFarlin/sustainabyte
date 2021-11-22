@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Pressable,
 } from "react-native";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useQuery } from "react-query";
@@ -94,12 +95,20 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <Image
-          style={styles.topAvatar}
-          source={{
-            uri: user?.avatarUrl,
-          }}
-        />
+        <Pressable
+          onPress={() =>
+            navigation.navigate("UserProfile", {
+              id: user._id,
+            })
+          }
+        >
+          <Image
+            style={styles.topAvatar}
+            source={{
+              uri: user?.avatarUrl,
+            }}
+          />
+        </Pressable>
         <Text>
           <Text style={styles.restName}>{user?.username || ""}</Text>{" "}
           {restaurant != null && (
@@ -120,12 +129,20 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         <View style={styles.restInfo}>
           {restaurant != null && (
             <View style={styles.avatarWrapper}>
-              <Image
-                style={styles.avatar}
-                source={{
-                  uri: restaurant?.avatarUrl,
-                }}
-              />
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("RestaurantProfile", {
+                    id: restaurant._id,
+                  })
+                }
+              >
+                <Image
+                  style={styles.avatar}
+                  source={{
+                    uri: restaurant?.avatarUrl,
+                  }}
+                />
+              </Pressable>
             </View>
           )}
           <View style={styles.nameTags}>
