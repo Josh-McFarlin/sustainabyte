@@ -3,11 +3,16 @@ import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 if (Platform.OS === "web") {
-  console.error(
+  /*
+  Previous commits said this should never be used in production
+  It is ok to use in production since it is only being used for storing
+  JWTs and localstorage is an acceptable place to store JWTs
+  (especially since the JWT does not contain any PII)
+   */
+  console.info(
     "WARNING:\n" +
       "SecureStore has been imported within a web context.\n" +
-      "This is not a secure operation, and should be used for local testing only!\n" +
-      "This should not be released within a production environment."
+      "Please pay attention to the context it is used within!"
   );
 }
 
