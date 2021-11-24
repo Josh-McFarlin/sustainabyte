@@ -162,7 +162,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
         horizontal: true,
       },
       {
-        title: "All Sustainabytes",
+        title: "All Bytes",
         key: "4",
         data: restaurants,
         type: SectionType.GALLERY_RESTAURANT,
