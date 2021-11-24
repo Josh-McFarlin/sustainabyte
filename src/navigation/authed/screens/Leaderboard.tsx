@@ -26,6 +26,7 @@ import { fetchChallenges } from "../../../actions/challenge";
 import type { UserType } from "../../../types/User";
 import type { ChallengeType } from "../../../types/Challenge";
 import { StackNavParamList } from "../types";
+import { useRefetchOnFocus } from "../../../utils/screen";
 
 dayjs.extend(relativeTime);
 
@@ -74,6 +75,8 @@ const LeaderboardScreen: React.FC<PropTypes> = ({ navigation }) => {
   } = useQuery<ChallengeType[], Error>(["challenges"], fetchChallenges, {
     initialData: [],
   });
+  useRefetchOnFocus(refetchUsers);
+  useRefetchOnFocus(refetchChallenges);
 
   const tabs = React.useMemo(
     () => ({

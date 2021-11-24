@@ -36,6 +36,7 @@ import { useAuth } from "../../../utils/auth";
 import OffersModal from "../../../components/OffersModal";
 import { hashtagsToIcons } from "../../../utils/hashtags";
 import { StackNavParamList } from "../types";
+import { useRefetchOnFocus } from "../../../utils/screen";
 
 enum SectionType {
   LIST_RESTAURANT,
@@ -72,7 +73,7 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
   const [filtering, setFiltering] = React.useState<string | null>(null);
   const [showSection, setShowSection] = React.useState<number | null>(null);
 
-  const { data: offers } = useQuery<OfferType[], Error>(
+  const { data: offers, refetch: refetchOffers } = useQuery<OfferType[], Error>(
     ["offers", coordinates],
     fetchOffers,
     {
@@ -80,7 +81,10 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
       initialData: [],
     }
   );
-  const { data: restaurants } = useQuery<RestaurantType[], Error>(
+  const { data: restaurants, refetch: refetchRestaurants } = useQuery<
+    RestaurantType[],
+    Error
+  >(
     [
       "restaurants",
       coordinates,
@@ -96,13 +100,16 @@ const HomeScreen: React.FC<PropTypes> = ({ navigation }) => {
       initialData: [],
     }
   );
-  const { data: socialGroups } = useQuery<SocialGroupType[], Error>(
-    ["socialGroups"],
-    fetchSocialGroups,
-    {
-      initialData: [],
-    }
-  );
+  const { data: socialGroups, refetch: refetchSocialGroups } = useQuery<
+    SocialGroupType[],
+    Error
+  >(["socialGroups"], fetchSocialGroups, {
+    initialData: [],
+  });
+
+  useRefetchOnFocus(refetchRestaurants);
+  useRefetchOnFocus(refetchOffers);
+  useRefetchOnFocus(refetchSocialGroups);
 
   const goForwardOffer = React.useCallback(
     () => setSelOffer((prevState) => prevState + 1),

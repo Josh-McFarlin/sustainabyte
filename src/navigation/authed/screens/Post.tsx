@@ -22,7 +22,6 @@ import usersStore from "../../../utils/userData";
 import restaurantsStore from "../../../utils/restaurantData";
 import Hashtag from "../../../components/Hashtag/Hashtag";
 import { useAuth } from "../../../utils/auth";
-import { toggleFollow } from "../../../actions/follow";
 import { toggleLike } from "../../../actions/like";
 import { toggleSave } from "../../../actions/save";
 
@@ -57,13 +56,6 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
     }
   }, [restaurant, navigation]);
 
-  const handleFollow = React.useCallback(async () => {
-    await toggleFollow(
-      user == null ? "Restaurant" : "User",
-      user == null ? restaurant._id : user._id
-    );
-  }, [user, restaurant]);
-
   const likeImage = React.useCallback(async () => {
     const newData = await toggleLike("Post", post._id);
 
@@ -86,10 +78,6 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }
 
   const { tags, photoUrls, body, createdAt } = post;
-  const follows =
-    isOwnProfile ||
-    usersStore?.following?.has(user?._id || restaurant?._id) ||
-    false;
   const saved = isOwnProfile || usersStore.saved?.has(post._id) || false;
 
   return (
@@ -118,11 +106,6 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
             </>
           )}
         </Text>
-        <TouchableOpacity style={styles.flex} onPress={handleFollow}>
-          <Text style={styles.topFollowText}>
-            {follows ? "Follow" : "Following"}
-          </Text>
-        </TouchableOpacity>
       </View>
       {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
       <View style={styles.bottomBar}>

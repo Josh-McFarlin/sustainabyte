@@ -14,6 +14,7 @@ import {
   Pressable,
   useWindowDimensions,
 } from "react-native";
+import { CommonActions } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
@@ -76,10 +77,25 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         photoUrls: [picture],
         tags: selTags,
       });
-      navigation.navigate("Post", {
-        id: newPost._id,
-        post: newPost,
-      });
+
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 1,
+          routes: [
+            {
+              name: "Tabs",
+              screen: "Discover",
+            } as any,
+            {
+              name: "Post",
+              params: {
+                id: newPost._id,
+                post: newPost,
+              },
+            },
+          ],
+        })
+      );
     } catch (error) {
       console.log("Error", error?.message || error);
       Alert.alert("Error", error?.message || error);

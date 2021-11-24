@@ -20,7 +20,6 @@ import { ReviewType } from "../../types/Review";
 import StarRating from "../StarRating";
 import Hashtag from "../Hashtag/Hashtag";
 import { AuthNavigationProp } from "../../navigation/authed/types";
-import { toggleFollow } from "../../actions/follow";
 import { useAuth } from "../../utils/auth";
 import { toggleSave } from "../../actions/save";
 import { toggleLike } from "../../actions/like";
@@ -29,7 +28,6 @@ type PropTypes = {
   data: ReviewType;
   user: BasicUserType;
   restaurant: BasicRestaurantType;
-  follows: boolean;
   saved: boolean;
 };
 
@@ -39,7 +37,6 @@ const DiscoverReview: React.FC<PropTypes> = ({
   data,
   user,
   restaurant,
-  follows,
   saved,
 }) => {
   const { tags, photoUrls, body, createdAt } = data;
@@ -49,13 +46,6 @@ const DiscoverReview: React.FC<PropTypes> = ({
   const [liked, setLiked] = React.useState<boolean>(
     data?.likedBy?.includes(authedUser._id) || false
   );
-
-  const handleFollow = React.useCallback(async () => {
-    await toggleFollow(
-      user == null ? "Restaurant" : "User",
-      user == null ? restaurant._id : user._id
-    );
-  }, [user, restaurant]);
 
   const likeImage = React.useCallback(async () => {
     const newData = await toggleLike("Review", data._id);
@@ -98,15 +88,6 @@ const DiscoverReview: React.FC<PropTypes> = ({
           <Text style={styles.otherText}>checked into</Text>{" "}
           <Text style={styles.restName}>{restaurant?.name || ""}</Text>
         </Text>
-        {isOwnProfile ? (
-          <Text style={[styles.flex, styles.topFollowText]}>Following</Text>
-        ) : (
-          <TouchableOpacity style={styles.flex} onPress={handleFollow}>
-            <Text style={styles.topFollowText}>
-              {follows ? "Following" : "Follow"}
-            </Text>
-          </TouchableOpacity>
-        )}
       </View>
       {photoUrls.length > 0 && <PhotoGallery photos={photoUrls} />}
       <View style={styles.curvedBar} />

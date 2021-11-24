@@ -85,7 +85,7 @@ const usersStore = store({
     usersStore.recentUsers = usersStore.recentUsers.filter(
       (user) => user !== userId
     );
-    usersStore.recentUsers.splice(10);
+    usersStore.recentUsers = usersStore.recentUsers.slice(0, 10);
     AsyncStorage.setItem(recentKey, JSON.stringify(usersStore.recentUsers));
   },
 });

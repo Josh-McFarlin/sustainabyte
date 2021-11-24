@@ -80,7 +80,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       "userSaves",
       {
         id: user?._id,
-        format: "simple",
+        format: "detailed",
         filter: "Post",
       },
     ],
@@ -112,6 +112,8 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   const handleFollow = React.useCallback(async () => {
     await toggleFollow("User", user._id);
   }, [user]);
+
+  console.log("Saves", saves);
 
   const tabs = React.useMemo(
     () => ({
@@ -151,7 +153,7 @@ const ProfileScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       [TabTypes.SAVED]: {
         type: TabTypes.SAVED,
         icon: ({ ...props }) => <Ionicons name="bookmark" {...props} />,
-        data: posts,
+        data: saves as PostType[],
         listProps: PostGallery.listProps,
         renderItem: (i) => <PostGallery.RenderItem {...i} />,
         refetch: refetchPosts,

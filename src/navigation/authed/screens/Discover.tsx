@@ -33,6 +33,8 @@ import { StackNavParamList } from "../types";
 import { BasicUserType, UserType } from "../../../types/User";
 import { fetchUsers } from "../../../actions/user";
 import usersStore from "../../../utils/userData";
+import { useRefetchOnFocus } from "../../../utils/screen";
+import UserList from "../../../components/UserList";
 
 const Marker = MarkerBase || (MapView as any).Marker;
 
@@ -74,7 +76,10 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
     latitudeDelta: 0.04,
     longitudeDelta: 0.05,
   });
-  const { data: restaurants } = useQuery<RestaurantType[], Error>(
+  const { data: restaurants, refetch: refetchRestaurants } = useQuery<
+    RestaurantType[],
+    Error
+  >(
     [
       "restaurants",
       searchRegion,
@@ -95,13 +100,12 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
       onSuccess: () => setWasMoved(false),
     }
   );
-  const { data: recent } = useQuery<RecentType[], Error>(
-    ["recent", searchRegion],
-    fetchRecent,
-    {
-      initialData: [],
-    }
-  );
+  const { data: recent, refetch: refetchRecent } = useQuery<
+    RecentType[],
+    Error
+  >(["recent", searchRegion], fetchRecent, {
+    initialData: [],
+  });
   const { data: users } = useQuery<UserType[], Error>(
     [
       "users",
@@ -117,6 +121,9 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
   const recentUsers = usersStore.recentUsers.map((userId) =>
     usersStore.get(userId)
   );
+
+  useRefetchOnFocus(refetchRestaurants);
+  useRefetchOnFocus(refetchRecent);
 
   const handleMarkerPress = React.useCallback(
     (restaurant) => {
@@ -149,16 +156,17 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
     }));
   }, [mapRef]);
 
-  const renderUserRecent = React.useCallback(
-    curContent === ContentTypes.MAP
-      ? ({ item }) => <DiscoverItem item={item as RecentType} />
-      : ({ item }) => <DiscoverItem user={item as UserType} />,
-    [curContent]
-  );
-
   const showingUsers = React.useMemo(
     () =>
       filteringText != null && filteringText.length > 0 ? users : recentUsers,
+    [filteringText, users, recentUsers]
+  );
+
+  const renderUsers = React.useMemo(
+    () =>
+      filteringText != null && filteringText.length > 0
+        ? (i) => <UserList.RenderItem {...i} />
+        : (i) => <UserList.RenderRecentItem {...i} />,
     [filteringText, users, recentUsers]
   );
 
@@ -222,7 +230,11 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
           style={styles.list}
           data={curContent === ContentTypes.USER ? showingUsers : recent}
           keyExtractor={(i) => i._id}
-          renderItem={renderUserRecent}
+          renderItem={
+            curContent === ContentTypes.MAP
+              ? ({ item }) => <DiscoverItem item={item as RecentType} />
+              : renderUsers
+          }
           ItemSeparatorComponent={() => <View style={styles.spacer} />}
         />
       ) : (
