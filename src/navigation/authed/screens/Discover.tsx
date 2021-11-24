@@ -30,12 +30,20 @@ import RestaurantSheet from "../../../components/RestaurantSheet";
 import { mapStyle } from "../../../utils/map";
 import { RecentType } from "../../../types/Recent";
 import { StackNavParamList } from "../types";
+import { BasicUserType, UserType } from "../../../types/User";
+import { fetchUsers } from "../../../actions/user";
+import usersStore from "../../../utils/userData";
 
 const Marker = MarkerBase || (MapView as any).Marker;
 
 enum TabTypes {
   RECENT,
   SEARCH,
+}
+
+enum ContentTypes {
+  MAP,
+  USER,
 }
 
 type PropTypes = CompositeScreenProps<
@@ -47,6 +55,9 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
   const coordinates = useLocation();
   const sheetRef = React.useRef<BottomSheetModal>(null);
   const mapRef = React.useRef<MapView>(null);
+  const [curContent, setCurContent] = React.useState<ContentTypes>(
+    ContentTypes.MAP
+  );
   const [curTab, setCurTab] = React.useState<TabTypes>(TabTypes.RECENT);
   const [wasMoved, setWasMoved] = React.useState<boolean>(false);
   const [selectedRest, setRestaurant] = React.useState<RestaurantType | null>(
@@ -90,6 +101,21 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
       initialData: [],
     }
   );
+  const { data: users } = useQuery<UserType[], Error>(
+    [
+      "users",
+      {
+        username: filteringText,
+      },
+    ],
+    fetchUsers,
+    {
+      initialData: [],
+    }
+  );
+  const recentUsers = usersStore.recentUsers.map((userId) =>
+    usersStore.get(userId)
+  );
 
   const handleMarkerPress = React.useCallback(
     (restaurant) => {
@@ -122,15 +148,80 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
     }));
   }, [mapRef]);
 
+  const renderUserRecent = React.useCallback(
+    curContent === ContentTypes.MAP
+      ? ({ item }) => <DiscoverItem item={item as RecentType} />
+      : ({ item }) => <DiscoverItem user={item as UserType} />,
+    [curContent]
+  );
+
+  const showingUsers = React.useMemo(
+    () =>
+      filteringText != null && filteringText.length > 0 ? users : recentUsers,
+    [filteringText, users, recentUsers]
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <SearchBar onChange={handleSearch} />
-      {curTab === TabTypes.RECENT ? (
-        <FlatList
+      <View style={[styles.hRow, styles.spaceAround, styles.marginVertical]}>
+        <TouchableOpacity
+          style={styles.typeButton}
+          onPress={() => setCurContent(ContentTypes.MAP)}
+        >
+          <View
+            style={
+              curContent === ContentTypes.MAP
+                ? styles.selectedSpan
+                : styles.spanContainer
+            }
+          >
+            <Text
+              style={
+                curContent === ContentTypes.MAP
+                  ? styles.selectedText
+                  : styles.spanText
+              }
+            >
+              Search Map
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.typeButton}
+          onPress={() => setCurContent(ContentTypes.USER)}
+        >
+          <View
+            style={
+              curContent === ContentTypes.USER
+                ? styles.selectedSpan
+                : styles.spanContainer
+            }
+          >
+            <Text
+              style={
+                curContent === ContentTypes.USER
+                  ? styles.selectedText
+                  : styles.spanText
+              }
+            >
+              Search Users
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <SearchBar
+        onChange={handleSearch}
+        placeholder={
+          curContent === ContentTypes.MAP ? `Search "Curry"` : `Search User`
+        }
+        showTags={curContent === ContentTypes.MAP}
+      />
+      {curContent === ContentTypes.USER || curTab === TabTypes.RECENT ? (
+        <FlatList<UserType | RecentType | BasicUserType>
           style={styles.list}
-          data={recent}
+          data={curContent === ContentTypes.USER ? showingUsers : recent}
           keyExtractor={(i) => i._id}
-          renderItem={({ item }) => <DiscoverItem item={item} />}
+          renderItem={renderUserRecent}
           ItemSeparatorComponent={() => <View style={styles.spacer} />}
         />
       ) : (
@@ -182,7 +273,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   spacer: {
-    height: 8,
+    height: 3,
     backgroundColor: "#D8D8D8",
   },
   list: {
@@ -217,6 +308,65 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     color: "#000",
+  },
+  hRow: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  spaceBetween: {
+    justifyContent: "space-between",
+  },
+  spaceAround: {
+    justifyContent: "space-around",
+  },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  alignEnd: {
+    alignItems: "flex-end",
+  },
+  selectedSpan: {
+    borderBottomWidth: 3,
+    borderBottomColor: "#3C8D90",
+    alignItems: "center",
+    paddingBottom: 8,
+  },
+  spanContainer: {
+    borderBottomWidth: 3,
+    borderBottomColor: "#A0A0A0",
+    alignItems: "center",
+    paddingBottom: 8,
+  },
+  selectedText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#3C8D90",
+    textAlign: "center",
+  },
+  spanText: {
+    fontSize: 16,
+    color: "#A0A0A0",
+    textAlign: "center",
+  },
+  title: {
+    fontSize: 32,
+    color: "#fff",
+    textAlign: "center",
+    marginVertical: 16,
+  },
+  marginVertical: {
+    marginVertical: 12,
+  },
+  typeButton: {
+    flex: 1,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    margin: 8,
+    backgroundColor: "#ccc",
   },
 });
 

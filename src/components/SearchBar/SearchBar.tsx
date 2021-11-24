@@ -7,9 +7,15 @@ import Hashtag from "../Hashtag/Hashtag";
 
 type PropTypes = {
   onChange: (search: string, tags: string[]) => void;
+  placeholder?: string;
+  showTags?: boolean;
 };
 
-const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
+const SearchBar: React.FC<PropTypes> = ({
+  placeholder,
+  onChange,
+  showTags = false,
+}) => {
   const [search, setSearch] = React.useState<string>("");
   const [selTags, setTags] = React.useState<string[]>([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,7 +55,7 @@ const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
           style={styles.input}
           value={search}
           onChangeText={setSearch}
-          placeholder={`Search "Curry"`}
+          placeholder={placeholder}
           placeholderTextColor="#8E8E8E"
         />
         {search.length > 0 && (
@@ -62,22 +68,24 @@ const SearchBar: React.FC<PropTypes> = ({ onChange }) => {
           />
         )}
       </View>
-      <FlatList
-        style={styles.overflow}
-        contentContainerStyle={styles.overflow}
-        horizontal
-        data={orderedTags}
-        keyExtractor={(i) => i}
-        renderItem={({ item }) => (
-          <Pressable style={styles.overflow} onPress={() => toggleTag(item)}>
-            <Hashtag
-              style={styles.touchable}
-              hashtag={item}
-              selected={selTags.includes(item)}
-            />
-          </Pressable>
-        )}
-      />
+      {showTags && (
+        <FlatList
+          style={styles.overflow}
+          contentContainerStyle={styles.overflow}
+          horizontal
+          data={orderedTags}
+          keyExtractor={(i) => i}
+          renderItem={({ item }) => (
+            <Pressable style={styles.overflow} onPress={() => toggleTag(item)}>
+              <Hashtag
+                style={styles.touchable}
+                hashtag={item}
+                selected={selTags.includes(item)}
+              />
+            </Pressable>
+          )}
+        />
+      )}
     </View>
   );
 };

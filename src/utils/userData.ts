@@ -1,9 +1,10 @@
-import { store, autoEffect } from "@risingstack/react-easy-state";
+import { autoEffect, store } from "@risingstack/react-easy-state";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BasicUserType, UserType } from "../types/User";
 import { fetchUser } from "../actions/user";
 
 const usersKey = "USERS";
+const recentKey = "RECENT-USERS";
 const userKey = (userId: UserType["_id"]) => `${usersKey}-${userId}`;
 
 const usersStore = store({
@@ -13,6 +14,7 @@ const usersStore = store({
   followers: new Set<string>(),
   following: new Set<string>(),
   saved: new Set<string>(),
+  recentUsers: new Array<UserType["_id"]>(),
   get(userId: UserType["_id"]): BasicUserType | null {
     if (
       !usersStore.retrieving.has(userId) &&
@@ -74,32 +76,53 @@ const usersStore = store({
       createdAt: new Date(),
     };
   },
+  addRecent: (userId: UserType["_id"]) => {
+    usersStore.recentUsers.unshift(userId);
+    usersStore.recentUsers.splice(10);
+    AsyncStorage.setItem(recentKey, JSON.stringify(usersStore.recentUsers));
+  },
+  removeRecent: (userId: UserType["_id"]) => {
+    usersStore.recentUsers = usersStore.recentUsers.filter(
+      (user) => user !== userId
+    );
+    usersStore.recentUsers.splice(10);
+    AsyncStorage.setItem(recentKey, JSON.stringify(usersStore.recentUsers));
+  },
 });
 
 autoEffect(async () => {
-  const stored = await AsyncStorage.getItem(usersKey);
+  try {
+    const stored = await AsyncStorage.getItem(usersKey);
 
-  if (stored != null) {
-    const userIds: BasicUserType["_id"][] = JSON.parse(stored);
-    const newUsers = new Map();
+    if (stored != null) {
+      const userIds: BasicUserType["_id"][] = JSON.parse(stored);
+      const newUsers = new Map();
 
-    await Promise.all(
-      userIds.map(async (userId) => {
-        try {
-          const userStr = await AsyncStorage.getItem(userKey(userId));
+      await Promise.all(
+        userIds.map(async (userId) => {
+          try {
+            const userStr = await AsyncStorage.getItem(userKey(userId));
 
-          if (userStr != null) {
-            const user: BasicUserType = JSON.parse(userStr);
+            if (userStr != null) {
+              const user: BasicUserType = JSON.parse(userStr);
 
-            newUsers.set(user._id, user);
+              newUsers.set(user._id, user);
+            }
+          } catch (error) {
+            console.error(`Failed loading user: ${userId}`);
           }
-        } catch (error) {
-          console.error(`Failed loading user: ${userId}`);
-        }
-      })
-    );
+        })
+      );
 
-    usersStore.users = newUsers;
+      usersStore.users = newUsers;
+
+      const storedRecent = await AsyncStorage.getItem(recentKey);
+      if (storedRecent != null) {
+        usersStore.recentUsers = JSON.parse(storedRecent);
+      }
+    }
+  } catch (error) {
+    console.log("Failed to setup usersStore!", error?.message || error);
   }
 });
 
