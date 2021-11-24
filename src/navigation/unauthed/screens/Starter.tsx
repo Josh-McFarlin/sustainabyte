@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { UnauthedNavParamList } from "../types";
@@ -14,6 +14,7 @@ import { useAuth } from "../../../utils/auth";
 type PropTypes = NativeStackScreenProps<UnauthedNavParamList, "Starter">;
 
 const StarterScreen: React.FC<PropTypes> = () => {
+  const window = useWindowDimensions();
   const { login } = useAuth();
 
   return (
@@ -25,7 +26,14 @@ const StarterScreen: React.FC<PropTypes> = () => {
       />
       <Text style={styles.subtitle}>Eat, Engage & Enjoy</Text>
       <TouchableOpacity onPress={login}>
-        <View style={styles.button}>
+        <View
+          style={[
+            styles.button,
+            {
+              width: window.width * 0.8,
+            },
+          ]}
+        >
           <Text style={styles.buttonText}>Sign In</Text>
         </View>
       </TouchableOpacity>
@@ -61,7 +69,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 48,
     backgroundColor: "#3EAC7E",
-    width: Dimensions.get("screen").width * 0.8,
+    width: 280,
   },
   buttonText: {
     color: "#fff",

@@ -5,7 +5,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import type { OfferType } from "../../types/Offer";
 
@@ -27,34 +27,40 @@ const bgColors = [
   "#F2C57C",
 ];
 
-const GalleryOffer: React.FC<PropTypes> = ({ offer, onPress }) => (
-  <View
-    style={[
-      styles.container,
-      {
-        backgroundColor: bgColors[Math.floor(Math.random() * bgColors.length)],
-      },
-    ]}
-  >
-    <View style={styles.restInfo}>
-      <Text style={styles.title}>{offer.title}</Text>
-      <Text>{offer.body}</Text>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.buttonText}>{offer.prompt || "Order Now"}</Text>
-      </TouchableOpacity>
+const GalleryOffer: React.FC<PropTypes> = ({ offer, onPress }) => {
+  const window = useWindowDimensions();
+
+  return (
+    <View
+      style={[
+        styles.container,
+        {
+          width: Math.min(360, window.width * 0.8),
+          backgroundColor:
+            bgColors[Math.floor(Math.random() * bgColors.length)],
+        },
+      ]}
+    >
+      <View style={styles.restInfo}>
+        <Text style={styles.title}>{offer.title}</Text>
+        <Text>{offer.body}</Text>
+        <TouchableOpacity style={styles.button} onPress={onPress}>
+          <Text style={styles.buttonText}>{offer.prompt || "Order Now"}</Text>
+        </TouchableOpacity>
+      </View>
+      <Image
+        style={styles.image}
+        source={{
+          uri: offer.photoUrl,
+        }}
+      />
     </View>
-    <Image
-      style={styles.image}
-      source={{
-        uri: offer.photoUrl,
-      }}
-    />
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    width: Math.min(360, Dimensions.get("window").width * 0.8),
+    width: 360,
     height: 150,
     display: "flex",
     flexDirection: "row",

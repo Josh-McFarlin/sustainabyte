@@ -6,7 +6,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useQuery } from "react-query";
@@ -52,6 +52,7 @@ type PropTypes = CompositeScreenProps<
 >;
 
 const DiscoverScreen: React.FC<PropTypes> = () => {
+  const window = useWindowDimensions();
   const coordinates = useLocation();
   const sheetRef = React.useRef<BottomSheetModal>(null);
   const mapRef = React.useRef<MapView>(null);
@@ -254,7 +255,14 @@ const DiscoverScreen: React.FC<PropTypes> = () => {
         </MapView>
       )}
       {curTab === TabTypes.SEARCH && wasMoved && (
-        <View style={styles.buttonContainer}>
+        <View
+          style={[
+            styles.buttonContainer,
+            {
+              width: window.width,
+            },
+          ]}
+        >
           <TouchableOpacity onPress={handleSearchArea}>
             <View style={styles.button}>
               <Text style={styles.buttonText}>Search This Area</Text>
@@ -284,7 +292,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   buttonContainer: {
-    width: Dimensions.get("window").width,
+    width: "100%",
     position: "absolute",
     left: 0,
     top: 200,

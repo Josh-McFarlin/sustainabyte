@@ -1,0 +1,24 @@
+diff --git a/node_modules/react-native-web/dist/exports/Dimensions/index.js b/node_modules/react-native-web/dist/exports/Dimensions/index.js
+index 281f573..3b34387 100644
+--- a/node_modules/react-native-web/dist/exports/Dimensions/index.js
++++ b/node_modules/react-native-web/dist/exports/Dimensions/index.js
+@@ -56,11 +56,17 @@ var Dimensions = /*#__PURE__*/function () {
+ 
+     var win = window;
+     var docEl = win.document.documentElement;
++    var rootEl = win.document?.getElementById("root");
++    var rootElSizes = {
++      width: rootEl != null ? rootEl.clientWidth || docEl.clientWidth : docEl.clientWidth,
++      height: rootEl != null ? rootEl.clientHeight || docEl.clientHeight : docEl.clientHeight
++    };
++
+     dimensions.window = {
+       fontScale: 1,
+-      height: docEl.clientHeight,
++      height: rootElSizes.height,
+       scale: win.devicePixelRatio || 1,
+-      width: docEl.clientWidth
++      width: rootElSizes.width
+     };
+     dimensions.screen = {
+       fontScale: 1,

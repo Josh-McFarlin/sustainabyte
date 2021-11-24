@@ -2,11 +2,16 @@
   "expo": {
     "name": "Byte",
     "owner": "jmcfarlin6gt",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "slug": "byte",
     "scheme": "sustainabyte",
+    "description": "A React Native app for encouraging sustainable eating. Try it out through the Expo app or at https://byte.mcfarl.in",
+    "githubUrl": "https://github.com/josh-mcfarlin/sustainabyte",
+    "platforms": ["ios", "android", "web"],
+    "orientation": "portrait",
     "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",
+    "assetBundlePatterns": ["assets/icons/*"],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -14,19 +19,25 @@
     },
     "ios": {
       "bundleIdentifier": "in.mcfarl.sustainabyte",
-      "buildNumber": "1.3.0",
+      "buildNumber": "1.4.0",
       "config": {
         "googleMapsApiKey": "AIzaSyD9cTO2D_qm49eF_Jk7am_B5cu7imfkSuc"
       }
     },
     "android": {
       "package": "in.mcfarl.sustainabyte",
-      "versionCode": 3,
+      "versionCode": 4,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAOruHlUpgRqfyqumGt_BcPTCSzpWtRjkM"
         }
       }
+    },
+    "web": {
+      "lang": "en",
+      "dir": "ltr",
+      "display": "standalone",
+      "orientation": "portrait"
     },
     "plugins": [
       [

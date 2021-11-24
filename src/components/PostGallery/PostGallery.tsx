@@ -2,10 +2,10 @@ import * as React from "react";
 import {
   StyleSheet,
   Image,
-  Dimensions,
   View,
   ListRenderItem,
   TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { PostType } from "../../types/Post";
@@ -14,6 +14,7 @@ import { AuthNavigationProp } from "../../navigation/authed/types";
 const numColumns = 3;
 
 export const RenderItem: ListRenderItem<PostType> = ({ item }) => {
+  const window = useWindowDimensions();
   const navigation = useNavigation<AuthNavigationProp>();
 
   return (
@@ -25,7 +26,15 @@ export const RenderItem: ListRenderItem<PostType> = ({ item }) => {
         })
       }
     >
-      <View style={styles.post}>
+      <View
+        style={[
+          styles.post,
+          {
+            width: window.width / numColumns,
+            height: window.width / numColumns,
+          },
+        ]}
+      >
         <Image
           style={styles.image}
           source={{
@@ -37,19 +46,13 @@ export const RenderItem: ListRenderItem<PostType> = ({ item }) => {
   );
 };
 
-const screenWidth = Dimensions.get("window").width;
-const padding = 4;
-const tileSize = screenWidth / numColumns;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
   },
   post: {
-    width: tileSize,
-    height: tileSize,
-    padding,
+    padding: 4,
   },
   image: {
     flex: 1,

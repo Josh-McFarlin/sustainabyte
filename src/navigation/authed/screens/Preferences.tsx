@@ -5,8 +5,8 @@ import {
   View,
   Text,
   Image,
-  Dimensions,
   Pressable,
+  useWindowDimensions,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
@@ -48,6 +48,7 @@ const restAttributes = [
 ];
 
 const PreferencesScreen: React.FC<PropTypes> = () => {
+  const window = useWindowDimensions();
   const [budget, setBudget] = React.useState<number>(20);
   const [selFoods, setFoods] = React.useState<string[]>(
     randomSizeSubset(foodDrink, 3)
@@ -130,7 +131,15 @@ const PreferencesScreen: React.FC<PropTypes> = () => {
           <View style={styles.wrapContent}>
             {foodDrink.map((item, i) => (
               <Pressable key={item} onPress={() => toggleFood(item)}>
-                <View style={[styles.imageItem, styles.touchable]}>
+                <View
+                  style={[
+                    styles.imageItem,
+                    styles.touchable,
+                    {
+                      width: window.width / 4 - 16,
+                    },
+                  ]}
+                >
                   <View style={styles.imageContainer}>
                     <Image
                       style={styles.image}
@@ -257,7 +266,6 @@ const styles = StyleSheet.create({
   imageItem: {
     justifyContent: "center",
     alignItems: "center",
-    width: Dimensions.get("screen").width / 4 - 16,
   },
   imageContainer: {
     position: "relative",

@@ -1,47 +1,67 @@
 import * as React from "react";
-import { ScrollView, View, Image, StyleSheet, Dimensions } from "react-native";
+import {
+  ScrollView,
+  View,
+  Image,
+  StyleSheet,
+  useWindowDimensions,
+} from "react-native";
 
 type PropTypes = {
   photos: string[];
 };
 
-const PhotoGallery: React.FC<PropTypes> = ({ photos }) => (
-  <View style={styles.container}>
-    <ScrollView
-      style={styles.scroll}
-      horizontal
-      pagingEnabled
-      bounces={false}
-      overScrollMode="never"
+const PhotoGallery: React.FC<PropTypes> = ({ photos }) => {
+  const window = useWindowDimensions();
+
+  return (
+    <View
+      style={[
+        styles.container,
+        {
+          width: window.width,
+          height: window.width,
+        },
+      ]}
     >
-      {photos.map((photo) => (
-        <Image
-          key={photo}
-          style={styles.image}
-          source={{
-            uri: photo,
-          }}
-        />
-      ))}
-    </ScrollView>
-  </View>
-);
+      <ScrollView
+        style={styles.scroll}
+        horizontal
+        pagingEnabled
+        bounces={false}
+        overScrollMode="never"
+      >
+        {photos.map((photo) => (
+          <Image
+            key={photo}
+            style={[
+              styles.image,
+              {
+                width: window.width,
+                height: window.width,
+              },
+            ]}
+            source={{
+              uri: photo,
+            }}
+          />
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").width,
   },
   scroll: {
     flex: 1,
   },
   image: {
     flex: 1,
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").width,
     resizeMode: "cover",
     backgroundColor: "#ccc",
   },

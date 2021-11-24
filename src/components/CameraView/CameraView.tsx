@@ -4,7 +4,7 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { manipulateAsync, ImageResult } from "expo-image-manipulator";
@@ -16,6 +16,7 @@ type PropTypes = {
 };
 
 const CameraView: React.FC<PropTypes> = ({ onCapture, onCancel }) => {
+  const { width, height } = useWindowDimensions();
   const cameraRef = React.useRef<Camera>(null);
   const [hasPermission, setHasPermission] = React.useState(null);
   const [type, setType] = React.useState(Camera.Constants.Type.back);
@@ -75,10 +76,35 @@ const CameraView: React.FC<PropTypes> = ({ onCapture, onCancel }) => {
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} ref={cameraRef} type={type} autoFocus>
-        <View style={styles.fills}>
+      <Camera
+        style={[
+          styles.camera,
+          {
+            width,
+          },
+        ]}
+        ref={cameraRef}
+        type={type}
+        autoFocus
+      >
+        <View
+          style={[
+            styles.fills,
+            {
+              width,
+              height,
+            },
+          ]}
+        >
           <View style={styles.otherFills} />
-          <View style={styles.square} />
+          <View
+            style={[
+              {
+                width: Math.min(width, height),
+                height: Math.min(width, height),
+              },
+            ]}
+          />
           <View style={styles.otherFills} />
         </View>
         <View style={styles.buttonContainer}>
@@ -109,24 +135,11 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-    width: Dimensions.get("screen").width,
     position: "relative",
     marginTop: -75,
   },
   fills: {
     position: "absolute",
-    width: Dimensions.get("screen").width,
-    height: Dimensions.get("screen").height,
-  },
-  square: {
-    width: Math.min(
-      Dimensions.get("screen").width,
-      Dimensions.get("screen").height
-    ),
-    height: Math.min(
-      Dimensions.get("screen").width,
-      Dimensions.get("screen").height
-    ),
   },
   otherFills: {
     flex: 1,

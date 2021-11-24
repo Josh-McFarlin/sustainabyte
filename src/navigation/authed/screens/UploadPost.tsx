@@ -8,11 +8,11 @@ import {
   Alert,
   Platform,
   TextInput,
-  Dimensions,
   FlatList,
   KeyboardAvoidingView,
   ActivityIndicator,
   Pressable,
+  useWindowDimensions,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -42,6 +42,7 @@ const useSelect = Platform.select({ web: true, default: false });
 type PropTypes = NativeStackScreenProps<StackNavParamList, "UploadPost">;
 
 const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
+  const window = useWindowDimensions();
   const location = useLocation();
   const [restaurant, setRestaurant] = React.useState<RestaurantType>(
     route?.params?.restaurant as RestaurantType
@@ -349,13 +350,27 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         <View style={styles.section}>
           {picture ? (
             <Image
-              style={styles.image}
+              style={[
+                styles.image,
+                {
+                  width: window.width - 32,
+                  height: window.width - 32,
+                },
+              ]}
               source={{
                 uri: picture,
               }}
             />
           ) : (
-            <View style={styles.image}>
+            <View
+              style={[
+                styles.image,
+                {
+                  width: window.width - 32,
+                  height: window.width - 32,
+                },
+              ]}
+            >
               <MaterialIcons name="add-a-photo" size={48} color="#3C8D90" />
               <Text>Take a picture</Text>
             </View>
@@ -450,8 +465,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   image: {
-    width: Dimensions.get("window").width - 32,
-    height: Dimensions.get("window").width - 32,
     resizeMode: "contain",
     backgroundColor: "#fff",
     justifyContent: "center",
