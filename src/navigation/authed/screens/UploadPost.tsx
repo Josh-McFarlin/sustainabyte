@@ -84,8 +84,14 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
           routes: [
             {
               name: "Tabs",
-              screen: "Discover",
-            } as any,
+              state: {
+                routes: [
+                  {
+                    name: "Discover",
+                  },
+                ],
+              },
+            },
             {
               name: "Post",
               params: {

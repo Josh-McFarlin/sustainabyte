@@ -70,3 +70,11 @@ export const createPost = async (
 
   return json.post;
 };
+
+export const deletePost = async (postId: PostType["_id"]): Promise<boolean> => {
+  const { status } = await authRequest.delete(
+    `${urls.api}/post/${encodeURIComponent(postId)}`
+  );
+
+  return status === 200;
+};

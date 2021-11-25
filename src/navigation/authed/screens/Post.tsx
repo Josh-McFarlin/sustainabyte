@@ -15,7 +15,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import dayjs from "dayjs";
 import { view } from "@risingstack/react-easy-state";
 import { StackNavParamList } from "../types";
-import { fetchPost } from "../../../actions/post";
+import { deletePost, fetchPost } from "../../../actions/post";
 import type { PostType } from "../../../types/Post";
 import PhotoGallery from "../../../components/PhotoGallery";
 import usersStore from "../../../utils/userData";
@@ -72,6 +72,17 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       Alert.alert("Error", "Failed to save!");
     }
   }, [post, isOwnProfile]);
+
+  const handleDelete = React.useCallback(async () => {
+    try {
+      await deletePost(post._id);
+
+      navigation.goBack();
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Failed to delete!");
+    }
+  }, []);
 
   if (post == null || (restaurant == null && user == null)) {
     return null;
@@ -172,7 +183,14 @@ const PostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
         <View style={styles.bodyRow}>
           <Text>{body}</Text>
         </View>
-        <Text style={styles.date}>{dayjs(createdAt).format("MMM D")}</Text>
+        <View style={[styles.hRow, styles.spaceBetween]}>
+          {isOwnProfile && (
+            <TouchableOpacity onPress={handleDelete}>
+              <Text style={styles.deleteText}>Delete Post</Text>
+            </TouchableOpacity>
+          )}
+          <Text style={styles.date}>{dayjs(createdAt).format("MMM D")}</Text>
+        </View>
       </View>
     </View>
   );
@@ -309,6 +327,13 @@ const styles = StyleSheet.create({
     color: "#000",
     marginTop: 4,
     fontWeight: "500",
+  },
+  spaceBetween: {
+    justifyContent: "space-between",
+  },
+  deleteText: {
+    fontSize: 12,
+    color: "#FA5B6B",
   },
 });
 
