@@ -161,10 +161,21 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       if (Platform.OS !== "web") {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
+
         if (status !== "granted") {
           Alert.alert(
             "Error",
             "Sorry, we need camera roll permissions to make this work!"
+          );
+        }
+
+        const { status: camStatus } =
+          await ImagePicker.requestCameraPermissionsAsync();
+
+        if (camStatus !== "granted") {
+          Alert.alert(
+            "Error",
+            "Sorry, we need camera permissions to make this work!"
           );
         }
       }
@@ -172,15 +183,19 @@ const UploadPostScreen: React.FC<PropTypes> = ({ route, navigation }) => {
   }, []);
 
   const takePhoto = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
 
-    if (result?.cancelled === false) {
-      setPicture(result.uri);
+      if (result?.cancelled === false) {
+        setPicture(result.uri);
+      }
+    } catch (error) {
+      Alert.alert("Error", error?.message || error);
     }
   };
 

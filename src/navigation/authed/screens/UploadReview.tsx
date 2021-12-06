@@ -135,10 +135,21 @@ const UploadReviewScreen: React.FC<PropTypes> = ({ route, navigation }) => {
       if (Platform.OS !== "web") {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
+
         if (status !== "granted") {
           Alert.alert(
             "Error",
             "Sorry, we need camera roll permissions to make this work!"
+          );
+        }
+
+        const { status: camStatus } =
+          await ImagePicker.requestCameraPermissionsAsync();
+
+        if (camStatus !== "granted") {
+          Alert.alert(
+            "Error",
+            "Sorry, we need camera permissions to make this work!"
           );
         }
       }
